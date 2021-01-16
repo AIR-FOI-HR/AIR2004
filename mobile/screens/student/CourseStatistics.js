@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, FlatList } from "react-native";
-import {
-  Text,
-  Surface,
-  DefaultTheme,
-  Provider as PaperProvider,
-} from "react-native-paper";
+import { Text, Surface, DefaultTheme, Provider as PaperProvider } from "react-native-paper";
 import { useSelector } from "react-redux";
 import { LineChart } from "react-native-chart-kit";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -26,7 +21,7 @@ const CourseStatistics = ({ route }) => {
   const { courseId } = route.params;
   const { selectedCourse } = route.params;
 
-  const user = useSelector((state) => state);
+  const user = useSelector((state) => state.userState);
 
   useEffect(() => {
     const getAllSubmitedAttendances = async () => {

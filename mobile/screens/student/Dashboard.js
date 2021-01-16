@@ -35,7 +35,7 @@ const Dashboard = ({ navigation }) => {
   const [todayAttendanceData, setTodayAttendanceData] = useState([]);
   const [lastWeekAttendanceData, setLastWeekAttendanceData] = useState([]);
 
-  const user = useSelector((state) => state);
+  const user = useSelector((state) => state.userState);
 
   useEffect(() => {
     api
@@ -319,9 +319,7 @@ const Dashboard = ({ navigation }) => {
                 keyExtractor={(item) => item.id}
                 data={enrolledCourses}
                 extraData={enrolledCourses.length}
-                renderItem={({ item }) => (
-                  <CourseItem id={item.id} courseName={item.name} />
-                )}
+                renderItem={({ item }) => <CourseItem id={item.id} courseName={item.name} />}
               />
             ) : (
               <View style={{ marginLeft: 20 }}>
@@ -384,9 +382,7 @@ const Dashboard = ({ navigation }) => {
                 label="Enter course passcode"
                 value={coursePasscode}
                 mode="outlined"
-                onChangeText={(coursePasscode) =>
-                  setCoursePasscode(coursePasscode)
-                }
+                onChangeText={(coursePasscode) => setCoursePasscode(coursePasscode)}
               />
             </Dialog.Content>
             <Dialog.Actions>

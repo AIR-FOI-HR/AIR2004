@@ -19,30 +19,21 @@ import QR from "../screens/teacher/QR";
 import * as Biometrics from "../utils/biometrics";
 import BiometricAuthenticationDialog from "../screens/common/components/BiometricAuthenticationDialog";
 
-import { signOut } from "../actions";
+import { signOut } from "../store/actions/user";
 
 const Stack = createStackNavigator();
 const Tabs = createMaterialBottomTabNavigator();
 const CoursesStack = createStackNavigator();
 
 const CoursesStackNavigation = () => {
-
-  return( <CoursesStack.Navigator headerMode="none">
-            <CoursesStack.Screen 
-                name="Courses" 
-                component={Courses} 
-              />
-            <CoursesStack.Screen 
-                name="NewCourse" 
-                component={NewCourse} 
-              />
-            <CoursesStack.Screen 
-                name="EditCourse" 
-                component={EditCourse} 
-              />
-          </CoursesStack.Navigator>)
-
-}
+  return (
+    <CoursesStack.Navigator headerMode="none">
+      <CoursesStack.Screen name="Courses" component={Courses} />
+      <CoursesStack.Screen name="NewCourse" component={NewCourse} />
+      <CoursesStack.Screen name="EditCourse" component={EditCourse} />
+    </CoursesStack.Navigator>
+  );
+};
 
 const TeacherTabNavigation = () => {
   return (
@@ -66,7 +57,7 @@ const TeacherTabNavigation = () => {
       />
 
       <Tabs.Screen
-        name="Courses" 
+        name="Courses"
         component={CoursesStackNavigation}
         options={{
           tabBarLabel: "Courses",

@@ -4,14 +4,14 @@ import React, { useEffect, useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import BlankSpacer from "react-native-blank-spacer";
 import { Modal, Portal, RadioButton, Switch, Text, useTheme } from "react-native-paper";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import MaterialCommunityIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useDispatch, useSelector } from "react-redux";
-import { setTheme } from "../../actions/index";
+import { setTheme } from "../../store/actions/user";
 import * as Biometrics from "../../utils/biometrics";
 
 const Settings = () => {
   const dispatch = useDispatch();
-  const themePreference = useSelector((state) => state.themePreference);
+  const themePreference = useSelector((state) => state.userState.themePreference);
 
   const theme = useTheme();
   const isDarkTheme = theme.dark;
@@ -56,7 +56,7 @@ const Settings = () => {
     <View style={styles.container}>
       {biometricsAvailable == true && (
         <View style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-          <Icon name="fingerprint" size={34} color={isDarkTheme ? "#fff" : "#000"} />
+          <MaterialCommunityIcon name="fingerprint" size={34} color={isDarkTheme ? "#fff" : "#000"} />
           <BlankSpacer width={10} />
           <Text style={{ flex: 1, fontSize: 17 }}>Biometric authentication</Text>
           <Switch value={isSwitchOn} onValueChange={onToggleSwitch}></Switch>
@@ -65,7 +65,7 @@ const Settings = () => {
       <BlankSpacer height={30} />
       <Pressable onPress={showThemeModal}>
         <View style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-          <Icon name="palette" size={34} color={isDarkTheme ? "#fff" : "#000"} />
+          <MaterialCommunityIcon name="palette-outline" size={34} color={isDarkTheme ? "#fff" : "#000"} />
           <BlankSpacer width={10} />
 
           <View style={{ display: "flex" }}>

@@ -1,14 +1,27 @@
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import { View, StyleSheet } from "react-native";
-import { Text, TextInput, Checkbox } from "react-native-paper";
+import { Text, TextInput } from "react-native-paper";
 import { useDispatch } from "react-redux";
 import { FAB, Provider as PaperProvider } from "react-native-paper";
+import { addCourse } from "../../store/actions/teacher";
+
+import api from "../../utils/api";
 
 const Courses = () => {
+  const teacherId = useSelector((state) => state.userState.userId);
   const dispatch = useDispatch();
-  const [courseName, setCourseName] = useState("");
-  const [joinPassword, setJoinPassword] = useState("");
+  const [name, setName] = useState("");
+  const [passcode, setPasscode] = useState("");
   const [allowedAbsences, setAllowedAbsences] = useState(0);
+
+  console.log("TEACHER", teacherId);
+
+  const handleAddCourse = () => {
+    api.post("/course/add", { name, passcode, allowedAbsences, teacherId }).then((data) => {
+      dispatch(addCourse(data.data.data));
+    });
+  };
 
   return (
     <PaperProvider>
@@ -17,20 +30,10 @@ const Courses = () => {
           <Text style={styles.firstWord}>Add</Text> a new course
         </Text>
         <Text style={styles.title}>Course name:</Text>
-        <TextInput
-          style={styles.textInput}
-          label="Course name"
-          value={courseName}
-          onChangeText={(courseName) => setCourseName(courseName)}
-        />
+        <TextInput style={styles.textInput} label="Course name" value={name} onChangeText={(name) => setName(name)} />
 
-        <Text style={styles.title}>Course join password:</Text>
-        <TextInput
-          style={styles.textInput}
-          label="Join password"
-          value={joinPassword}
-          onChangeText={(joinPassword) => setJoinPassword(joinPassword)}
-        />
+        <Text style={styles.title}>Course join passcode:</Text>
+        <TextInput style={styles.textInput} label="Join passcode" value={passcode} onChangeText={(passcode) => setPasscode(passcode)} />
 
         <Text style={styles.title}>Number of allowed absences:</Text>
         <TextInput
@@ -40,15 +43,7 @@ const Courses = () => {
           onChangeText={(allowedAbsences) => setAllowedAbsences(allowedAbsences)}
         />
       </View>
-      <FAB
-        style={styles.fab}
-        small
-        label="save"
-        icon="content-save"
-        color="black"
-        onPress={() => console.log("Pressed")}
-        onPress={() => navigation.push("QRScan")}
-      />
+      <FAB style={styles.fab} small label="add" icon="plus" color="black" onPress={handleAddCourse} />
     </PaperProvider>
   );
 };

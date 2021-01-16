@@ -22,69 +22,47 @@ const CoursesView = () => {
   }, []);
 
   const add = () => {
-    history.push('/courses/add');
+    history.push("/courses/add");
   };
 
   const edit = () => {
-    history.push('/courses/edit');
+    history.push("/courses/edit");
   };
 
-  console.log('aa: ', useSelector(state => state.courseEdit));
-  const selectedCourse = useSelector(state => state.courseEdit);
+  const selectedCourse = useSelector((state) => state.courseEdit);
 
   const deleteCourse = (selectedCourse) => {
     if (selectedCourse !== null) {
-      console.log('delete course: ', selectedCourse);
-    api
-      .delete(`/course/${selectedCourse.id}`, {
-        headers: { "Content-Type": "application/json" },
-      })
-      .then((response) => {
-        console.log("RESPONSE", response);
-        //setSnackBarData({ isOpen: true, response: response.data.success });
-        history.go(0);
-      })
-      .catch((error) => {
-        //setSnackBarData({ isOpen: true, response: false });
-      });
+      console.log("delete course: ", selectedCourse);
+      api
+        .delete(`/course/${selectedCourse.id}`, {
+          headers: { "Content-Type": "application/json" },
+        })
+        .then((response) => {
+          console.log("RESPONSE", response);
+          //setSnackBarData({ isOpen: true, response: response.data.success });
+          history.go(0);
+        })
+        .catch((error) => {
+          //setSnackBarData({ isOpen: true, response: false });
+        });
     }
-  } 
+  };
 
   return (
     <>
       <Grid container className={classes.container}>
-        <Button
-          type="add"
-          variant="contained"
-          color="primary"
-          className={classes.button}
-          onClick={add}
-        >
+        <Button type="add" variant="contained" color="primary" className={classes.button} onClick={add}>
           New
         </Button>
-        <Button
-          type="delete"
-          variant="contained"
-          color="secondary"
-          className={classes.button}
-          onClick={() => deleteCourse(selectedCourse)}
-        >
+        <Button type="delete" variant="contained" color="secondary" className={classes.button} onClick={() => deleteCourse(selectedCourse)}>
           Delete
         </Button>
-        <Button
-          type="update"
-          variant="contained"
-          color="default"
-          className={classes.button}
-          onClick={edit}
-        >
+        <Button type="update" variant="contained" color="default" className={classes.button} onClick={edit}>
           Edit
         </Button>
         <Grid item>
-          <Paper
-            className={`${fixedHeightPaper} ${classes.Paper}`}
-            elevation={3}
-          >
+          <Paper className={`${fixedHeightPaper} ${classes.Paper}`} elevation={3}>
             {allCourses && <CoursesDataTable courses={allCourses} />}
           </Paper>
         </Grid>

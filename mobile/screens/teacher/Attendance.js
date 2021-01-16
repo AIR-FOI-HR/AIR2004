@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { View, StyleSheet } from "react-native";
-import { Button, Colors, Text } from "react-native-paper";
+import { Text } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
-import { ActivityIndicator, FAB, Paragraph } from "react-native-paper";
+import { ActivityIndicator, FAB } from "react-native-paper";
 import StudentAttendanceCard from "./components/StudentAttendanceCard";
 import { ScrollView } from "react-native-gesture-handler";
 import { io } from "socket.io-client";
@@ -10,7 +10,7 @@ import { WSS_URL } from "../../constants";
 
 const Attendance = () => {
   const dispatch = useDispatch();
-  const user = useSelector((state) => state);
+  const user = useSelector((state) => state.userState);
   const [attendances, setAttendances] = useState([]);
 
   const [fabOpen, setFabOpen] = useState(false);
