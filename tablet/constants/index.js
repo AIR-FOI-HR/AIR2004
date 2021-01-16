@@ -1,2 +1,2 @@
-export const WSS_URL = "http://10.0.2.2:8080";
-export const API_URL = "http://10.0.2.2:8080/api";
+export const WSS_URL = "http://secret-tundra-55967.herokuapp.com";
+export const API_URL = "http://secret-tundra-55967.herokuapp.com/api";
