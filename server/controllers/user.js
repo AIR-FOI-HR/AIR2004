@@ -12,14 +12,26 @@ exports.login = async (req, res) => {
 
   // Check if user exists
   const user = await User.findOne({ email });
-  if (!user) return res.status(401).json({ success: false, message: "Email or password not valid!" });
+  if (!user)
+    return res
+      .status(401)
+      .json({ success: false, message: "Email or password not valid!" });
 
   // Check if passwords match
   const match = await bcrypt.compareSync(password, user.password);
-  if (!match) return res.status(401).json({ success: false, message: "Email or password not valid!" });
+  if (!match)
+    return res
+      .status(401)
+      .json({ success: false, message: "Email or password not valid!" });
 
   const token = jwt.sign(
-    { email: user.email, jmbag: user.jmbag, phoneNumber: user.phoneNumber, name: user.name, surname: user.surname },
+    {
+      email: user.email,
+      jmbag: user.jmbag,
+      phoneNumber: user.phoneNumber,
+      name: user.name,
+      surname: user.surname,
+    },
     process.env.JWT_SECRET
   );
 
@@ -64,7 +76,10 @@ exports.loginTablet = async (req, res) => {
 exports.register = async (req, res) => {
   const { role } = req.params;
 
-  if (!["student", "teacher"].includes(role)) return res.status(400).json({ success: false, error: "Valid roles are student, teacher" });
+  if (!["student", "teacher"].includes(role))
+    return res
+      .status(400)
+      .json({ success: false, error: "Valid roles are student, teacher" });
 
   try {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
@@ -174,7 +189,9 @@ exports.getSingle = async (req, res) => {
   try {
     const token = req.header("Authorization").replace("Bearer ", "");
     let user = jwt.verify(token, process.env.JWT_SECRET);
-    user = await User.findOne({ email: user.email }).populate("enrolledCourses").populate("assignedCourses");
+    user = await User.findOne({ email: user.email })
+      .populate("enrolledCourses")
+      .populate("assignedCourses");
     const data = user.toJSON();
     res.status(200).json({ success: true, data });
   } catch (error) {
@@ -188,7 +205,9 @@ exports.verify = async (req, res) => {
     const user = jwt.verify(token, process.env.JWT_SECRET);
     res.status(200).json({ success: true, user });
   } catch (error) {
-    res.status(400).json({ success: false, error: "Invalid or missing token!" });
+    res
+      .status(400)
+      .json({ success: false, error: "Invalid or missing token!" });
   }
 };
 
@@ -200,8 +219,17 @@ exports.enroll = async (req, res) => {
     student = await User.findOne({ jmbag: student.jmbag });
     const course = await Course.findOne({ passcode: req.body.passcode });
 
+    let checkIfEnrolled = student.enrolledCourses.includes(course._id);
+
+    if (checkIfEnrolled) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Course already enrolled." });
+    }
+
     student.enrolledCourses = student.enrolledCourses.concat(course._id);
     course.enrolledStudents = course.enrolledStudents.concat(student._id);
+
     const data = { student, course };
 
     await student.save();
