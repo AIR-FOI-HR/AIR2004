@@ -19,6 +19,11 @@ const lectureSchema = mongoose.Schema({
     type: Date,
     required: false,
   },
+  attendingStudents: [ { 
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User"
+    }
+  ]
 });
 
 lectureSchema.set("toJSON", {

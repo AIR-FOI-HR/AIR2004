@@ -7,8 +7,11 @@ import TeachersView from "./pages/TeachersView/TeachersView";
 import TeachersViewAdd from "./pages/TeachersViewAdd/TeachersViewAdd";
 import CoursesView from "./pages/CoursesView/CoursesView";
 import CoursesViewAdd from "./pages/CoursesViewAdd/CoursesViewAdd";
+import CoursesViewEdit from "./pages/CoursesViewEdit/CoursesViewEdit";
 import LecturesView from "./pages/LecturesView/LecturesView";
 import LecturesViewAdd from "./pages/LecturesViewAdd/LecturesViewAdd";
+import AttendanceView from "./pages/AttendanceView/AttendanceView";
+import AttendanceViewAdd from "./pages/AttendanceViewAdd/AttendanceViewAdd";
 import Login from "./pages/Login/Login";
 import PrivateRoute from "./components/PrivateRoute";
 
@@ -49,6 +52,11 @@ const App = () => {
             <CoursesViewAdd />
           </Dashboard>
         </PrivateRoute>
+        <PrivateRoute path="/courses/edit">
+          <Dashboard>
+            <CoursesViewEdit />
+          </Dashboard>
+        </PrivateRoute>
         <PrivateRoute exact path="/lectures">
           <Dashboard>
             <LecturesView />
@@ -57,6 +65,16 @@ const App = () => {
         <PrivateRoute path="/lectures/add">
           <Dashboard>
             <LecturesViewAdd />
+          </Dashboard>
+        </PrivateRoute>
+        <PrivateRoute exact path="/attendances">
+          <Dashboard>
+            <AttendanceView />
+          </Dashboard>
+        </PrivateRoute>
+        <PrivateRoute path="/attendances/add">
+          <Dashboard>
+            <AttendanceViewAdd />
           </Dashboard>
         </PrivateRoute>
         <PrivateRoute path="/">

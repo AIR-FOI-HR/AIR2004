@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
-  ActivityIndicator,
   FlatList,
   ScrollView,
   Dimensions,
@@ -11,56 +10,32 @@ import {
   Button,
   Text,
   Surface,
-  DefaultTheme,
   Portal,
   Dialog,
   TextInput,
-  Provider as PaperProvider,
   FAB,
-  Card,
 } from "react-native-paper";
-import { LineChart } from "react-native-chart-kit";
+import { LineChart, BarChart } from "react-native-chart-kit";
 import { useSelector } from "react-redux";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { showMessage } from "react-native-flash-message";
+
+const moment = require("moment");
 
 import CourseItem from "../student/components/CourseItem";
 import AttendanceItem from "../student/components/AttendanceItem";
 
 import api from "../../utils/api";
-
-const theme = {
-  ...DefaultTheme,
-  colors: {
-    ...DefaultTheme.colors,
-    surface: "rgb(238, 238, 238)",
-  },
-};
-
-const chartConfig = {
-  backgroundColor: "#a1a09f",
-  backgroundGradientFrom: "#949494",
-  backgroundGradientTo: "#949494",
-  decimalPlaces: 2, // optional, defaults to 2dp
-  color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-  labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-  style: {
-    borderRadius: 16,
-  },
-  propsForDots: {
-    r: "6",
-    strokeWidth: "2",
-    stroke: "#757575",
-  },
-};
+import { set } from "react-native-reanimated";
 
 const Dashboard = ({ navigation }) => {
-  const [showLoadingIndicator, setShowLoadingIndicator] = useState(false);
   const [coursePasscode, setCoursePasscode] = useState("");
   const [visible, toggleVisible] = useState(false);
   const [enrolledCourses, setEnrolledCourses] = useState([]);
-  const [refresh, setRefresh] = useState(false);
+  const [todayAttendanceData, setTodayAttendanceData] = useState([]);
+  const [lastWeekAttendanceData, setLastWeekAttendanceData] = useState([]);
 
-  const user = useSelector((state) => state);
+  const user = useSelector((state) => state.userState);
 
   useEffect(() => {
     api
@@ -74,59 +49,102 @@ const Dashboard = ({ navigation }) => {
         setEnrolledCourses(data.data.enrolledCourses);
       })
       .catch((error) => console.log(error));
+
+    api
+      .get("/attendance", {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+          "Content-Type": "application/json",
+        },
+      })
+      .then(({ data }) => {
+        setTodayAttendanceData(
+          data.data.filter((item) => {
+            moment().isSame(item.fullDate, "day") &&
+              moment().isSame(item.fullDate, "month") &&
+              moment()
+                .isSame(item.fullDate, "year")
+                .sort((a, b) =>
+                  moment(a.fullDate).isBefore(b.fullDate)
+                    ? -1
+                    : moment(a.fullDate).isAfter(b.fullDate)
+                    ? 1
+                    : 0
+                );
+          })
+        );
+
+        setLastWeekAttendanceData(
+          data.data.filter(
+            (item) =>
+              moment().subtract(7, "days").isBefore(item.fullDate) &&
+              moment().isAfter(item.fullDate)
+          )
+        );
+      })
+      .catch((error) => console.log(error));
   }, []);
 
-  const mockData = [
-    {
-      id: "1",
-      attendanceTime: "10:01",
-      courseName: "Software Analysis and Design",
-    },
-    {
-      id: "2",
-      attendanceTime: "13:48",
-      courseName: "Foreign Trade",
-    },
-  ];
-
   const graphData = {
-    labels: ["M", "T", "W", "T", "F"],
+    labels: ["MON", "TUE", "WED", "THU", "FRI"],
     datasets: [
       {
-        data: [4, 2, 5, 5, 1],
+        data: [
+          lastWeekAttendanceData.filter((item) => item.day === "MONDAY").length,
+          lastWeekAttendanceData.filter((item) => item.day === "TUESDAY")
+            .length,
+          lastWeekAttendanceData.filter((item) => item.day === "WEDNESDAY")
+            .length,
+          lastWeekAttendanceData.filter((item) => item.day === "THURSDAY")
+            .length,
+          lastWeekAttendanceData.filter((item) => item.day === "FRIDAY").length,
+        ],
       },
     ],
   };
 
   const handleSubmitAddCourse = () => {
-    setShowLoadingIndicator(true);
-
     const body = { passcode: coursePasscode };
 
-    setTimeout(() => {
-      setShowLoadingIndicator(false);
-      toggleVisible(false);
+    toggleVisible(false);
 
-      api
-        .post("/user/enroll", body, {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-            "Content-Type": "application/json",
-          },
-        })
-        .then(({ data }) => {
-          console.log("ADDED COURSE", data.data.course);
-          setEnrolledCourses(enrolledCourses.concat(data.data.course));
-        })
-        .catch((error) => console.log(error));
+    api
+      .post("/user/enroll", body, {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+          "Content-Type": "application/json",
+        },
+      })
+      .then(({ data }) => {
+        console.log("ADDED COURSE", data.data.course);
+        toggleVisible(false);
+        setEnrolledCourses(enrolledCourses.concat(data.data.course));
+        showMessage({
+          message: "Thank you!",
+          description: `You have been successfully added to course ${data.data.course.name}!`,
+          type: "success",
+          duration: 5000,
+          icon: "success",
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+        showMessage({
+          message: "Error occured!",
+          description:
+            "Please contact professor to add you manually or try again later!",
+          type: "danger",
+          duration: 5000,
+          icon: "danger",
+        });
+      });
 
-      setCoursePasscode("");
-    }, 4000);
+    setCoursePasscode("");
   };
 
   return (
-    <PaperProvider>
-      <View style={styles.container}>
+    <View>
+      <ScrollView style={styles.container}>
         <Text style={styles.title}>
           Hi,{" "}
           <Text style={{ fontWeight: "bold" }}>
@@ -136,82 +154,95 @@ const Dashboard = ({ navigation }) => {
 
         <View style={{ marginTop: 25 }}>
           <Text style={styles.font}>Here's your summary for today:</Text>
-          <Surface
-            style={{ ...styles.graphContainer, marginTop: 20 }}
-            theme={theme}
-          >
-            <ScrollView>
-              <Text
-                style={
-                  (styles.font,
-                  {
-                    marginLeft: 12,
-                    marginTop: 12,
-                    fontWeight: "bold",
-                    color: "#626262",
-                  })
-                }
-              >
-                Recent attendance
-              </Text>
-
-              <Text
-                style={
-                  (styles.font, { marginLeft: 12, color: "#000", fontSize: 34 })
-                }
-              >
-                12
-              </Text>
-
-              <Text style={(styles.font, { marginLeft: 12, color: "#000" })}>
-                in the last week
-              </Text>
-
-              {mockData.length !== 0 ? (
-                <View style={{ margin: 10, padding: 10, alignItems: "center" }}>
-                  <LineChart
-                    data={graphData}
-                    width={280}
-                    height={165}
-                    chartConfig={chartConfig}
-                    bezier
-                  />
-                </View>
-              ) : (
-                <View style={{ marginLeft: 20 }}>
-                  <MaterialCommunityIcons name="cloud-sync-outline" size={26} />
-                  <Text style={styles.font}>No data found!</Text>
-                </View>
-              )}
-            </ScrollView>
-          </Surface>
-        </View>
-
-        <View style={{ marginTop: 15 }}>
-          <Surface style={styles.graphContainer} theme={theme}>
+          <Surface style={{ ...styles.graphContainer, marginTop: 20 }}>
             <Text
               style={
                 (styles.font,
                 {
-                  margin: 12,
-                  marginBottom: 5,
+                  marginLeft: 12,
+                  marginTop: 12,
                   fontWeight: "bold",
-                  color: "#626262",
                 })
               }
             >
-              Your attendance today
+              Recent attendance
             </Text>
 
-            {mockData.length !== 0 ? (
-              <FlatList
-                keyExtractor={(item) => item.id}
-                data={mockData}
-                renderItem={({ item }) => <AttendanceItem item={item} />}
-              />
+            <Text style={(styles.font, { marginLeft: 12, fontSize: 34 })}>
+              {lastWeekAttendanceData.length}
+            </Text>
+
+            <Text style={(styles.font, { marginLeft: 12 })}>
+              in the last week
+            </Text>
+
+            {lastWeekAttendanceData.length > 0 ? (
+              <View
+                style={{
+                  marginTop: 10,
+                  marginLeft: -10,
+                  padding: 10,
+                }}
+              >
+                {user.themePreference === "dark" ? (
+                  <BarChart
+                    data={graphData}
+                    showBarTops={true}
+                    showValuesOnTopOfBars={true}
+                    withInnerLines={false}
+                    segments={5}
+                    withHorizontalLabels={false}
+                    width={320}
+                    height={220}
+                    withCustomBarColorFromData={true}
+                    flatColor={true}
+                    chartConfig={{
+                      backgroundGradientFrom: "#272727",
+                      backgroundGradientTo: "#272727",
+                      data: graphData.datasets,
+                      decimalPlaces: 2,
+                      color: () => "#731ff0",
+                      labelColor: () => "#6a6a6a",
+                    }}
+                  />
+                ) : (
+                  <BarChart
+                    data={graphData}
+                    showBarTops={true}
+                    showValuesOnTopOfBars={true}
+                    withInnerLines={false}
+                    segments={5}
+                    withHorizontalLabels={false}
+                    width={320}
+                    height={220}
+                    withCustomBarColorFromData={true}
+                    flatColor={true}
+                    chartConfig={{
+                      backgroundGradientFrom: "#ffffff",
+                      backgroundGradientTo: "#ffffff",
+                      data: graphData.datasets,
+                      decimalPlaces: 2,
+                      color: () => "#731ff0",
+                      labelColor: () => "#6a6a6a",
+                    }}
+                  />
+                )}
+              </View>
             ) : (
               <View style={{ marginLeft: 20 }}>
-                <MaterialCommunityIcons name="cloud-sync-outline" size={26} />
+                {user.themePreference === "dark" ? (
+                  <MaterialCommunityIcons
+                    color="white"
+                    name="cloud-sync-outline"
+                    size={26}
+                  />
+                ) : (
+                  <MaterialCommunityIcons
+                    color="black"
+                    name="cloud-sync-outline"
+                    size={26}
+                  />
+                )}
                 <Text style={styles.font}>No data found!</Text>
               </View>
             )}
@@ -219,7 +250,10 @@ const Dashboard = ({ navigation }) => {
         </View>
 
         <View style={{ marginTop: 15 }}>
-          <Surface style={styles.graphContainer} theme={theme}>
+          <Surface
+            style={{ ...styles.graphContainer, height: 200 }}
+            nestedScrollEnabled={true}
+          >
             <Text
               style={
                 (styles.font,
@@ -227,7 +261,52 @@ const Dashboard = ({ navigation }) => {
                   margin: 12,
                   marginBottom: 5,
                   fontWeight: "bold",
-                  color: "#626262",
+                })
+              }
+            >
+              Your attendance today
+            </Text>
+
+            {todayAttendanceData.length !== 0 ? (
+              <FlatList
+                nestedScrollEnabled={true}
+                keyExtractor={(item) => item.id}
+                data={mockData}
+                renderItem={({ item }) => <AttendanceItem item={item} />}
+              />
+            ) : (
+              <View style={{ marginLeft: 20 }}>
+                {user.themePreference === "dark" ? (
+                  <MaterialCommunityIcons
+                    color="white"
+                    name="cloud-sync-outline"
+                    size={26}
+                  />
+                ) : (
+                  <MaterialCommunityIcons
+                    color="black"
+                    name="cloud-sync-outline"
+                    size={26}
+                  />
+                )}
+                <Text style={styles.font}>No data found!</Text>
+              </View>
+            )}
+          </Surface>
+        </View>
+
+        <View style={{ marginTop: 15 }}>
+          <Surface
+            style={{ ...styles.graphContainer, height: 200, marginBottom: 100 }}
+            nestedScrollEnabled={true}
+          >
+            <Text
+              style={
+                (styles.font,
+                {
+                  margin: 12,
+                  marginBottom: 5,
+                  fontWeight: "bold",
                 })
               }
             >
@@ -236,26 +315,48 @@ const Dashboard = ({ navigation }) => {
 
             {enrolledCourses.length !== 0 ? (
               <FlatList
+                nestedScrollEnabled={true}
                 keyExtractor={(item) => item.id}
                 data={enrolledCourses}
                 extraData={enrolledCourses.length}
-                renderItem={({ item }) => (
-                  <CourseItem id={item.id} courseName={item.name} />
-                )}
+                renderItem={({ item }) => <CourseItem id={item.id} courseName={item.name} />}
               />
             ) : (
               <View style={{ marginLeft: 20 }}>
-                <MaterialCommunityIcons name="cloud-sync-outline" size={26} />
+                {user.themePreference === "dark" ? (
+                  <MaterialCommunityIcons
+                    color="white"
+                    name="cloud-sync-outline"
+                    size={26}
+                  />
+                ) : (
+                  <MaterialCommunityIcons
+                    color="black"
+                    name="cloud-sync-outline"
+                    size={26}
+                  />
+                )}
                 <Text style={styles.font}>No data found!</Text>
               </View>
             )}
 
-            <MaterialCommunityIcons
-              style={styles.plusIcon}
-              name="plus"
-              size={35}
-              onPress={() => toggleVisible(true)}
-            />
+            {user.themePreference === "dark" ? (
+              <MaterialCommunityIcons
+                style={styles.plusIcon}
+                color="white"
+                name="plus"
+                size={35}
+                onPress={() => toggleVisible(true)}
+              />
+            ) : (
+              <MaterialCommunityIcons
+                style={styles.plusIcon}
+                color="black"
+                name="plus"
+                size={35}
+                onPress={() => toggleVisible(true)}
+              />
+            )}
           </Surface>
         </View>
 
@@ -275,18 +376,13 @@ const Dashboard = ({ navigation }) => {
               }}
             >
               <Dialog.Title>Enter course join password:</Dialog.Title>
-              {showLoadingIndicator && (
-                <ActivityIndicator size="large" color="#0000ff" />
-              )}
             </View>
             <Dialog.Content>
               <TextInput
                 label="Enter course passcode"
                 value={coursePasscode}
                 mode="outlined"
-                onChangeText={(coursePasscode) =>
-                  setCoursePasscode(coursePasscode)
-                }
+                onChangeText={(coursePasscode) => setCoursePasscode(coursePasscode)}
               />
             </Dialog.Content>
             <Dialog.Actions>
@@ -302,7 +398,7 @@ const Dashboard = ({ navigation }) => {
             </Dialog.Actions>
           </Dialog>
         </Portal>
-      </View>
+      </ScrollView>
 
       <FAB
         style={styles.fab}
@@ -312,7 +408,7 @@ const Dashboard = ({ navigation }) => {
         color="black"
         onPress={() => navigation.push("QRScan")}
       />
-    </PaperProvider>
+    </View>
   );
 };
 
@@ -330,7 +426,7 @@ const styles = StyleSheet.create({
 
   graphContainer: {
     marginTop: 5,
-    height: 150,
+    height: 350,
     elevation: 4,
   },
 

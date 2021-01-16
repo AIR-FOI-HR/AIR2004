@@ -10,3 +10,10 @@ export const logout = () => {
     type: "LOG_OUT",
   };
 };
+
+export const courseEdit = (row) => {
+  return {
+    type: "EDIT_COURSE",
+    selectedRow: row
+  }
+};

@@ -17,6 +17,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import java.util.Arrays;
+
+
 	 
 import org.unimodules.adapters.react.ModuleRegistryAdapter;
 import org.unimodules.adapters.react.ReactModuleRegistryProvider;
@@ -54,6 +56,8 @@ public class MainApplication extends Application implements ReactApplication {
         protected String getJSMainModuleName() {
           return "index";
         }
+
+       
       };
 
   @Override

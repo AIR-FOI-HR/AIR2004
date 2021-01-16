@@ -7,7 +7,7 @@ import api from "../../utils/api";
 import { useSelector } from "react-redux";
 
 const QR = ({ navigation }) => {
-  const user = useSelector((state) => state.userId);
+  const user = useSelector((state) => state.userState.userId);
 
   const onScanned = async (e) => {
     try {

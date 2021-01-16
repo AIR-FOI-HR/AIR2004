@@ -16,7 +16,7 @@ const Attendance = () => {
   const [attendanceData, setAttendanceData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
 
-  const user = useSelector((state) => state);
+  const user = useSelector((state) => state.userState);
 
   useEffect(() => {
     api
@@ -29,13 +29,7 @@ const Attendance = () => {
       .then(({ data }) => {
         setAttendanceData(data.data);
         setFilteredData(
-          data.data.sort((a, b) =>
-            moment(a.fullDate).isBefore(b.fullDate)
-              ? -1
-              : moment(a.fullDate).isAfter(b.fullDate)
-              ? 1
-              : 0
-          )
+          data.data.sort((a, b) => (moment(a.fullDate).isBefore(b.fullDate) ? -1 : moment(a.fullDate).isAfter(b.fullDate) ? 1 : 0))
         );
       })
       .catch((error) => console.log(error));
@@ -46,80 +40,56 @@ const Attendance = () => {
 
     switch (filterValue) {
       case "Courses":
-        console.log("Courses.");
-
         setFilteredData(
-          attendanceData.sort((a, b) =>
-            moment(a.fullDate).isBefore(b.fullDate)
-              ? -1
-              : moment(a.fullDate).isAfter(b.fullDate)
-              ? 1
-              : 0
-          )
+          attendanceData.sort((a, b) => (moment(a.fullDate).isBefore(b.fullDate) ? -1 : moment(a.fullDate).isAfter(b.fullDate) ? 1 : 0))
         );
         break;
 
       case "Attended":
-        console.log("Attended.");
         setFilteredData(
           attendanceData
             .filter((item) => item.present === true)
-            .sort((a, b) =>
-              moment(a.fullDate).isBefore(b.fullDate)
-                ? -1
-                : moment(a.fullDate).isAfter(b.fullDate)
-                ? 1
-                : 0
-            )
+            .sort((a, b) => (moment(a.fullDate).isBefore(b.fullDate) ? -1 : moment(a.fullDate).isAfter(b.fullDate) ? 1 : 0))
         );
         break;
 
       case "Missed":
-        console.log("Missed.");
-        setFilteredData(
-          attendanceData
-            .filter((item) => item.present === false)
-            .sort((a, b) =>
-              moment(a.fullDate).isBefore(b.fullDate)
-                ? -1
-                : moment(a.fullDate).isAfter(b.fullDate)
-                ? 1
-                : 0
-            )
-        );
+        api
+          .get("attendance/missed", {
+            headers: {
+              Authorization: `Bearer ${user.token}`,
+              "Content-Type": "application/json",
+            },
+          })
+          .then(({ data }) => {
+            setFilteredData(
+              data.data.sort((a, b) =>
+                moment(a.fullDate).isBefore(b.fullDate)
+                  ? -1
+                  : moment(a.fullDate).isAfter(b.fullDate)
+                  ? 1
+                  : 0
+              )
+            );
+          })
+          .catch((error) => console.log(error));
         break;
 
       case "LastWeek": {
-        console.log("LastWeek!");
-
         setFilteredData(
           attendanceData
-            .filter(
-              (item) =>
-                moment().subtract(7, "days").isBefore(item.fullDate) &&
-                moment().isAfter(item.fullDate)
-            )
-            .sort((a, b) =>
-              moment(a.fullDate).isBefore(b.fullDate)
-                ? -1
-                : moment(a.fullDate).isAfter(b.fullDate)
-                ? 1
-                : 0
-            )
+            .filter((item) => moment().subtract(7, "days").isBefore(item.fullDate) && moment().isAfter(item.fullDate))
+            .sort((a, b) => (moment(a.fullDate).isBefore(b.fullDate) ? -1 : moment(a.fullDate).isAfter(b.fullDate) ? 1 : 0))
         );
 
         break;
       }
 
       case "LastMonth":
-        console.log("LastMonth.");
-
         setFilteredData(
           attendanceData
-            .filter(
-              (item) =>
-                moment().isSame(item.fullDate, "month") &&
-                moment().isSame(item.fullDate, "year")
+            .filter((item) =>
+              moment().subtract(1, "month").isSame(item.fullDate, "month")
             )
             .sort((a, b) =>
               moment(a.fullDate).isBefore(b.fullDate)
@@ -135,7 +105,7 @@ const Attendance = () => {
   };
 
   return (
-    <View style={{ margin: 12, marginBottom: 60 }}>
+    <View style={styles.container}>
       <View style={{ flexDirection: "row" }}>
         <Text
           style={{
@@ -167,11 +137,7 @@ const Attendance = () => {
       </View>
 
       {filteredData.length !== 0 ? (
-        <FlatList
-          keyExtractor={(item) => item.id}
-          data={filteredData}
-          renderItem={({ item }) => <AttendanceItem item={item} />}
-        />
+        <FlatList keyExtractor={(item) => item.id} data={filteredData} renderItem={({ item }) => <AttendanceItem item={item} />} />
       ) : (
         <View style={{ marginLeft: 20 }}>
           <MaterialCommunityIcons name="cloud-sync-outline" size={26} />
@@ -184,9 +150,7 @@ const Attendance = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    margin: 12,
   },
 });
 

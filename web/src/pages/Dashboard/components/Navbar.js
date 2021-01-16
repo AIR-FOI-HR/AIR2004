@@ -7,6 +7,7 @@ import HomeIcon from "@material-ui/icons/Home";
 import NavItem from "./NavItem";
 import SchoolIcon from "@material-ui/icons/School";
 import SubjectIcon from '@material-ui/icons/Subject';
+import PlaylistAddCheckIcon from '@material-ui/icons/PlaylistAddCheck';
 
 const user = {
   jobTitle: "Web administrator",
@@ -38,6 +39,11 @@ const items = [
     href: "/lectures",
     icon: SubjectIcon,
     title: "Lectures",
+  },
+  {
+    href: "/attendances",
+    icon: PlaylistAddCheckIcon,
+    title: "Attendances",
   }
 ];
 

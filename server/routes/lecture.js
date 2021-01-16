@@ -31,6 +31,8 @@ const lectureController = require("../controllers/lecture");
 
 router.post("/add", lectureController.add);
 
+router.get("/lecturesForTeacher", lectureController.getLecturesForTeacher);
+
 /**
  * @swagger
  * /lecture/:

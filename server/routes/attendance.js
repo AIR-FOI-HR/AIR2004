@@ -17,10 +17,8 @@ const attendanceController = require("../controllers/attendance");
  *        type: "object"
  *        properties:
  *          lecture:
- *            type: "number"
+ *            type: "string"
  *          user:
- *            type: "number"
- *          qrCode:
  *            type: "string"
  *    responses:
  *      '200':
@@ -64,5 +62,7 @@ router.get("/", attendanceController.getAll);
  *        description: A successful response
  */
 router.post("/mark", attendanceController.markAttendance);
+router.delete("/:id", attendanceController.delete);
+router.get("/missed", attendanceController.getMissed)
 
 module.exports = router;

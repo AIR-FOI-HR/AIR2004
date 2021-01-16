@@ -20,6 +20,9 @@ const useStyles = makeStyles((theme) => ({
   container: {
     margin: "5% 25%"
   },
+  button: {
+    margin: theme.spacing(1),
+  },
 }));
 
 export { useStyles };

@@ -4,9 +4,7 @@ const initialState = {
   surname: null,
   token: null,
   userType: null,
-  attendanceToken: null,
-  courseSelectedOnTablet: null,
-  trackingStarted: false,
+  themePreference: null,
 };
 
 const userReducer = (state = initialState, action) => {
@@ -20,31 +18,13 @@ const userReducer = (state = initialState, action) => {
         token: action.user.token,
         userType: action.user.userType,
       };
-    case "SIGN_IN_TABLET":
-      return {
-        ...state,
-        attendanceToken: action.attendanceToken,
-      };
     case "SIGN_OUT":
       return initialState;
 
-    case "SIGN_OUT_TABLET":
+    case "SET_THEME":
       return {
         ...state,
-        attendanceToken: null,
-        courseSelectedOnTablet: null,
-      };
-
-    case "SET_COURSE_SELECTED_ON_TABLET":
-      return {
-        ...state,
-        courseSelectedOnTablet: action.courseSelectedOnTablet,
-      };
-
-    case "START_TRACKING":
-      return {
-        ...state,
-        trackingStarted: true,
+        themePreference: action.themePref,
       };
 
     default:

@@ -2,14 +2,12 @@ import React from "react";
 import QRCodeScanner from "react-native-qrcode-scanner";
 import { Dimensions, View } from "react-native";
 import { StackActions } from "@react-navigation/native";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
-import { signInTablet } from "../../actions/index";
+import { signInTablet } from "../../store/actions/teacher";
 import api from "../../utils/api";
 
 const QR = ({ navigation, route }) => {
-  const user = useSelector((state) => state);
-
   const dispatch = useDispatch();
   const onScanned = (e) => {
     const attendanceToken = e.data;

@@ -4,7 +4,7 @@ import { View, StyleSheet } from "react-native";
 import { Text, FAB } from "react-native-paper";
 import { io } from "socket.io-client";
 
-import { setCourseSelectedOnTablet, signOutTablet, startTracking } from "../../actions";
+import { setCourseSelectedOnTablet, signOutTablet, startTracking } from "../../store/actions/teacher";
 import DashboardAfterCourseSelection from "./components/DashboardAfterCourseSelection";
 import DashboardAfterTabletLogin from "./components/DashboardAfterTabletLogin";
 import DashboardBeforeTabletLogin from "./components/DashboardAfterLogin";
@@ -12,7 +12,7 @@ import { WSS_URL } from "../../constants";
 
 const Dashboard = ({ navigation }) => {
   const dispatch = useDispatch();
-  const user = useSelector((state) => state);
+  const user = useSelector((state) => state.userState);
   const socket = useRef();
 
   useEffect(() => {
@@ -96,8 +96,8 @@ const styles = StyleSheet.create({
   },
   fab: {
     position: "absolute",
-    marginBottom: 110,
-    marginRight: 20,
+    marginBottom: 105,
+    marginRight: 12,
     right: 0,
     bottom: 0,
   },

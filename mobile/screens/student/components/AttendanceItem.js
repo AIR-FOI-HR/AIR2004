@@ -1,41 +1,29 @@
 import React from "react";
-import { View } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { Card, Paragraph } from "react-native-paper";
 import Feather from "react-native-vector-icons/Feather";
+import { useSelector } from "react-redux";
 
 const AttendanceItem = ({ item }) => {
+  const user = useSelector((state) => state);
+
   if (item.present === undefined) {
     return (
       <View>
-        <Card
-          key={item.id}
-          style={{
-            marginLeft: 10,
-            marginRight: 10,
-            marginTop: 7,
-            marginBottom: 5,
-          }}
-        >
-          <Card.Content>
+        <View key={item.id} style={styles.card}>
+          <View>
             <Paragraph>{item.attendanceTime}</Paragraph>
             <Paragraph style={{ fontWeight: "bold" }}>
               {item.courseName}
             </Paragraph>
-          </Card.Content>
-        </Card>
+          </View>
+        </View>
       </View>
     );
   } else {
     return (
       <View>
-        <Card
-          style={{
-            marginLeft: 10,
-            marginRight: 10,
-            marginTop: 7,
-            marginBottom: 5,
-          }}
-        >
+        <Card style={styles.card}>
           <Card.Content style={{ flexDirection: "row" }}>
             <View style={{ marginRight: 20 }}>
               <Paragraph style={{ fontSize: 30, lineHeight: 40 }}>
@@ -55,12 +43,27 @@ const AttendanceItem = ({ item }) => {
               >
                 {item.courseName}
               </Paragraph>
-              <Paragraph>{item.attendanceTime}</Paragraph>
+              {item.attendanceTime && (
+                <Paragraph>{item.attendanceTime}</Paragraph>
+              )}
             </View>
 
             <View style={{ position: "absolute", right: 10, top: 7 }}>
-              {item.present && <Feather name="check-circle" size={30} />}
-              {!item.present && <Feather name="x-circle" size={30} />}
+              {item.present && user.themePreference === "dark" && (
+                <Feather name="check-circle" size={30} color="white" />
+              )}
+
+              {item.present && user.themePreference === "light" && (
+                <Feather name="check-circle" size={30} color="black" />
+              )}
+
+              {!item.present && user.themePreference === "dark" && (
+                <Feather name="x-circle" size={30} color="white" />
+              )}
+
+              {!item.present && user.themePreference === "light" && (
+                <Feather name="x-circle" size={30} color="black" />
+              )}
             </View>
 
             <View style={{ position: "absolute", right: 10, bottom: 7 }}>
@@ -72,5 +75,15 @@ const AttendanceItem = ({ item }) => {
     );
   }
 };
+
+const styles = StyleSheet.create({
+  card: {
+    marginLeft: 10,
+    marginRight: 10,
+    marginTop: 7,
+    marginBottom: 5,
+    elevation: 4,
+  },
+});
 
 export default AttendanceItem;

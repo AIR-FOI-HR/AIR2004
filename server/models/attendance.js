@@ -12,7 +12,7 @@ const attendanceSchema = mongoose.Schema({
   },
   qrCode: {
     type: String,
-    required: true,
+    required: false,
     unique: true,
     default: () => cryptoRandomString({ length: 15 }),
   },

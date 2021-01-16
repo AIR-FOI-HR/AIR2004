@@ -2,14 +2,11 @@ import React, { useEffect } from "react";
 import { View, StyleSheet } from "react-native";
 import { Button, Text, FAB, Chip } from "react-native-paper";
 import { useSelector, useDispatch } from "react-redux";
-import { signOutTablet, startTracking } from "../../../actions/index";
 import FontAwesomeIcons from "react-native-vector-icons/FontAwesome";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { checkLocationAccuracy } from "react-native-permissions";
 
 const DashboardAfterCourseSelection = ({ handleSignOut, handleStartTracking }) => {
-  const user = useSelector((state) => state);
-  const dispatch = useDispatch();
+  const user = useSelector((state) => state.userState);
 
   return (
     <>

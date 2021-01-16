@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { View, StyleSheet } from "react-native";
-import { Button, Colors, Text } from "react-native-paper";
+import { Text } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
-import { ActivityIndicator, FAB, Paragraph } from "react-native-paper";
+import { ActivityIndicator, FAB } from "react-native-paper";
 import StudentAttendanceCard from "./components/StudentAttendanceCard";
 import { ScrollView } from "react-native-gesture-handler";
 import { io } from "socket.io-client";
@@ -10,7 +10,7 @@ import { WSS_URL } from "../../constants";
 
 const Attendance = () => {
   const dispatch = useDispatch();
-  const user = useSelector((state) => state);
+  const user = useSelector((state) => state.userState);
   const [attendances, setAttendances] = useState([]);
 
   const [fabOpen, setFabOpen] = useState(false);
@@ -44,7 +44,7 @@ const Attendance = () => {
     return (
       <View style={styles.container}>
         <View>
-          <Text style={{ textAlign: "center", fontSize: 20, fontWeight: "500", marginBottom: 20 }}>Marking attendance is not stared!</Text>
+          <Text style={{ textAlign: "center", fontSize: 20, fontWeight: "500", marginBottom: 20 }}>Attendance marking is not started!</Text>
           <Text style={{ textAlign: "center" }}>
             Please go to the dashboard and click "Sign in on tablet" button to sign in on a tablet in a lecture room.
           </Text>

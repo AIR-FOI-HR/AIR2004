@@ -34,8 +34,8 @@ const swaggerOptions = {
 };
 
 // Serve Swagger documentation
-const swaggerDocs = swaggerJsDoc(swaggerOptions);
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+//const swaggerDocs = swaggerJsDoc(swaggerOptions);
+//app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // REST API
 app.use(express.json());
