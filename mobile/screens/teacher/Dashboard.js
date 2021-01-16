@@ -35,9 +35,11 @@ const Dashboard = ({ navigation }) => {
   }, [teacher.attendanceToken]);
 
   const handleSignOut = () => {
+    console.log("AAA", teacher);
+
     socket.current.emit("sign out tablet", {
       attendanceToken: teacher.attendanceToken,
-      lecture: teacher.courseSelectedOnTablet.lecture.id,
+      lecture: teacher.courseSelectedOnTablet?.lecture.id,
     });
     dispatch(signOutTablet());
   };
