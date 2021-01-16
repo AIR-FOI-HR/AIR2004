@@ -4,6 +4,7 @@ const passwordGenerator = require("generate-password");
 const sgMail = require("@sendgrid/mail");
 const User = require("../models/user");
 const Course = require("../models/course");
+const moment = require("moment");
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 exports.login = async (req, res) => {
@@ -78,27 +79,73 @@ exports.register = async (req, res) => {
   }
 };
 
-exports.resetPassword = async (req, res) => {
-  try {
-    const user = await User.findOne({ email: req.body.email });
-    const newPassword = passwordGenerator.generate({
-      length: 10,
-      numbers: true,
-    });
-    if (!user) throw "User not found";
+exports.resetCode = async (req, res) => {
+  const email = req.body.email;
 
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    user.password = hashedPassword;
+  try {
+    const resetCode = Math.floor(100000 + Math.random() * 900000); // broj od 6 znamenki
+
+    const user = await User.findOneAndUpdate(
+      { email },
+      {
+        code: resetCode.toString(),
+        verified: false,
+        expires_timestamp: moment().add(10, "minutes").unix().toString(),
+        created_timestamp: moment().unix().toString(),
+      }
+    );
+    if (!user) {
+      throw "You have entered an invalid e-mail address!";
+    }
+
     const msg = {
       to: `${req.body.email}`,
       from: `air2004.2020@gmail.com`,
       replyTo: "air2004.2020@gmail.com",
-      subject: "Unittend - Your new password",
-      text: `Hello, we've successfully changed your password, and it's ${newPassword}\nEnjoy!\nSincerely, Unittend team`,
-      html: `<p>Hello, we've successfully changed your password, and it's ${newPassword}\nEnjoy!\nSincerely, Unittend team</p>`,
+      subject: "Unittend - Your password reset code",
+      text: `Hello, you've recently requested a password reset. Please use this code in the application for verification before changing the password: ${resetCode}\n Enjoy!\nSincerely, Unittend team`,
+      html: `<p>Hello, you've recently requested a password reset. Please use this code in the application for verification before changing the password: ${resetCode}\n Enjoy!\nSincerely, Unittend team</p>`,
     };
     await sgMail.send(msg);
+    res.status(200).json({ success: true, data: resetCode });
+  } catch (error) {
+    res.status(400).json({ success: false, error });
+  }
+};
+
+exports.verifyResetCode = async (req, res) => {
+  const { recoveryEmail, resetCode } = req.body;
+
+  try {
+    let user = await User.findOne({ email: recoveryEmail });
+
+    if (parseInt(moment().unix().toString()) >= parseInt(user.expires_timestamp)) {
+      throw "Validation code has expired!";
+    }
+    if (user.code != resetCode.toString()) {
+      throw "Validation code is invalid!";
+    }
+    user.verified = true;
     await user.save();
+    res.status(200).json({ success: true, verified: true });
+  } catch (error) {
+    res.status(400).json({ success: false, error });
+  }
+};
+
+exports.resetPassword = async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const user = await User.findOne({ email });
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    user.password = hashedPassword;
+    user.verified = false;
+    user.created_timestamp = "";
+    user.expires_timestamp = "";
+
+    await user.save();
+
     res.status(200).json({ success: true });
   } catch (error) {
     res.status(400).json({ success: false, error });
@@ -205,6 +252,6 @@ exports.delete = async (req, res) => {
     const data = user.toJSON();
     res.status(200).json({ success: true, data });
   } catch (error) {
-    res.status(400).json({ success: false, error }); 
+    res.status(400).json({ success: false, error });
   }
 };

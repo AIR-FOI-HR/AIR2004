@@ -148,7 +148,7 @@ const Login = ({ navigation }) => {
             <Text style={theme.dark == true ? styles.tooltipText : null}>Don't have an account?</Text>
           </TouchableOpacity>
           <BlankSpacer height={50} />
-          <TouchableOpacity onPress={() => toggleVisible(true)}>
+          <TouchableOpacity onPress={() => navigation.push("ForgottenPassword")}>
             <Text style={theme.dark == true ? styles.tooltipText : null}>Forgot password?</Text>
           </TouchableOpacity>
 

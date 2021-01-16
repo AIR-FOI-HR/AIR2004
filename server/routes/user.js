@@ -131,6 +131,31 @@ router.get("/verify", userController.verify);
 
 /**
  * @swagger
+ * /user/resetCode:
+ *  post:
+ *    tags:
+ *    - "/user/"
+ *    summary: Reset code for reseting password
+ *  parameters:
+ *   - name: "body"
+ *     in: "body"
+ *     description: "Reset code for reseting forgotten password"
+ *     schema:
+ *       type: "object"
+ *       properties:
+ *         passcode:
+ *           type: "string"
+ *     responses:
+ *      '200':
+ *        description: A successful response
+ */
+
+router.post("/resetCode", userController.resetCode);
+
+router.post("/verifyResetCode", userController.verifyResetCode);
+
+/**
+ * @swagger
  * /user/resetPassword:
  *  post:
  *    tags:
