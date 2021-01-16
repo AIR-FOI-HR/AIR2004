@@ -13,38 +13,49 @@ import { WSS_URL } from "../../constants";
 const Dashboard = ({ navigation }) => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.userState);
+  const teacher = useSelector((state) => state.teacherState);
   const socket = useRef();
+
+  useEffect(() => {
+    console.log("TEACHER", teacher);
+  }, [teacher]);
 
   useEffect(() => {
     socket.current = io(WSS_URL + "/teacher", {
       query: {
-        attendanceToken: user.attendanceToken,
+        attendanceToken: teacher.attendanceToken,
       },
     });
     socket.current.on("lecture selected", (data) => {
+      console.log("SELECTED", data);
       dispatch(setCourseSelectedOnTablet(data));
     });
 
     return () => socket.current.disconnect();
-  }, [user.attendanceToken]);
+  }, [teacher.attendanceToken]);
 
   const handleSignOut = () => {
-    socket.current.emit("sign out tablet", { attendanceToken: user.attendanceToken, lecture: user.courseSelectedOnTablet.lecture.id });
+    console.log("AAA", teacher);
+
+    socket.current.emit("sign out tablet", {
+      attendanceToken: teacher.attendanceToken,
+      lecture: teacher.courseSelectedOnTablet?.lecture.id,
+    });
     dispatch(signOutTablet());
   };
 
   const handleStartTracking = () => {
     dispatch(startTracking());
-    socket.current.emit("start tracking", { lecture: user.courseSelectedOnTablet.lecture.id });
+    socket.current.emit("start tracking", { lecture: teacher.courseSelectedOnTablet.lecture.id });
     navigation.navigate("Attendance");
   };
 
   const DashBoardContainer = () => {
     // Dashboard before teacher signs in on the tablet
-    if (!user.attendanceToken) return <DashboardBeforeTabletLogin />;
+    if (!teacher.attendanceToken) return <DashboardBeforeTabletLogin />;
 
     // Dashboard after teacher has signed in on the tablet
-    if (!user.courseSelectedOnTablet) return <DashboardAfterTabletLogin handleSignOut={handleSignOut} />;
+    if (!teacher.courseSelectedOnTablet) return <DashboardAfterTabletLogin handleSignOut={handleSignOut} />;
 
     // Dashboard after course is selected on the tablet
     return <DashboardAfterCourseSelection handleSignOut={handleSignOut} handleStartTracking={handleStartTracking} />;
@@ -60,7 +71,7 @@ const Dashboard = ({ navigation }) => {
       </Text>
       <View style={styles.dashboardContainer}>
         <DashBoardContainer />
-        {user.attendanceToken == null && (
+        {teacher.attendanceToken == null && (
           <FAB style={styles.fab} small label="SIGN IN ON TABLET" icon="qrcode" color="black" onPress={() => navigation.push("QRScan")} />
         )}
       </View>
