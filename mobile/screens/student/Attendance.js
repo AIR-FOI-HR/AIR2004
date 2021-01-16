@@ -127,11 +127,39 @@ const Attendance = () => {
               onChangeFilter(itemValue);
             }}
           >
-            <Picker.Item label="Courses" value="Courses" />
-            <Picker.Item label="Attended" value="Attended" />
-            <Picker.Item label="Missed" value="Missed" />
-            <Picker.Item label="Last week" value="LastWeek" />
-            <Picker.Item label="Last month" value="LastMonth" />
+            {user.themePreference === "dark" ? (
+              <Picker.Item color="#a6a6a6" label="Courses" value="Courses" />
+            ) : (
+              <Picker.Item label="Courses" value="Courses" />
+            )}
+
+            {user.themePreference === "dark" ? (
+              <Picker.Item color="#a6a6a6" label="Attended" value="Attended" />
+            ) : (
+              <Picker.Item label="Attended" value="Attended" />
+            )}
+
+            {user.themePreference === "dark" ? (
+              <Picker.Item color="#a6a6a6" label="Missed" value="Missed" />
+            ) : (
+              <Picker.Item label="Missed" value="Missed" />
+            )}
+
+            {user.themePreference === "dark" ? (
+              <Picker.Item color="#a6a6a6" label="Last week" value="LastWeek" />
+            ) : (
+              <Picker.Item label="Last week" value="LastWeek" />
+            )}
+
+            {user.themePreference === "dark" ? (
+              <Picker.Item
+                color="#a6a6a6"
+                label="Last month"
+                value="LastMonth"
+              />
+            ) : (
+              <Picker.Item label="Last month" value="LastMonth" />
+            )}
           </Picker>
         </View>
       </View>

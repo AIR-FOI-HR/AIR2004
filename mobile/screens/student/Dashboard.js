@@ -128,15 +128,24 @@ const Dashboard = ({ navigation }) => {
         });
       })
       .catch((error) => {
-        console.log(error);
-        showMessage({
-          message: "Error occured!",
-          description:
-            "Please contact professor to add you manually or try again later!",
-          type: "danger",
-          duration: 5000,
-          icon: "danger",
-        });
+        if (error.response.data.message === "Course already enrolled.") {
+          showMessage({
+            message: "Warning",
+            description: "Course with specified passcode is already enrolled.",
+            type: "warning",
+            duration: 5000,
+            icon: "warning",
+          });
+        } else {
+          showMessage({
+            message: "Error occured!",
+            description:
+              "Please contact professor to add you manually or try again later!",
+            type: "danger",
+            duration: 5000,
+            icon: "danger",
+          });
+        }
       });
 
     setCoursePasscode("");
