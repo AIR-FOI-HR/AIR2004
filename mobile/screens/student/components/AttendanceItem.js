@@ -7,6 +7,8 @@ import { useSelector } from "react-redux";
 const AttendanceItem = ({ item }) => {
   const user = useSelector((state) => state);
 
+  console.log("user theme", user.userState.themePreference);
+
   if (item.present === undefined) {
     return (
       <View>
@@ -49,19 +51,19 @@ const AttendanceItem = ({ item }) => {
             </View>
 
             <View style={{ position: "absolute", right: 10, top: 7 }}>
-              {item.present && user.themePreference === "dark" && (
+              {item.present && user.userState.themePreference === "dark" && (
                 <Feather name="check-circle" size={30} color="white" />
               )}
 
-              {item.present && user.themePreference === "light" && (
+              {item.present && user.userState.themePreference === "light" && (
                 <Feather name="check-circle" size={30} color="black" />
               )}
 
-              {!item.present && user.themePreference === "dark" && (
+              {!item.present && user.userState.themePreference === "dark" && (
                 <Feather name="x-circle" size={30} color="white" />
               )}
 
-              {!item.present && user.themePreference === "light" && (
+              {!item.present && user.userState.themePreference === "light" && (
                 <Feather name="x-circle" size={30} color="black" />
               )}
             </View>

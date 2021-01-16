@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  StyleSheet,
-  FlatList,
-  ScrollView,
-  Dimensions,
-} from "react-native";
+import { View, StyleSheet, FlatList, ScrollView } from "react-native";
 import {
   Button,
   Text,
@@ -15,10 +9,11 @@ import {
   TextInput,
   FAB,
 } from "react-native-paper";
-import { LineChart, BarChart } from "react-native-chart-kit";
+import { BarChart } from "react-native-chart-kit";
 import { useSelector } from "react-redux";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { showMessage } from "react-native-flash-message";
+import { useIsFocused } from "@react-navigation/native";
 
 const moment = require("moment");
 
@@ -26,7 +21,6 @@ import CourseItem from "../student/components/CourseItem";
 import AttendanceItem from "../student/components/AttendanceItem";
 
 import api from "../../utils/api";
-import { set } from "react-native-reanimated";
 
 const Dashboard = ({ navigation }) => {
   const [coursePasscode, setCoursePasscode] = useState("");
@@ -34,6 +28,7 @@ const Dashboard = ({ navigation }) => {
   const [enrolledCourses, setEnrolledCourses] = useState([]);
   const [todayAttendanceData, setTodayAttendanceData] = useState([]);
   const [lastWeekAttendanceData, setLastWeekAttendanceData] = useState([]);
+  const isFocused = useIsFocused();
 
   const user = useSelector((state) => state.userState);
 
@@ -59,19 +54,7 @@ const Dashboard = ({ navigation }) => {
       })
       .then(({ data }) => {
         setTodayAttendanceData(
-          data.data.filter((item) => {
-            moment().isSame(item.fullDate, "day") &&
-              moment().isSame(item.fullDate, "month") &&
-              moment()
-                .isSame(item.fullDate, "year")
-                .sort((a, b) =>
-                  moment(a.fullDate).isBefore(b.fullDate)
-                    ? -1
-                    : moment(a.fullDate).isAfter(b.fullDate)
-                    ? 1
-                    : 0
-                );
-          })
+          data.data.filter((item) => moment().isSame(item.fullDate, "date"))
         );
 
         setLastWeekAttendanceData(
@@ -83,7 +66,7 @@ const Dashboard = ({ navigation }) => {
         );
       })
       .catch((error) => console.log(error));
-  }, []);
+  }, [isFocused]);
 
   const graphData = {
     labels: ["MON", "TUE", "WED", "THU", "FRI"],
@@ -271,7 +254,7 @@ const Dashboard = ({ navigation }) => {
               <FlatList
                 nestedScrollEnabled={true}
                 keyExtractor={(item) => item.id}
-                data={mockData}
+                data={todayAttendanceData}
                 renderItem={({ item }) => <AttendanceItem item={item} />}
               />
             ) : (

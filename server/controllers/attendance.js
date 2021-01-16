@@ -65,6 +65,7 @@ exports.getAll = async (req, res) => {
         path: "course",
       },
     });
+
     const data = allAttendances.map((attendance) => {
       return {
         id: attendance._id,
@@ -74,12 +75,11 @@ exports.getAll = async (req, res) => {
         day: getDayName(attendance.modifiedAt, "en-US"),
         courseName: attendance.lecture.course.name,
         lectureType: attendance.lecture.type,
-        attendanceTime: moment(attendance.modifiedAt)
-          .subtract(1, "hours")
-          .format("HH:mm"),
+        attendanceTime: moment(attendance.modifiedAt).format("HH:mm"),
         present: true,
       };
     });
+
     res.status(200).json({ success: true, data });
   } catch (error) {
     console.log(error);

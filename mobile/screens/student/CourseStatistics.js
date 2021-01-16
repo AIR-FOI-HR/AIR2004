@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, FlatList } from "react-native";
-import { Text, Surface, DefaultTheme, Provider as PaperProvider } from "react-native-paper";
+import {
+  Text,
+  Surface,
+  DefaultTheme,
+  Provider as PaperProvider,
+} from "react-native-paper";
 import { useSelector } from "react-redux";
 import { LineChart } from "react-native-chart-kit";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -191,7 +196,7 @@ const styles = StyleSheet.create({
   },
 
   attendanceContainer: {
-    height: "auto",
+    height: "90%",
     elevation: 4,
   },
 

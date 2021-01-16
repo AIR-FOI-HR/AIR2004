@@ -3,6 +3,7 @@ import { View, StyleSheet, FlatList } from "react-native";
 import { Text } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
 import { useSelector } from "react-redux";
+import { useIsFocused } from "@react-navigation/native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 import AttendanceItem from "../student/components/AttendanceItem";
@@ -15,6 +16,7 @@ const Attendance = () => {
   const [selectedFilter, setSelectedFilter] = useState("Courses");
   const [attendanceData, setAttendanceData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
+  const isFocused = useIsFocused();
 
   const user = useSelector((state) => state.userState);
 
@@ -39,7 +41,7 @@ const Attendance = () => {
         );
       })
       .catch((error) => console.log(error));
-  }, []);
+  }, [isFocused]);
 
   const onChangeFilter = (filterValue) => {
     setSelectedFilter(filterValue);
@@ -183,6 +185,7 @@ const Attendance = () => {
 const styles = StyleSheet.create({
   container: {
     margin: 12,
+    height: "97%",
   },
 });
 
