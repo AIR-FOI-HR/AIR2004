@@ -11,6 +11,7 @@ const QR = ({ navigation, route }) => {
   const dispatch = useDispatch();
   const onScanned = (e) => {
     const attendanceToken = e.data;
+
     api.post("/user/login/tablet", { attendanceToken }).then(({ data }) => {
       console.log("SOCKET TOKEN", attendanceToken);
       dispatch(signInTablet(attendanceToken));
@@ -23,7 +24,10 @@ const QR = ({ navigation, route }) => {
 
   return (
     <View>
-      <QRCodeScanner onRead={onScanned} cameraStyle={{ height: Dimensions.get("window").height }} />
+      <QRCodeScanner
+        onRead={onScanned}
+        cameraStyle={{ height: Dimensions.get("window").height }}
+      />
     </View>
   );
 };

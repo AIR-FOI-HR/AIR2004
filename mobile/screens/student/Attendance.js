@@ -29,7 +29,13 @@ const Attendance = () => {
       .then(({ data }) => {
         setAttendanceData(data.data);
         setFilteredData(
-          data.data.sort((a, b) => (moment(a.fullDate).isBefore(b.fullDate) ? -1 : moment(a.fullDate).isAfter(b.fullDate) ? 1 : 0))
+          data.data.sort((a, b) =>
+            moment(a.fullDate).isBefore(b.fullDate)
+              ? -1
+              : moment(a.fullDate).isAfter(b.fullDate)
+              ? 1
+              : 0
+          )
         );
       })
       .catch((error) => console.log(error));
@@ -41,7 +47,13 @@ const Attendance = () => {
     switch (filterValue) {
       case "Courses":
         setFilteredData(
-          attendanceData.sort((a, b) => (moment(a.fullDate).isBefore(b.fullDate) ? -1 : moment(a.fullDate).isAfter(b.fullDate) ? 1 : 0))
+          attendanceData.sort((a, b) =>
+            moment(a.fullDate).isBefore(b.fullDate)
+              ? -1
+              : moment(a.fullDate).isAfter(b.fullDate)
+              ? 1
+              : 0
+          )
         );
         break;
 
@@ -49,7 +61,13 @@ const Attendance = () => {
         setFilteredData(
           attendanceData
             .filter((item) => item.present === true)
-            .sort((a, b) => (moment(a.fullDate).isBefore(b.fullDate) ? -1 : moment(a.fullDate).isAfter(b.fullDate) ? 1 : 0))
+            .sort((a, b) =>
+              moment(a.fullDate).isBefore(b.fullDate)
+                ? -1
+                : moment(a.fullDate).isAfter(b.fullDate)
+                ? 1
+                : 0
+            )
         );
         break;
 
@@ -78,8 +96,18 @@ const Attendance = () => {
       case "LastWeek": {
         setFilteredData(
           attendanceData
-            .filter((item) => moment().subtract(7, "days").isBefore(item.fullDate) && moment().isAfter(item.fullDate))
-            .sort((a, b) => (moment(a.fullDate).isBefore(b.fullDate) ? -1 : moment(a.fullDate).isAfter(b.fullDate) ? 1 : 0))
+            .filter(
+              (item) =>
+                moment().subtract(7, "days").isBefore(item.fullDate) &&
+                moment().isAfter(item.fullDate)
+            )
+            .sort((a, b) =>
+              moment(a.fullDate).isBefore(b.fullDate)
+                ? -1
+                : moment(a.fullDate).isAfter(b.fullDate)
+                ? 1
+                : 0
+            )
         );
 
         break;
@@ -137,7 +165,11 @@ const Attendance = () => {
       </View>
 
       {filteredData.length !== 0 ? (
-        <FlatList keyExtractor={(item) => item.id} data={filteredData} renderItem={({ item }) => <AttendanceItem item={item} />} />
+        <FlatList
+          keyExtractor={(item) => item.id}
+          data={filteredData}
+          renderItem={({ item }) => <AttendanceItem item={item} />}
+        />
       ) : (
         <View style={{ marginLeft: 20 }}>
           <MaterialCommunityIcons name="cloud-sync-outline" size={26} />
