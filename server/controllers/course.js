@@ -5,7 +5,6 @@ exports.add = async (req, res) => {
   const { name, passcode, allowedAbsences, teacherId } = req.body;
 
   let teacher = await User.findOne({ _id: teacherId });
-
   try {
     let newCourse = new Course({
       name,

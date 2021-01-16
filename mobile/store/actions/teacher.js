@@ -44,3 +44,10 @@ export const addCourse = (course) => {
     course,
   };
 };
+
+export const editCourse = (course) => {
+  return {
+    type: "EDIT_COURSE",
+    course,
+  };
+};

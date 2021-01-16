@@ -48,6 +48,19 @@ const teacherReducer = (state = initialState, action) => {
         courses: [...state.courses, action.course],
       };
 
+    case "EDIT_COURSE": {
+      return {
+        ...state,
+        courses: [
+          ...state.courses.map((course) => {
+            if (course.id == action.course.id) {
+              return action.course;
+            }
+            return course;
+          }),
+        ],
+      };
+    }
     default:
       return state;
   }

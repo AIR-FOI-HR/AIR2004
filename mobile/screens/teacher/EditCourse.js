@@ -1,44 +1,94 @@
-import React, { useState } from "react";
+import React from "react";
 import { View, StyleSheet } from "react-native";
-import { Text, TextInput } from "react-native-paper";
-import { FAB, Provider as PaperProvider } from "react-native-paper";
+import { Text, TextInput, HelperText } from "react-native-paper";
+import { FAB } from "react-native-paper";
+import { showMessage } from "react-native-flash-message";
+import { editCourse } from "../../store/actions/teacher";
+import { useDispatch } from "react-redux";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import api from "../../utils/api";
 
-const EditCourse = () => {
-  const [joinPassword, setJoinPassword] = useState("");
-  const [allowedAbsences, setAllowedAbsences] = useState(0);
+const EditCourseSchema = Yup.object({
+  name: Yup.string().required("This field is required!"),
+  passcode: Yup.string().length(8, "Passcode must be 8 characters long!").required("This field is required!"),
+  allowedAbsences: Yup.number().typeError("This field must be a number!").required("This field is required!"),
+});
+
+const EditCourse = ({ route }) => {
+  const course = route.params.course;
+  const navigation = route.params.navigation;
+
+  const dispatch = useDispatch();
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      passcode: "",
+      allowedAbsences: "",
+    },
+    validationSchema: EditCourseSchema,
+    onSubmit: (values) => {
+      handleEditCourse(values);
+    },
+  });
+
+  const handleEditCourse = (editedCourse) => {
+    api.post(`/course/update/${course.id}`, editedCourse).then((data) => {
+      dispatch(editCourse(data.data.course));
+      navigation.goBack();
+      showMessage({
+        message: `Course ${course.name} edited!`,
+        description: `You have successfully edited course ${course.name}!`,
+        type: "success",
+        duration: 2500,
+        icon: "success",
+      });
+    });
+  };
 
   return (
     <>
       <View style={styles.container}>
         <Text style={styles.pageTitle}>
-          <Text style={styles.firstWord}>Edit</Text> course
+          <Text style={styles.firstWord}>Edit</Text> course {course.name}
         </Text>
-
-        <Text style={styles.title}>Course join password:</Text>
+        <Text style={styles.title}>Course name:</Text>
         <TextInput
           style={styles.textInput}
-          label="Join password"
-          value={joinPassword}
-          onChangeText={(joinPassword) => setJoinPassword(joinPassword)}
+          placeholder={course.name}
+          value={formik.name}
+          onBlur={formik.handleBlur("name")}
+          onChangeText={formik.handleChange("name")}
         />
+        <HelperText type="error" visible={formik.errors.name}>
+          {formik.errors.name}
+        </HelperText>
+
+        <Text style={styles.title}>Course join passcode:</Text>
+        <TextInput
+          style={styles.textInput}
+          placeholder={course.passcode.toString()}
+          value={formik.passcode}
+          onBlur={formik.handleBlur("passcode")}
+          onChangeText={formik.handleChange("passcode")}
+        />
+        <HelperText type="error" visible={formik.errors.passcode}>
+          {formik.errors.passcode}
+        </HelperText>
 
         <Text style={styles.title}>Number of allowed absences:</Text>
         <TextInput
           style={styles.textInput}
-          label="Allowed absences"
-          value={allowedAbsences}
-          onChangeText={(allowedAbsences) => setAllowedAbsences(allowedAbsences)}
+          placeholder={course.allowedAbsences.toString()}
+          value={formik.allowedAbsences}
+          onBlur={formik.handleBlur("allowedAbsences")}
+          onChangeText={formik.handleChange("allowedAbsences")}
         />
+        <HelperText type="error" visible={formik.errors.allowedAbsences}>
+          {formik.errors.allowedAbsences}
+        </HelperText>
       </View>
-      <FAB
-        style={styles.fab}
-        small
-        label="save changes"
-        icon="content-save"
-        color="black"
-        onPress={() => console.log("Pressed")}
-        onPress={() => navigation.push("QRScan")}
-      />
+      <FAB style={styles.fab} small label="Save" icon="content-save" color="black" onPress={formik.handleSubmit} />
     </>
   );
 };

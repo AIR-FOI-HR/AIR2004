@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import React, { useEffect, useCallback, useMemo, useRef } from "react";
 import { View, StyleSheet, FlatList } from "react-native";
-import { IconButton, Text, Title, Card } from "react-native-paper";
+import { IconButton, Text } from "react-native-paper";
 
 import { useDispatch, useSelector } from "react-redux";
 
@@ -18,7 +18,6 @@ const Courses = ({ navigation }) => {
   const courses = useSelector((state) => state.teacherState.courses);
   const lectures = useSelector((state) => state.teacherState.lectures);
 
-  console.log("COURSES", courses);
   useEffect(() => {
     api
       .get("/user/details", {
@@ -61,7 +60,11 @@ const Courses = ({ navigation }) => {
       {courses == null ? (
         <Loading />
       ) : (
-        <FlatList data={courses} renderItem={({ item }) => <CourseItem course={item} />} keyExtractor={(course) => course.id} />
+        <FlatList
+          data={courses}
+          renderItem={({ item }) => <CourseItem course={item} navigation={navigation} />}
+          keyExtractor={(course) => course.id}
+        />
       )}
 
       <BottomSheet ref={bottomSheetRef} snapPoints={snapPoints} onChange={handleSheetChange}>

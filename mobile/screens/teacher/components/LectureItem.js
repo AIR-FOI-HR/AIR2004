@@ -2,7 +2,6 @@ import React from "react";
 import { View } from "react-native";
 import BlankSpacer from "react-native-blank-spacer";
 import { Card, Paragraph, IconButton } from "react-native-paper";
-import Feather from "react-native-vector-icons/Feather";
 import MaterialIcon from "react-native-vector-icons/MaterialIcons";
 const LectureItem = ({ lecture }) => {
   console.log("LECTURE", lecture);
@@ -35,7 +34,7 @@ const LectureItem = ({ lecture }) => {
             <BlankSpacer height={10} />
             <IconButton
               icon={() => <MaterialIcon name="people-outline" size={35} />}
-              onPress={() => console.log("Potrebno implementirati brisanje")}
+              onPress={() => console.log("do nothing, currently")}
             />
           </View>
         </Card.Content>

@@ -4,8 +4,7 @@ import BlankSpacer from "react-native-blank-spacer";
 import MaterialCommunityIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import { Card, IconButton, Title, Text } from "react-native-paper";
 
-const CourseItem = ({ course }) => {
-  console.log("COURSE", course);
+const CourseItem = ({ course, navigation }) => {
   return (
     <>
       <Card>
@@ -14,7 +13,7 @@ const CourseItem = ({ course }) => {
             <Title style={styles.cardTitle}>{course.name}</Title>
             <IconButton
               icon={() => <MaterialCommunityIcon name="pencil-outline" size={20} />}
-              onPress={() => navigation.push("EditCourse")}
+              onPress={() => navigation.push("EditCourse", { course, navigation })}
             />
           </View>
 
