@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { View, StyleSheet } from "react-native";
-import { Button, Colors, Text } from "react-native-paper";
+import { Text } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
-import { ActivityIndicator, FAB, Paragraph } from "react-native-paper";
+import { ActivityIndicator, FAB } from "react-native-paper";
 import StudentAttendanceCard from "./components/StudentAttendanceCard";
 import { ScrollView } from "react-native-gesture-handler";
 import { io } from "socket.io-client";
@@ -10,19 +10,19 @@ import { WSS_URL } from "../../constants";
 
 const Attendance = () => {
   const dispatch = useDispatch();
-  const user = useSelector((state) => state);
+  const teacher = useSelector((state) => state.teacherState);
   const [attendances, setAttendances] = useState([]);
 
   const [fabOpen, setFabOpen] = useState(false);
   const socket = useRef();
 
   useEffect(() => {
-    if (!user.courseSelectedOnTablet) return;
+    if (!teacher.courseSelectedOnTablet) return;
 
     socket.current = io(WSS_URL + "/teacher", {
       query: {
-        attendanceToken: user.attendanceToken,
-        fetchLectureAttendance: user.courseSelectedOnTablet.lecture.id,
+        attendanceToken: teacher.attendanceToken,
+        fetchLectureAttendance: teacher.courseSelectedOnTablet.lecture.id,
       },
     });
     socket.current.on("lecture selected", (data) => {
@@ -40,7 +40,7 @@ const Attendance = () => {
     return () => socket.current.disconnect();
   }, []);
 
-  if (!user.courseSelectedOnTablet)
+  if (!teacher.courseSelectedOnTablet)
     return (
       <View style={styles.container}>
         <View>

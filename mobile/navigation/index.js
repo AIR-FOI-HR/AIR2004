@@ -3,7 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createStackNavigator } from "@react-navigation/stack";
 import { useSelector, useDispatch } from "react-redux";
 
-import { signIn } from "../actions/";
+import { signIn } from "../store/actions/user";
 import Student from "./Student";
 import Teacher from "./Teacher";
 import Guest from "./Guest";
@@ -11,7 +11,7 @@ import Guest from "./Guest";
 const Stack = createStackNavigator();
 
 const Navigation = () => {
-  const user = useSelector((state) => state);
+  const user = useSelector((state) => state.userState);
   const dispatch = useDispatch();
 
   useEffect(() => {

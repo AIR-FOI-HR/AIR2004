@@ -26,7 +26,7 @@ const CourseStatistics = ({ route }) => {
   const { courseId } = route.params;
   const { selectedCourse } = route.params;
 
-  const user = useSelector((state) => state);
+  const user = useSelector((state) => state.userState);
 
   useEffect(() => {
     const getAllSubmitedAttendances = async () => {
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
   },
 
   attendanceContainer: {
-    height: "auto",
+    height: "90%",
     elevation: 4,
   },
 

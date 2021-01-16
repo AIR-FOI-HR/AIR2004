@@ -2,5 +2,3 @@ node_modules
 Pods
 .DS_Store
 .env
-mobile/constants/index.js
-tablet/constants/index.js

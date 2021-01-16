@@ -2,14 +2,11 @@ import React, { useEffect } from "react";
 import { View, StyleSheet } from "react-native";
 import { Button, Text, FAB, Chip } from "react-native-paper";
 import { useSelector, useDispatch } from "react-redux";
-import { signOutTablet, startTracking } from "../../../actions/index";
 import FontAwesomeIcons from "react-native-vector-icons/FontAwesome";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { checkLocationAccuracy } from "react-native-permissions";
 
 const DashboardAfterCourseSelection = ({ handleSignOut, handleStartTracking }) => {
-  const user = useSelector((state) => state);
-  const dispatch = useDispatch();
+  const teacher = useSelector((state) => state.teacherState);
 
   return (
     <>
@@ -24,11 +21,11 @@ const DashboardAfterCourseSelection = ({ handleSignOut, handleStartTracking }) =
           mode="outlined"
           icon={() => <FontAwesomeIcons name="graduation-cap" size={16} />}
         >
-          {user.courseSelectedOnTablet.course.name} | {user.courseSelectedOnTablet.lecture.type}
+          {teacher.courseSelectedOnTablet.course.name} | {teacher.courseSelectedOnTablet.lecture.type}
         </Chip>
       </View>
 
-      {!user.trackingStarted && (
+      {!teacher.trackingStarted && (
         <View style={{ ...styles.stepContainer, marginTop: 25 }}>
           <Text style={{ fontWeight: "bold", fontSize: 20 }}>Start tracking attendance</Text>
           <Text style={{ ...styles.font, marginTop: 10, marginBottom: 10, lineHeight: 20 }}>
@@ -46,7 +43,7 @@ const DashboardAfterCourseSelection = ({ handleSignOut, handleStartTracking }) =
         </View>
       )}
 
-      {user.trackingStarted && (
+      {teacher.trackingStarted && (
         <View style={{ ...styles.stepContainer, marginTop: 25 }}>
           <Text style={{ fontWeight: "bold", fontSize: 20 }}>Stop tracking attendance</Text>
           <Text style={{ ...styles.font, marginTop: 10, marginBottom: 10, lineHeight: 20 }}>

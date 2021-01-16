@@ -17,7 +17,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 
 import api from "../../utils/api";
-import { signIn } from "../../actions";
+import { signIn } from "../../store/actions/user";
 import AnimatedCheckmark from "./components/AnimatedCheckmark";
 import AnimatedDotsLoader from "./components/AnimatedLoader";
 
@@ -98,7 +98,7 @@ const Login = ({ navigation }) => {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
         <View>
-          <Image style={styles.logo} source={require("../../assets/logo.png")} />
+          <Image style={styles.logo} source={require("../../assets/logo_dark.png")} />
         </View>
 
         <View>
@@ -148,7 +148,7 @@ const Login = ({ navigation }) => {
             <Text style={theme.dark == true ? styles.tooltipText : null}>Don't have an account?</Text>
           </TouchableOpacity>
           <BlankSpacer height={50} />
-          <TouchableOpacity onPress={() => toggleVisible(true)}>
+          <TouchableOpacity onPress={() => navigation.push("ForgottenPassword")}>
             <Text style={theme.dark == true ? styles.tooltipText : null}>Forgot password?</Text>
           </TouchableOpacity>
 

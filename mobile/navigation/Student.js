@@ -10,7 +10,7 @@ import Dashboard from "../screens/student/Dashboard";
 import Attendance from "../screens/student/Attendance";
 import Statistics from "../screens/student/Statistics";
 import Settings from "../screens/common/Settings";
-import { signOut } from "../actions";
+import { signOut } from "../store/actions/user";
 
 import { View } from "react-native";
 
@@ -32,9 +32,7 @@ const StudentTabNavigation = () => {
         component={Dashboard}
         options={{
           tabBarLabel: "Dashboard",
-          tabBarIcon: ({ color }) => (
-            <FontAwesomeIcons name="home" color={color} size={22} />
-          ),
+          tabBarIcon: ({ color }) => <FontAwesomeIcons name="home" color={color} size={22} />,
         }}
       />
 
@@ -43,9 +41,7 @@ const StudentTabNavigation = () => {
         component={Attendance}
         options={{
           tabBarLabel: "Attendance",
-          tabBarIcon: ({ color }) => (
-            <FontAwesomeIcons name="list" color={color} size={22} />
-          ),
+          tabBarIcon: ({ color }) => <FontAwesomeIcons name="list" color={color} size={22} />,
         }}
       />
 
@@ -54,9 +50,7 @@ const StudentTabNavigation = () => {
         component={Statistics}
         options={{
           tabBarLabel: "Statistics",
-          tabBarIcon: ({ color }) => (
-            <FontAwesomeIcons name="chart-pie" color={color} size={22} />
-          ),
+          tabBarIcon: ({ color }) => <FontAwesomeIcons name="chart-pie" color={color} size={22} />,
         }}
       />
     </Tabs.Navigator>
@@ -149,12 +143,7 @@ const Student = ({ navigation }) => {
                   }}
                 />
                 <BlankSpacer width={20} />
-                <MaterialIcons
-                  name="logout"
-                  size={26}
-                  color={"white"}
-                  onPress={() => dispatch(signOut())}
-                />
+                <MaterialIcons name="logout" size={26} color={"white"} onPress={() => dispatch(signOut())} />
               </View>
             ),
           })}
@@ -186,12 +175,7 @@ const Student = ({ navigation }) => {
             headerStyle: { backgroundColor: "#6202EE" },
             headerRight: () => (
               <View style={{ marginRight: 15 }}>
-                <MaterialIcons
-                  name="logout"
-                  size={26}
-                  color={"white"}
-                  onPress={() => dispatch(signOut())}
-                />
+                <MaterialIcons name="logout" size={26} color={"white"} onPress={() => dispatch(signOut())} />
               </View>
             ),
           })}

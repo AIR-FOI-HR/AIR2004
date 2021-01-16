@@ -6,24 +6,22 @@ import { Appearance } from "react-native";
 import FlashMessage from "react-native-flash-message";
 import { DarkTheme as PaperDarkTheme, DefaultTheme as PaperDefaultTheme, Provider as PaperProvider } from "react-native-paper";
 import { Provider } from "react-redux";
-import { applyMiddleware, createStore } from "redux";
-import { setTheme } from "./actions/index";
-import signInOutMiddleware from "./middleware/signInOut";
+
+import { setTheme } from "./store/actions/user";
+
 import Navigation from "./navigation";
-import userReducer from "./reducers/user";
+import store from "./store/index";
 
 const CombinedDefaultTheme = merge(PaperDefaultTheme, NavigationDefaultTheme);
 const CombinedDarkTheme = merge(PaperDarkTheme, NavigationDarkTheme);
-
-const store = createStore(userReducer, applyMiddleware(signInOutMiddleware));
 
 const App = () => {
   const [globalTheme, setGlobalTheme] = useState();
 
   store.subscribe(() => {
-    if (store.getState().themePreference == null || store.getState().themePreference == "systemDefault") {
+    if (store.getState().userState.themePreference == null || store.getState().userState.themePreference == "systemDefault") {
       setGlobalTheme(Appearance.getColorScheme() == "light" ? CombinedDefaultTheme : CombinedDarkTheme);
-    } else if (store.getState().themePreference == "light") {
+    } else if (store.getState().userState.themePreference == "light") {
       setGlobalTheme(CombinedDefaultTheme);
     } else {
       setGlobalTheme(CombinedDarkTheme);

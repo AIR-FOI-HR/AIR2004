@@ -1,16 +1,3 @@
-export const signIn = (user) => {
-  return {
-    type: "SIGN_IN",
-    user: user,
-  };
-};
-
-export const signOut = () => {
-  return {
-    type: "SIGN_OUT",
-  };
-};
-
 export const signInTablet = (attendanceToken) => {
   return {
     type: "SIGN_IN_TABLET",
@@ -37,10 +24,30 @@ export const startTracking = () => {
   };
 };
 
-export const setTheme = (themePref) => {
-  console.log("THEME PREF ACTION", themePref);
+export const setCourses = (courses) => {
   return {
-    type: "SET_THEME",
-    themePref,
+    type: "SET_COURSES",
+    courses,
+  };
+};
+
+export const setLectures = (lectures) => {
+  return {
+    type: "SET_LECTURES",
+    lectures,
+  };
+};
+
+export const addCourse = (course) => {
+  return {
+    type: "ADD_COURSE",
+    course,
+  };
+};
+
+export const editCourse = (course) => {
+  return {
+    type: "EDIT_COURSE",
+    course,
   };
 };

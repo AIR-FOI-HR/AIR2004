@@ -1,19 +1,6 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  StyleSheet,
-  FlatList,
-  TouchableWithoutFeedback,
-} from "react-native";
-import {
-  Text,
-  Surface,
-  Card,
-  Paragraph,
-  DefaultTheme,
-  Provider as PaperProvider,
-  FAB,
-} from "react-native-paper";
+import { View, StyleSheet, FlatList, TouchableWithoutFeedback } from "react-native";
+import { Text, Surface, Card, Paragraph, DefaultTheme, Provider as PaperProvider, FAB } from "react-native-paper";
 import { useSelector } from "react-redux";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { showMessage, hideMessage } from "react-native-flash-message";
@@ -23,7 +10,7 @@ import api from "../../utils/api";
 const Statistics = ({ navigation }) => {
   const [enrolledCourses, setEnrolledCourses] = useState([]);
 
-  const user = useSelector((state) => state);
+  const user = useSelector((state) => state.userState);
 
   useEffect(() => {
     api

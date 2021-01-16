@@ -1,17 +1,56 @@
-import React, { useState } from "react";
+import React from "react";
+import { useSelector } from "react-redux";
 import { View, StyleSheet } from "react-native";
-import { Text, TextInput, Checkbox } from "react-native-paper";
+import { Text, TextInput } from "react-native-paper";
 import { useDispatch } from "react-redux";
-import { FAB, Provider as PaperProvider } from "react-native-paper";
+import { useFormik } from "formik";
+import { FAB, HelperText } from "react-native-paper";
+import { showMessage } from "react-native-flash-message";
+import { addCourse } from "../../store/actions/teacher";
 
-const Courses = () => {
+import * as Yup from "yup";
+
+import api from "../../utils/api";
+
+const NewCourseSchema = Yup.object({
+  name: Yup.string().required("This field is required!"),
+  passcode: Yup.string().length(8, "Passcode must be 8 characters long!").required("This field is required!"),
+  allowedAbsences: Yup.number().typeError("This field must be a number!").required("This field is required!"),
+});
+
+const NewCourse = ({ navigation }) => {
+  const teacherId = useSelector((state) => state.userState.userId);
   const dispatch = useDispatch();
-  const [courseName, setCourseName] = useState("");
-  const [joinPassword, setJoinPassword] = useState("");
-  const [allowedAbsences, setAllowedAbsences] = useState(0);
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      passcode: "",
+      allowedAbsences: "",
+    },
+    validationSchema: NewCourseSchema,
+    onSubmit: (values) => {
+      handleAddCourse({ ...values, teacherId });
+    },
+  });
+
+  console.log("TEACHER", teacherId);
+
+  const handleAddCourse = (newCourse) => {
+    api.post("/course/add", newCourse).then((data) => {
+      dispatch(addCourse(data.data.data));
+      navigation.goBack();
+      showMessage({
+        message: "Course added!",
+        description: `You have successfully added course ${data.data.data.name}!`,
+        type: "success",
+        duration: 2500,
+        icon: "success",
+      });
+    });
+  };
 
   return (
-    <PaperProvider>
+    <>
       <View style={styles.container}>
         <Text style={styles.pageTitle}>
           <Text style={styles.firstWord}>Add</Text> a new course
@@ -20,36 +59,40 @@ const Courses = () => {
         <TextInput
           style={styles.textInput}
           label="Course name"
-          value={courseName}
-          onChangeText={(courseName) => setCourseName(courseName)}
+          value={formik.name}
+          onBlur={formik.handleBlur("name")}
+          onChangeText={formik.handleChange("name")}
         />
+        <HelperText type="error" visible={formik.errors.name}>
+          {formik.errors.name}
+        </HelperText>
 
-        <Text style={styles.title}>Course join password:</Text>
+        <Text style={styles.title}>Course join passcode:</Text>
         <TextInput
           style={styles.textInput}
-          label="Join password"
-          value={joinPassword}
-          onChangeText={(joinPassword) => setJoinPassword(joinPassword)}
+          label="Join passcode"
+          value={formik.passcode}
+          onBlur={formik.handleBlur("passcode")}
+          onChangeText={formik.handleChange("passcode")}
         />
+        <HelperText type="error" visible={formik.errors.passcode}>
+          {formik.errors.passcode}
+        </HelperText>
 
         <Text style={styles.title}>Number of allowed absences:</Text>
         <TextInput
           style={styles.textInput}
           label="Allowed absences"
-          value={allowedAbsences}
-          onChangeText={(allowedAbsences) => setAllowedAbsences(allowedAbsences)}
+          value={formik.allowedAbsences}
+          onBlur={formik.handleBlur("allowedAbsences")}
+          onChangeText={formik.handleChange("allowedAbsences")}
         />
+        <HelperText type="error" visible={formik.errors.allowedAbsences}>
+          {formik.errors.allowedAbsences}
+        </HelperText>
       </View>
-      <FAB
-        style={styles.fab}
-        small
-        label="save"
-        icon="content-save"
-        color="black"
-        onPress={() => console.log("Pressed")}
-        onPress={() => navigation.push("QRScan")}
-      />
-    </PaperProvider>
+      <FAB style={styles.fab} small label="add" icon="plus" color="black" onPress={formik.handleSubmit} />
+    </>
   );
 };
 
@@ -117,4 +160,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Courses;
+export default NewCourse;
