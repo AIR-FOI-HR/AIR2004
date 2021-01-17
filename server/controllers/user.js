@@ -9,54 +9,58 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 exports.login = async (req, res) => {
   const { email, password, deviceUID } = req.body;
 
-  // Check if user exists
-  const user = await User.findOne({ email });
-  if (!user) return res.status(401).json({ success: false, message: "Email or password not valid!" });
+  try {
+    // Check if user exists
+    const user = await User.findOne({ email });
+    if (!user) return res.status(401).json({ success: false, message: "Email or password not valid!" });
 
-  // Check if passwords match
-  const match = await bcrypt.compareSync(password, user.password);
-  if (!match) return res.status(401).json({ success: false, message: "Email or password not valid!" });
+    // Check if passwords match
+    const match = await bcrypt.compareSync(password, user.password);
+    if (!match) return res.status(401).json({ success: false, message: "Email or password not valid!" });
 
-  // If it's student's first sign in, save his deviceUID
-  // Otherwise, check student's deviceUID
-  if (user.userType === "student") {
-    if (!user.deviceUID) {
-      user.deviceUID = deviceUID;
-      await user.save();
+    // If it's student's first sign in, save his deviceUID
+    // Otherwise, check student's deviceUID
+    if (user.userType === "student") {
+      if (!user.deviceUID) {
+        user.deviceUID = deviceUID;
+        await user.save();
+      }
+
+      if (user.deviceUID !== deviceUID) {
+        return res.status(401).json({
+          success: false,
+          message: "You have to sign in from your own device! If you think this is an error, please contact your teacher for assitance.",
+        });
+      }
     }
 
-    if (user.deviceUID !== deviceUID) {
-      return res.status(401).json({
-        success: false,
-        message: "You have to sign in from your own device! If you think this is an error, please contact your teacher for assitance.",
-      });
-    }
+    const token = jwt.sign(
+      {
+        email: user.email,
+        jmbag: user.jmbag,
+        phoneNumber: user.phoneNumber,
+        name: user.name,
+        surname: user.surname,
+      },
+      process.env.JWT_SECRET
+    );
+
+    res.status(200).json({
+      success: true,
+      user: {
+        userId: user.id,
+        token,
+        email: user.email,
+        jmbag: user.jmbag,
+        phoneNumber: user.phoneNumber,
+        userType: user.userType,
+        name: user.name,
+        surname: user.surname,
+      },
+    });
+  } catch (error) {
+    res.status(400).json({ success: false, error });
   }
-
-  const token = jwt.sign(
-    {
-      email: user.email,
-      jmbag: user.jmbag,
-      phoneNumber: user.phoneNumber,
-      name: user.name,
-      surname: user.surname,
-    },
-    process.env.JWT_SECRET
-  );
-
-  res.status(200).json({
-    success: true,
-    user: {
-      userId: user.id,
-      token,
-      email: user.email,
-      jmbag: user.jmbag,
-      phoneNumber: user.phoneNumber,
-      userType: user.userType,
-      name: user.name,
-      surname: user.surname,
-    },
-  });
 };
 
 exports.loginTablet = async (req, res) => {

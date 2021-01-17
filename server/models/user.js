@@ -26,6 +26,7 @@ const userSchema = mongoose.Schema({
   },
   deviceUID: {
     type: String,
+    unique: true,
   },
   phoneNumber: {
     type: String,
