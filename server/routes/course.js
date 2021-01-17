@@ -65,7 +65,7 @@ router.get("/", courseController.getAll);
 
 /**
  * @swagger
- * /course/:
+ * /course/:id:
  *  delete:
  *    tags:
  *    - "/course/"
@@ -77,24 +77,26 @@ router.get("/", courseController.getAll);
  *    responses:
  *      '200':
  *        description: A successful response
- * /course/:id
- *  delete:
- *    tags:
- *    - "/course/"
- *    summary: Delete course by id
  */
 
 router.delete("/:id", courseController.delete);
 
 /**
  * @swagger
- * /course/:id
- *  update:
+ * /course/:id:
+ *  put:
  *    tags:
  *    - "/course/"
- *    summary: Update course by id
+ *    summary: Update course with the given ID
+ *    parameters:
+ *    - name: "id"
+ *      in: "path"
+ *      description: "Course ID"
+ *    responses:
+ *      '200':
+ *        description: A successful response
  */
 
-router.post("/update/:id", courseController.update);
+router.put("/:id", courseController.update);
 
 module.exports = router;
