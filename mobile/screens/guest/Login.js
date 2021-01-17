@@ -15,6 +15,7 @@ import { Dialog, Portal, HelperText, TextInput, Button, useTheme } from "react-n
 import BlankSpacer from "react-native-blank-spacer";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { getUniqueId } from "react-native-device-info";
 
 import api from "../../utils/api";
 import { signIn } from "../../store/actions/user";
@@ -58,17 +59,14 @@ const Login = ({ navigation }) => {
     toggleVisible(false);
 
     api
-      .post("/user/login", { email, password })
+      .post("/user/login", { email, password, deviceUID: getUniqueId() })
       .then(({ data }) => {
-        console.log(data);
-        setShowLoadingIndicatorLogin(false);
         dispatch(signIn(data.user));
       })
       .catch((error) => {
-        console.log(error);
-        setShowLoadingIndicatorLogin(false);
-        Alert.alert("Invalid credentials!");
-      });
+        Alert.alert(error.response.data.message);
+      })
+      .finally(() => setShowLoadingIndicatorLogin(false));
   };
 
   const handleResetPassword = () => {
@@ -77,7 +75,6 @@ const Login = ({ navigation }) => {
       .post("/user/resetPassword", { email: emailChangePassword })
       .then((data) => {
         setAnimatedLoaderVisible(false);
-        console.log("DATA", data);
         if (data.data.success == true) {
           setAnimatedCheckMarkVisible(true);
           setTimeout(() => {

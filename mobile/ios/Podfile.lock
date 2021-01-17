@@ -334,6 +334,8 @@ PODS:
     - React
   - RNCPicker (1.9.7):
     - React-Core
+  - RNDeviceInfo (8.0.0):
+    - React-Core
   - RNGestureHandler (1.9.0):
     - React-Core
   - RNPermissions (3.0.0-beta.2):
@@ -426,6 +428,7 @@ DEPENDENCIES:
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
   - "RNCPicker (from `../node_modules/@react-native-picker/picker`)"
+  - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
@@ -538,6 +541,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/masked-view"
   RNCPicker:
     :path: "../node_modules/@react-native-picker/picker"
+  RNDeviceInfo:
+    :path: "../node_modules/react-native-device-info"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
   RNPermissions:
@@ -629,6 +634,7 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: bc2f81cc1df90c267ce9ed30bb2dbc93b945a8ee
   RNCMaskedView: f5c7d14d6847b7b44853f7acb6284c1da30a3459
   RNCPicker: 344840b0db891c9645622a8783ebb1369c90c17b
+  RNDeviceInfo: 72ded653ce636b3f03571e90bed99309a714944e
   RNGestureHandler: 9b7e605a741412e20e13c512738a31bd1611759b
   RNPermissions: 96b45dbf96e2ba0f2747dc3932ed10764ede3c3f
   RNReanimated: e03f7425cb7a38dcf1b644d680d1bfc91c3337ad
