@@ -1,6 +1,5 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const passwordGenerator = require("generate-password");
 const sgMail = require("@sendgrid/mail");
 const User = require("../models/user");
 const Course = require("../models/course");
@@ -8,46 +7,60 @@ const moment = require("moment");
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 exports.login = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, deviceUID } = req.body;
 
-  // Check if user exists
-  const user = await User.findOne({ email });
-  if (!user)
-    return res
-      .status(401)
-      .json({ success: false, message: "Email or password not valid!" });
+  try {
+    // Check if user exists
+    const user = await User.findOne({ email });
+    if (!user) return res.status(401).json({ success: false, message: "Email or password not valid!" });
 
-  // Check if passwords match
-  const match = await bcrypt.compareSync(password, user.password);
-  if (!match)
-    return res
-      .status(401)
-      .json({ success: false, message: "Email or password not valid!" });
+    // Check if passwords match
+    const match = await bcrypt.compareSync(password, user.password);
+    if (!match) return res.status(401).json({ success: false, message: "Email or password not valid!" });
 
-  const token = jwt.sign(
-    {
-      email: user.email,
-      jmbag: user.jmbag,
-      phoneNumber: user.phoneNumber,
-      name: user.name,
-      surname: user.surname,
-    },
-    process.env.JWT_SECRET
-  );
+    // If it's student's first sign in, save his deviceUID
+    // Otherwise, check student's deviceUID
+    if (user.userType === "student") {
+      if (!user.deviceUID) {
+        user.deviceUID = deviceUID;
+        await user.save();
+      }
 
-  res.status(200).json({
-    success: true,
-    user: {
-      userId: user.id,
-      token,
-      email: user.email,
-      jmbag: user.jmbag,
-      phoneNumber: user.phoneNumber,
-      userType: user.userType,
-      name: user.name,
-      surname: user.surname,
-    },
-  });
+      if (user.deviceUID !== deviceUID) {
+        return res.status(401).json({
+          success: false,
+          message: "You have to sign in from your own device! If you think this is an error, please contact your teacher for assitance.",
+        });
+      }
+    }
+
+    const token = jwt.sign(
+      {
+        email: user.email,
+        jmbag: user.jmbag,
+        phoneNumber: user.phoneNumber,
+        name: user.name,
+        surname: user.surname,
+      },
+      process.env.JWT_SECRET
+    );
+
+    res.status(200).json({
+      success: true,
+      user: {
+        userId: user.id,
+        token,
+        email: user.email,
+        jmbag: user.jmbag,
+        phoneNumber: user.phoneNumber,
+        userType: user.userType,
+        name: user.name,
+        surname: user.surname,
+      },
+    });
+  } catch (error) {
+    res.status(400).json({ success: false, error });
+  }
 };
 
 exports.loginTablet = async (req, res) => {
@@ -76,10 +89,7 @@ exports.loginTablet = async (req, res) => {
 exports.register = async (req, res) => {
   const { role } = req.params;
 
-  if (!["student", "teacher"].includes(role))
-    return res
-      .status(400)
-      .json({ success: false, error: "Valid roles are student, teacher" });
+  if (!["student", "teacher"].includes(role)) return res.status(400).json({ success: false, error: "Valid roles are student, teacher" });
 
   try {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
@@ -189,9 +199,7 @@ exports.getSingle = async (req, res) => {
   try {
     const token = req.header("Authorization").replace("Bearer ", "");
     let user = jwt.verify(token, process.env.JWT_SECRET);
-    user = await User.findOne({ email: user.email })
-      .populate("enrolledCourses")
-      .populate("assignedCourses");
+    user = await User.findOne({ email: user.email }).populate("enrolledCourses").populate("assignedCourses");
     const data = user.toJSON();
     res.status(200).json({ success: true, data });
   } catch (error) {
@@ -205,9 +213,7 @@ exports.verify = async (req, res) => {
     const user = jwt.verify(token, process.env.JWT_SECRET);
     res.status(200).json({ success: true, user });
   } catch (error) {
-    res
-      .status(400)
-      .json({ success: false, error: "Invalid or missing token!" });
+    res.status(400).json({ success: false, error: "Invalid or missing token!" });
   }
 };
 
@@ -222,9 +228,7 @@ exports.enroll = async (req, res) => {
     let checkIfEnrolled = student.enrolledCourses.includes(course._id);
 
     if (checkIfEnrolled) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Course already enrolled." });
+      return res.status(400).json({ success: false, message: "Course already enrolled." });
     }
 
     student.enrolledCourses = student.enrolledCourses.concat(course._id);
