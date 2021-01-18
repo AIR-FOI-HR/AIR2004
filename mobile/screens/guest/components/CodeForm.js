@@ -8,7 +8,7 @@ import { showMessage } from "react-native-flash-message";
 import OTPTextInput from "react-native-otp-textinput";
 import api from "../../../utils/api";
 
-const CodeForm = ({ setStage, recoveryEmail }) => {
+const CodeForm = ({ setStage, setResetCode }) => {
   const [otpCode, setOtpCode] = useState("");
 
   const user = useSelector((state) => state);
@@ -16,9 +16,10 @@ const CodeForm = ({ setStage, recoveryEmail }) => {
   const handleVerifyCode = () => {
     if (otpCode.length == 6) {
       api
-        .post("/user/verifyResetCode", { resetCode: otpCode, recoveryEmail })
+        .post("/user/verifyResetCode", { resetCode: otpCode })
         .then((data) => {
           if (data.data.success == true) {
+            setResetCode(otpCode);
             setStage("CHANGE_PASSWORD");
           }
         })
@@ -47,7 +48,7 @@ const CodeForm = ({ setStage, recoveryEmail }) => {
         <OTPTextInput
           inputCount={6}
           handleTextChange={(code) => setOtpCode(code)}
-          textInputStyle={user.themePreference === "dark" ? { color: "#FFF" } : { color: "#000" }}
+          textInputStyle={user.userState.themePreference === "dark" ? { color: "#FFF" } : { color: "#000" }}
         />
       </View>
       <BlankSpacer height={20} />

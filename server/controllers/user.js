@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const sgMail = require("@sendgrid/mail");
 const User = require("../models/user");
 const Course = require("../models/course");
+const PasswordResetToken = require("../models/passwordResetToken");
 const moment = require("moment");
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
@@ -110,18 +111,17 @@ exports.resetCode = async (req, res) => {
   try {
     const resetCode = Math.floor(100000 + Math.random() * 900000); // broj od 6 znamenki
 
-    const user = await User.findOneAndUpdate(
-      { email },
-      {
-        code: resetCode.toString(),
-        verified: false,
-        expires_timestamp: moment().add(10, "minutes").unix().toString(),
-        created_timestamp: moment().unix().toString(),
-      }
-    );
+    const user = await User.findOne({ email });
     if (!user) {
       throw "You have entered an invalid e-mail address!";
     }
+
+    // Generate a password reset token
+    const passwordResetToken = new PasswordResetToken({
+      user: user._id,
+      code: resetCode.toString(),
+    });
+    await passwordResetToken.save();
 
     const msg = {
       to: `${req.body.email}`,
@@ -139,19 +139,13 @@ exports.resetCode = async (req, res) => {
 };
 
 exports.verifyResetCode = async (req, res) => {
-  const { recoveryEmail, resetCode } = req.body;
+  const { resetCode } = req.body;
 
   try {
-    let user = await User.findOne({ email: recoveryEmail });
+    const passwordResetToken = await PasswordResetToken.findOne({ code: resetCode });
 
-    if (parseInt(moment().unix().toString()) >= parseInt(user.expires_timestamp)) {
-      throw "Validation code has expired!";
-    }
-    if (user.code != resetCode.toString()) {
-      throw "Validation code is invalid!";
-    }
-    user.verified = true;
-    await user.save();
+    if (!passwordResetToken) throw "Reset code is invalid or has expired!";
+
     res.status(200).json({ success: true, verified: true });
   } catch (error) {
     res.status(400).json({ success: false, error });
@@ -159,17 +153,17 @@ exports.verifyResetCode = async (req, res) => {
 };
 
 exports.resetPassword = async (req, res) => {
-  const { email, password } = req.body;
+  const { password, resetCode } = req.body;
   try {
-    const user = await User.findOne({ email });
+    const passwordResetToken = await PasswordResetToken.findOne({ code: resetCode });
+
+    const user = await User.findOne({ _id: passwordResetToken.user });
 
     const hashedPassword = await bcrypt.hash(password, 10);
     user.password = hashedPassword;
-    user.verified = false;
-    user.created_timestamp = "";
-    user.expires_timestamp = "";
 
     await user.save();
+    await passwordResetToken.deleteOne();
 
     res.status(200).json({ success: true });
   } catch (error) {

@@ -14,7 +14,7 @@ const NewPasswordSchema = Yup.object({
     .required("This field is required!"),
 });
 
-const NewPasswordForm = ({ navigation, recoveryEmail }) => {
+const NewPasswordForm = ({ navigation, resetCode }) => {
   const [showHidePassword, setShowHidePassword] = useState(false);
   const [showHideConfirmPassword, setShowHideConfirmPassword] = useState(false);
 
@@ -39,7 +39,7 @@ const NewPasswordForm = ({ navigation, recoveryEmail }) => {
 
   const handleChangePassword = (values) => {
     console.log("VALUES", values);
-    api.post("/user/resetPassword", { ...values, email: recoveryEmail }).then((data) => {
+    api.post("/user/resetPassword", { ...values, resetCode }).then((data) => {
       console.log("DATA", data.data);
       if (data.data.success == true) {
         showMessage({

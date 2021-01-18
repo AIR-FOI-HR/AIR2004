@@ -50,18 +50,6 @@ const userSchema = mongoose.Schema({
       ref: "Course",
     },
   ],
-  code: {
-    type: String,
-    required: false,
-  },
-  created_timestamp: {
-    type: String,
-    required: false,
-  },
-  expires_timestamp: {
-    type: String,
-    required: false,
-  },
   verified: {
     type: Boolean,
     required: false,
