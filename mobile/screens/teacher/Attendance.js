@@ -8,7 +8,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import { io } from "socket.io-client";
 import { WSS_URL } from "../../constants";
 
-const Attendance = () => {
+const Attendance = ({ navigation }) => {
   const dispatch = useDispatch();
   const teacher = useSelector((state) => state.teacherState);
   const [attendances, setAttendances] = useState([]);
@@ -66,7 +66,7 @@ const Attendance = () => {
               icon: "account-plus",
               label: "Manual entry",
               style: { backgroundColor: "#62D7C5" },
-              onPress: () => console.log("Pressed email"),
+              onPress: () => navigation.push("ManualAttendance"),
             },
             {
               icon: "check-all",

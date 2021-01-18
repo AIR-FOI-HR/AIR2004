@@ -10,6 +10,7 @@ import BlankSpacer from "react-native-blank-spacer";
 
 import Dashboard from "../screens/teacher/Dashboard";
 import Attendance from "../screens/teacher/Attendance";
+import ManualAttendance from "../screens/teacher/ManualAttendance";
 import Courses from "../screens/teacher/Courses";
 import Settings from "../screens/common/Settings";
 
@@ -24,6 +25,7 @@ import { signOut } from "../store/actions/user";
 const Stack = createStackNavigator();
 const Tabs = createMaterialBottomTabNavigator();
 const CoursesStack = createStackNavigator();
+const AttendanceStack = createStackNavigator();
 
 const CoursesStackNavigation = () => {
   return (
@@ -32,6 +34,15 @@ const CoursesStackNavigation = () => {
       <CoursesStack.Screen name="NewCourse" component={NewCourse} />
       <CoursesStack.Screen name="EditCourse" component={EditCourse} />
     </CoursesStack.Navigator>
+  );
+};
+
+const AttendanceStackNavigation = () => {
+  return (
+    <AttendanceStack.Navigator headerMode="none">
+      <AttendanceStack.Screen name="Attendance" component={Attendance} />
+      <AttendanceStack.Screen name="ManualAttendance" component={ManualAttendance} />
+    </AttendanceStack.Navigator>
   );
 };
 
@@ -49,7 +60,7 @@ const TeacherTabNavigation = () => {
 
       <Tabs.Screen
         name="Attendance"
-        component={Attendance}
+        component={AttendanceStackNavigation}
         options={{
           tabBarLabel: "Attendance",
           tabBarIcon: ({ color }) => <FontAwesomeIcons name="list" color={color} size={22} />,
