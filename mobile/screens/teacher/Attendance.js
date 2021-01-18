@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { View, StyleSheet } from "react-native";
 import { Text } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
-import { ActivityIndicator, FAB } from "react-native-paper";
+import { ActivityIndicator, FAB, Portal, Dialog, Paragraph, Button } from "react-native-paper";
 import StudentAttendanceCard from "./components/StudentAttendanceCard";
 import { ScrollView } from "react-native-gesture-handler";
 import { io } from "socket.io-client";
@@ -12,6 +12,7 @@ const Attendance = () => {
   const dispatch = useDispatch();
   const teacher = useSelector((state) => state.teacherState);
   const [attendances, setAttendances] = useState([]);
+  const [shown, setShown] = useState(false);
 
   const [fabOpen, setFabOpen] = useState(false);
   const socket = useRef();
@@ -71,7 +72,7 @@ const Attendance = () => {
               icon: "check-all",
               label: "Finish tracking",
               style: { backgroundColor: "#62D7C5" },
-              onPress: () => console.log("Pressed notifications"),
+              onPress: () => setShown(true),
             },
           ]}
           onStateChange={({ open }) => setFabOpen(open)}
@@ -88,6 +89,18 @@ const Attendance = () => {
           ))}
         </ScrollView>
       </View>
+      <Portal>
+        <Dialog visible={shown} onDismiss={() => setShown(false)}>
+          <Dialog.Title>Finish Tracking</Dialog.Title>
+          <Dialog.Content>
+            <Paragraph>Are you sure you want to finish tracking attendance for this lecture?</Paragraph>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => setShown(false)}>Cancel</Button>
+            <Button onPress={() => setShown(false)}>Finish</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
     </View>
   );
 };
@@ -109,7 +122,7 @@ const styles = StyleSheet.create({
   },
   fab: {
     position: "absolute",
-    margin: 16,
+    margin: 0,
     right: 0,
     bottom: 0,
     zIndex: 2,
