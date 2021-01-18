@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { View, StyleSheet } from "react-native";
 import { Text } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
-import { ActivityIndicator, FAB, Portal, Dialog, Paragraph, Button } from "react-native-paper";
+import { ActivityIndicator, FAB } from "react-native-paper";
 import StudentAttendanceCard from "./components/StudentAttendanceCard";
 import { ScrollView } from "react-native-gesture-handler";
 import { io } from "socket.io-client";
@@ -12,7 +12,6 @@ const Attendance = ({ navigation }) => {
   const dispatch = useDispatch();
   const teacher = useSelector((state) => state.teacherState);
   const [attendances, setAttendances] = useState([]);
-  const [shown, setShown] = useState(false);
 
   const [fabOpen, setFabOpen] = useState(false);
   const socket = useRef();
@@ -79,7 +78,7 @@ const Attendance = ({ navigation }) => {
         />
         <View style={{ margin: 10 }}>
           <Text style={styles.title}>Now tracking:</Text>
-          <Text style={styles.courseName}>Software Analysis</Text>
+          <Text style={styles.courseName}>{teacher.courseSelectedOnTablet.course.name}</Text>
           <ActivityIndicator animating={true} size={40} style={{ paddingVertical: 10 }} />
         </View>
         <ScrollView>
@@ -89,18 +88,6 @@ const Attendance = ({ navigation }) => {
           ))}
         </ScrollView>
       </View>
-      <Portal>
-        <Dialog visible={shown} onDismiss={() => setShown(false)}>
-          <Dialog.Title>Finish Tracking</Dialog.Title>
-          <Dialog.Content>
-            <Paragraph>Are you sure you want to finish tracking attendance for this lecture?</Paragraph>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={() => setShown(false)}>Cancel</Button>
-            <Button onPress={() => setShown(false)}>Finish</Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
     </View>
   );
 };
