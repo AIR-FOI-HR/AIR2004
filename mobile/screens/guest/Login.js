@@ -14,6 +14,7 @@ import { useDispatch } from "react-redux";
 import { HelperText, TextInput, Button, useTheme } from "react-native-paper";
 import BlankSpacer from "react-native-blank-spacer";
 import { useFormik } from "formik";
+import { useSelector } from "react-redux";
 import * as Yup from "yup";
 import { getUniqueId } from "react-native-device-info";
 
@@ -31,6 +32,8 @@ const Login = ({ navigation }) => {
 
   const [showHidePassword, setShowHidePassword] = useState(false);
   const [showLoadingIndicatorLogin, setShowLoadingIndicatorLogin] = useState(false);
+
+  const user = useSelector((state) => state.userState);
 
   const formik = useFormik({
     initialValues: {
@@ -66,7 +69,11 @@ const Login = ({ navigation }) => {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
         <View>
-          <Image style={styles.logo} source={require("../../assets/logo_dark.png")} />
+          {user.themePreference == "dark" ? (
+            <Image style={styles.logo} source={require("../../assets/logo_dark.png")} />
+          ) : (
+            <Image style={styles.logo} source={require("../../assets/logo.png")} />
+          )}
         </View>
 
         <View>

@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
   description: {
     textAlign: "justify",
     fontSize: 15,
-    margin: 15,
+    margin: 25,
     lineHeight: 25,
   },
 });
