@@ -61,6 +61,13 @@ const teacherReducer = (state = initialState, action) => {
         ],
       };
     }
+
+    case "RESTORE_TEACHER_DATA": {
+      return {
+        ...action.teacher,
+      };
+    }
+
     default:
       return state;
   }

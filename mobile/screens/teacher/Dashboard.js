@@ -16,22 +16,13 @@ const Dashboard = ({ navigation }) => {
   const teacher = useSelector((state) => state.teacherState);
   const socket = useRef();
 
-  console.log("USER: ", user);
-
-  useEffect(() => {
-    console.log("TEACHER", teacher);
-  }, [teacher]);
-
   useEffect(() => {
     socket.current = io(WSS_URL + "/teacher", {
       query: {
         attendanceToken: teacher.attendanceToken,
       },
     });
-    socket.current.on("lecture selected", (data) => {
-      console.log("SELECTED", data);
-      dispatch(setCourseSelectedOnTablet(data));
-    });
+    socket.current.on("lecture selected", (data) => dispatch(setCourseSelectedOnTablet(data)));
 
     return () => socket.current.disconnect();
   }, [teacher.attendanceToken]);

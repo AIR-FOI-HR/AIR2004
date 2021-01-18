@@ -4,6 +4,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { useSelector, useDispatch } from "react-redux";
 
 import { signIn } from "../store/actions/user";
+import { restoreTeacherData } from "../store/actions/teacher";
 import Student from "./Student";
 import Teacher from "./Teacher";
 import Guest from "./Guest";
@@ -21,7 +22,10 @@ const Navigation = () => {
   // Checks whether user is already logged in (his data is stored in AsyncStorage)
   const checkIfSignedIn = async () => {
     const userData = await AsyncStorage.getItem("user");
+    const teacherData = await AsyncStorage.getItem("teacher");
+
     if (userData) dispatch(signIn(JSON.parse(userData)));
+    if (teacherData) dispatch(restoreTeacherData(JSON.parse(teacherData)));
   };
 
   return (

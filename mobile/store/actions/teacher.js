@@ -51,3 +51,10 @@ export const editCourse = (course) => {
     course,
   };
 };
+
+export const restoreTeacherData = (teacher) => {
+  return {
+    type: "RESTORE_TEACHER_DATA",
+    teacher,
+  };
+};
