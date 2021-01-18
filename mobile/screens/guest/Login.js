@@ -11,7 +11,7 @@ import {
   Alert,
 } from "react-native";
 import { useDispatch } from "react-redux";
-import { Dialog, Portal, HelperText, TextInput, Button, useTheme } from "react-native-paper";
+import { HelperText, TextInput, Button, useTheme } from "react-native-paper";
 import BlankSpacer from "react-native-blank-spacer";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -19,8 +19,6 @@ import { getUniqueId } from "react-native-device-info";
 
 import api from "../../utils/api";
 import { signIn } from "../../store/actions/user";
-import AnimatedCheckmark from "./components/AnimatedCheckmark";
-import AnimatedDotsLoader from "./components/AnimatedLoader";
 
 const LoginSchema = Yup.object({
   email: Yup.string().email("Please enter a valid email!").required("This field is required!"),
@@ -30,13 +28,9 @@ const LoginSchema = Yup.object({
 const Login = ({ navigation }) => {
   const dispatch = useDispatch();
   const theme = useTheme();
-  const [emailChangePassword, setEmailChangePassword] = useState("");
+
   const [showHidePassword, setShowHidePassword] = useState(false);
   const [showLoadingIndicatorLogin, setShowLoadingIndicatorLogin] = useState(false);
-
-  const [animatedLoaderVisible, setAnimatedLoaderVisible] = useState(false);
-  const [animatedCheckmarkVisible, setAnimatedCheckMarkVisible] = useState(false);
-  const [visible, toggleVisible] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -56,7 +50,6 @@ const Login = ({ navigation }) => {
   const handleLoginRequest = (values) => {
     const { email, password } = values;
     setShowLoadingIndicatorLogin(true);
-    toggleVisible(false);
 
     api
       .post("/user/login", { email, password, deviceUID: getUniqueId() })
@@ -67,28 +60,6 @@ const Login = ({ navigation }) => {
         Alert.alert(error.response.data.message);
       })
       .finally(() => setShowLoadingIndicatorLogin(false));
-  };
-
-  const handleResetPassword = () => {
-    setAnimatedLoaderVisible(true);
-    api
-      .post("/user/resetPassword", { email: emailChangePassword })
-      .then((data) => {
-        setAnimatedLoaderVisible(false);
-        if (data.data.success == true) {
-          setAnimatedCheckMarkVisible(true);
-          setTimeout(() => {
-            setAnimatedCheckMarkVisible(false);
-            toggleVisible(false);
-          }, 1500);
-        }
-      })
-      .catch((error) => {
-        setAnimatedLoaderVisible(false);
-        if (error.response.status == 400) {
-          alert("There has been an error processing your request, please check your input!");
-        }
-      });
   };
 
   return (
@@ -148,47 +119,6 @@ const Login = ({ navigation }) => {
           <TouchableOpacity onPress={() => navigation.push("ForgottenPassword")}>
             <Text style={theme.dark == true ? styles.tooltipText : null}>Forgot password?</Text>
           </TouchableOpacity>
-
-          <Portal>
-            <Dialog
-              visible={visible}
-              onDismiss={() => {
-                toggleVisible(false);
-                setEmailChangePassword("");
-              }}
-            >
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  marginRight: 20,
-                }}
-              >
-                <Dialog.Title>Reset password</Dialog.Title>
-              </View>
-              <Dialog.Content>
-                <TextInput
-                  label="Enter your email"
-                  value={emailChangePassword}
-                  mode="outlined"
-                  onChangeText={(emailChangePassword) => setEmailChangePassword(emailChangePassword)}
-                />
-                {animatedLoaderVisible && <AnimatedDotsLoader />}
-                {animatedCheckmarkVisible && <AnimatedCheckmark />}
-              </Dialog.Content>
-              <Dialog.Actions>
-                <Button
-                  onPress={() => {
-                    toggleVisible(false);
-                    setEmailChangePassword("");
-                  }}
-                >
-                  Close
-                </Button>
-                <Button onPress={() => handleResetPassword()}>Reset Password</Button>
-              </Dialog.Actions>
-            </Dialog>
-          </Portal>
         </View>
       </View>
     </TouchableWithoutFeedback>
