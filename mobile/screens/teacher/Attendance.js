@@ -72,7 +72,7 @@ const Attendance = ({ navigation }) => {
               icon: "check-all",
               label: "Finish tracking",
               style: { backgroundColor: "#62D7C5" },
-              onPress: () => setShown(true),
+              onPress: () => navigation.navigate("Dashboard"),
             },
           ]}
           onStateChange={({ open }) => setFabOpen(open)}

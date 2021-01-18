@@ -4,11 +4,7 @@ import { View, StyleSheet } from "react-native";
 import { Text, FAB } from "react-native-paper";
 import { io } from "socket.io-client";
 
-import {
-  setCourseSelectedOnTablet,
-  signOutTablet,
-  startTracking,
-} from "../../store/actions/teacher";
+import { setCourseSelectedOnTablet, signOutTablet, startTracking } from "../../store/actions/teacher";
 import DashboardAfterCourseSelection from "./components/DashboardAfterCourseSelection";
 import DashboardAfterTabletLogin from "./components/DashboardAfterTabletLogin";
 import DashboardBeforeTabletLogin from "./components/DashboardAfterLogin";
@@ -41,8 +37,6 @@ const Dashboard = ({ navigation }) => {
   }, [teacher.attendanceToken]);
 
   const handleSignOut = () => {
-    console.log("AAA", teacher);
-
     socket.current.emit("sign out tablet", {
       attendanceToken: teacher.attendanceToken,
       lecture: teacher.courseSelectedOnTablet?.lecture.id,
@@ -64,12 +58,7 @@ const Dashboard = ({ navigation }) => {
     if (!teacher.courseSelectedOnTablet) return <DashboardAfterTabletLogin handleSignOut={handleSignOut} />;
 
     // Dashboard after course is selected on the tablet
-    return (
-      <DashboardAfterCourseSelection
-        handleSignOut={handleSignOut}
-        handleStartTracking={handleStartTracking}
-      />
-    );
+    return <DashboardAfterCourseSelection handleSignOut={handleSignOut} handleStartTracking={handleStartTracking} />;
   };
 
   return (
