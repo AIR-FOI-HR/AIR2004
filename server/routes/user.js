@@ -135,22 +135,47 @@ router.get("/verify", userController.verify);
  *  post:
  *    tags:
  *    - "/user/"
- *    summary: Reset code for reseting password
- *  parameters:
- *   - name: "body"
- *     in: "body"
- *     description: "Reset code for reseting forgotten password"
- *     schema:
- *       type: "object"
- *       properties:
- *         passcode:
- *           type: "string"
- *     responses:
+ *    summary: Request a reset code for setting a new password
+ *    parameters:
+ *    - name: "body"
+ *      in: "body"
+ *      description: "Email to which the reset code is sent"
+ *      schema:
+ *        type: "object"
+ *        properties:
+ *          email:
+ *             type: "string"
+ *    responses:
  *      '200':
- *        description: A successful response
+ *        description: A successful response, with data object that contains the sent reset code
+ *      '400':
+ *        description: An unsuccessful response
  */
 
 router.post("/resetCode", userController.resetCode);
+
+/**
+ * @swagger
+ * /user/verifyResetCode:
+ *  post:
+ *    tags:
+ *    - "/user/"
+ *    summary: Verifies the reset code sent to mail
+ *    parameters:
+ *    - name: "body"
+ *      in: "body"
+ *      description: "Reset code that needs to be verified"
+ *      schema:
+ *        type: "object"
+ *        properties:
+ *          resetCode:
+ *            type: "string"
+ *    responses:
+ *      '200':
+ *        description: A successful response, denoting that the code has been successfully verified
+ *      '400':
+ *        description: An unsuccessful response
+ */
 
 router.post("/verifyResetCode", userController.verifyResetCode);
 
@@ -164,17 +189,19 @@ router.post("/verifyResetCode", userController.verifyResetCode);
  *    parameters:
  *    - name: "body"
  *      in: "body"
- *      description: "Email used to register"
+ *      description: "New password to save and the reset code which was used to initiate the password reset process"
  *      schema:
  *        type: "object"
  *        properties:
- *          email:
+ *          password:
+ *            type: "string"
+ *          resetCode:
  *            type: "string"
  *    responses:
  *      '200':
  *        description: An successful response
  *      '400':
- *        description: An unsuccessful response containing the error description
+ *        description: An unsuccessful response
  */
 
 router.post("/resetPassword", userController.resetPassword);
