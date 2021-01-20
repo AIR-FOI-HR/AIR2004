@@ -33,7 +33,13 @@ const Attendance = () => {
       .then(({ data }) => {
         setAttendanceData(data.data);
         setFilteredData(
-          data.data.sort((a, b) => (moment(a.fullDate).isBefore(b.fullDate) ? -1 : moment(a.fullDate).isAfter(b.fullDate) ? 1 : 0))
+          data.data.sort((a, b) =>
+            moment(a.fullDate).isBefore(b.fullDate)
+              ? -1
+              : moment(a.fullDate).isAfter(b.fullDate)
+              ? 1
+              : 0
+          )
         );
       })
       .catch((error) => console.log(error))
@@ -48,7 +54,13 @@ const Attendance = () => {
     switch (filterValue) {
       case "Courses":
         setFilteredData(
-          attendanceData.sort((a, b) => (moment(a.fullDate).isBefore(b.fullDate) ? -1 : moment(a.fullDate).isAfter(b.fullDate) ? 1 : 0))
+          attendanceData.sort((a, b) =>
+            moment(a.fullDate).isBefore(b.fullDate)
+              ? -1
+              : moment(a.fullDate).isAfter(b.fullDate)
+              ? 1
+              : 0
+          )
         );
         break;
 
@@ -56,7 +68,13 @@ const Attendance = () => {
         setFilteredData(
           attendanceData
             .filter((item) => item.present === true)
-            .sort((a, b) => (moment(a.fullDate).isBefore(b.fullDate) ? -1 : moment(a.fullDate).isAfter(b.fullDate) ? 1 : 0))
+            .sort((a, b) =>
+              moment(a.fullDate).isBefore(b.fullDate)
+                ? -1
+                : moment(a.fullDate).isAfter(b.fullDate)
+                ? 1
+                : 0
+            )
         );
         break;
 
@@ -70,7 +88,13 @@ const Attendance = () => {
           })
           .then(({ data }) => {
             setFilteredData(
-              data.data.sort((a, b) => (moment(a.fullDate).isBefore(b.fullDate) ? -1 : moment(a.fullDate).isAfter(b.fullDate) ? 1 : 0))
+              data.data.sort((a, b) =>
+                moment(a.fullDate).isBefore(b.fullDate)
+                  ? -1
+                  : moment(a.fullDate).isAfter(b.fullDate)
+                  ? 1
+                  : 0
+              )
             );
           })
           .catch((error) => console.log(error));
@@ -79,8 +103,18 @@ const Attendance = () => {
       case "LastWeek": {
         setFilteredData(
           attendanceData
-            .filter((item) => moment().subtract(7, "days").isBefore(item.fullDate) && moment().isAfter(item.fullDate))
-            .sort((a, b) => (moment(a.fullDate).isBefore(b.fullDate) ? -1 : moment(a.fullDate).isAfter(b.fullDate) ? 1 : 0))
+            .filter(
+              (item) =>
+                moment().subtract(7, "days").isBefore(item.fullDate) &&
+                moment().isAfter(item.fullDate)
+            )
+            .sort((a, b) =>
+              moment(a.fullDate).isBefore(b.fullDate)
+                ? -1
+                : moment(a.fullDate).isAfter(b.fullDate)
+                ? 1
+                : 0
+            )
         );
 
         break;
@@ -89,8 +123,16 @@ const Attendance = () => {
       case "LastMonth":
         setFilteredData(
           attendanceData
-            .filter((item) => moment().subtract(1, "month").isSame(item.fullDate, "month"))
-            .sort((a, b) => (moment(a.fullDate).isBefore(b.fullDate) ? -1 : moment(a.fullDate).isAfter(b.fullDate) ? 1 : 0))
+            .filter((item) =>
+              moment().subtract(1, "month").isSame(item.fullDate, "month")
+            )
+            .sort((a, b) =>
+              moment(a.fullDate).isBefore(b.fullDate)
+                ? -1
+                : moment(a.fullDate).isAfter(b.fullDate)
+                ? 1
+                : 0
+            )
         );
 
         break;
@@ -100,9 +142,9 @@ const Attendance = () => {
   return (
     <View style={styles.container}>
       {!loading ? (
-        filteredData.length !== 0 ? (
-          <View style={{ flexDirection: "row" }}>
-            <View>
+        attendanceData.length !== 0 && !loading ? (
+          <View>
+            <View style={{ flexDirection: "row" }}>
               <Text
                 style={{
                   fontSize: 17,
@@ -113,54 +155,87 @@ const Attendance = () => {
               >
                 Filter by:{" "}
               </Text>
+
+              <View style={{ marginLeft: 10, marginTop: -6 }}>
+                <Picker
+                  selectedValue={selectedFilter}
+                  style={{ height: 50, width: 160 }}
+                  mode={"dialog"}
+                  onValueChange={(itemValue) => {
+                    onChangeFilter(itemValue);
+                  }}
+                >
+                  {user.themePreference === "dark" ? (
+                    <Picker.Item
+                      color="#a6a6a6"
+                      label="Courses"
+                      value="Courses"
+                    />
+                  ) : (
+                    <Picker.Item label="Courses" value="Courses" />
+                  )}
+
+                  {user.themePreference === "dark" ? (
+                    <Picker.Item
+                      color="#a6a6a6"
+                      label="Attended"
+                      value="Attended"
+                    />
+                  ) : (
+                    <Picker.Item label="Attended" value="Attended" />
+                  )}
+
+                  {user.themePreference === "dark" ? (
+                    <Picker.Item
+                      color="#a6a6a6"
+                      label="Missed"
+                      value="Missed"
+                    />
+                  ) : (
+                    <Picker.Item label="Missed" value="Missed" />
+                  )}
+
+                  {user.themePreference === "dark" ? (
+                    <Picker.Item
+                      color="#a6a6a6"
+                      label="Last week"
+                      value="LastWeek"
+                    />
+                  ) : (
+                    <Picker.Item label="Last week" value="LastWeek" />
+                  )}
+
+                  {user.themePreference === "dark" ? (
+                    <Picker.Item
+                      color="#a6a6a6"
+                      label="Last month"
+                      value="LastMonth"
+                    />
+                  ) : (
+                    <Picker.Item label="Last month" value="LastMonth" />
+                  )}
+                </Picker>
+              </View>
             </View>
-            <View style={{ marginLeft: 10, marginTop: -6 }}>
-              <Picker
-                selectedValue={selectedFilter}
-                style={{ height: 50, width: 160 }}
-                mode={"dialog"}
-                onValueChange={(itemValue) => {
-                  onChangeFilter(itemValue);
-                }}
-              >
-                {user.themePreference === "dark" ? (
-                  <Picker.Item color="#a6a6a6" label="Courses" value="Courses" />
-                ) : (
-                  <Picker.Item label="Courses" value="Courses" />
-                )}
-
-                {user.themePreference === "dark" ? (
-                  <Picker.Item color="#a6a6a6" label="Attended" value="Attended" />
-                ) : (
-                  <Picker.Item label="Attended" value="Attended" />
-                )}
-
-                {user.themePreference === "dark" ? (
-                  <Picker.Item color="#a6a6a6" label="Missed" value="Missed" />
-                ) : (
-                  <Picker.Item label="Missed" value="Missed" />
-                )}
-
-                {user.themePreference === "dark" ? (
-                  <Picker.Item color="#a6a6a6" label="Last week" value="LastWeek" />
-                ) : (
-                  <Picker.Item label="Last week" value="LastWeek" />
-                )}
-
-                {user.themePreference === "dark" ? (
-                  <Picker.Item color="#a6a6a6" label="Last month" value="LastMonth" />
-                ) : (
-                  <Picker.Item label="Last month" value="LastMonth" />
-                )}
-              </Picker>
-              <FlatList keyExtractor={(item) => item.id} data={filteredData} renderItem={({ item }) => <AttendanceItem item={item} />} />
-            </View>
+            <FlatList
+              keyExtractor={(item) => item.id}
+              data={filteredData}
+              renderItem={({ item }) => <AttendanceItem item={item} />}
+            />
           </View>
         ) : (
-          <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+          <View
+            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+          >
             <View>
-              <Text style={{ fontSize: 20, fontWeight: "500", marginBottom: 20 }}>You don't have any attendance record yet!</Text>
-              <Text style={{ textAlign: "center" }}>Attendances will be displayed after your first attendance.</Text>
+              <Text
+                style={{ fontSize: 19, fontWeight: "500", marginBottom: 20 }}
+              >
+                You don't have any attendance record yet!
+              </Text>
+              <Text style={{ textAlign: "center" }}>
+                Attendances will be displayed after your first attendance.
+              </Text>
             </View>
           </View>
         )
