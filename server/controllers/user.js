@@ -21,7 +21,7 @@ exports.login = async (req, res) => {
     // If it's student's first sign in, save his deviceUID
     // Otherwise, check student's deviceUID
     if (user.userType === "student") {
-      if (!user.deviceUID) {
+      if (user.deviceUID === "null") {
         user.deviceUID = deviceUID;
         await user.save();
       }
@@ -29,7 +29,7 @@ exports.login = async (req, res) => {
       if (user.deviceUID !== deviceUID) {
         return res.status(401).json({
           success: false,
-          message: "You have to sign in from your own device! If you think this is an error, please contact your teacher for assitance.",
+          message: "You have to sign in from your own device! If you think this is an error, please contact your teacher for assistance.",
         });
       }
     }
