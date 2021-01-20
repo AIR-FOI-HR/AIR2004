@@ -103,11 +103,14 @@ exports.getMissed = async (req, res) => {
         if (
           item.course.enrolledStudents.includes(student[0]._id) &&
           !item.attendingStudents.includes(student[0]._id)
-        ) {
+        )
           return item;
-        }
       })
-      .filter((item) => item !== undefined);
+      .filter(
+        (item) => item !== undefined && item.course.name === "Matematics 2"
+      );
+
+    console.log("MISSED DATA: ", missed);
 
     const data = missed.map((attendance) => {
       return {

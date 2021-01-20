@@ -35,7 +35,13 @@ const CourseStatistics = ({ route }) => {
           setAttendanceData(
             data.data
               .filter((item) => item.courseName === selectedCourse)
-              .sort((a, b) => (moment(a.fullDate).isBefore(b.fullDate) ? -1 : moment(a.fullDate).isAfter(b.fullDate) ? 1 : 0))
+              .sort((a, b) =>
+                moment(a.fullDate).isBefore(b.fullDate)
+                  ? -1
+                  : moment(a.fullDate).isAfter(b.fullDate)
+                  ? 1
+                  : 0
+              )
           );
         })
         .catch((error) => console.log(error))
@@ -56,7 +62,13 @@ const CourseStatistics = ({ route }) => {
         .then(({ data }) => {
           setMissedAttendanceData(
             data.data
-              .sort((a, b) => (moment(a.fullDate).isBefore(b.fullDate) ? -1 : moment(a.fullDate).isAfter(b.fullDate) ? 1 : 0))
+              .sort((a, b) =>
+                moment(a.fullDate).isBefore(b.fullDate)
+                  ? -1
+                  : moment(a.fullDate).isAfter(b.fullDate)
+                  ? 1
+                  : 0
+              )
               .filter((item) => item.courseName === selectedCourse)
           );
         })
@@ -80,7 +92,11 @@ const CourseStatistics = ({ route }) => {
 
     api
       .get("/lecture")
-      .then(({ data }) => setLectureData(data.data.filter((item) => item.course.name === selectedCourse)))
+      .then(({ data }) =>
+        setLectureData(
+          data.data.filter((item) => item.course.name === selectedCourse)
+        )
+      )
       .catch((error) => console.log(error));
 
     getAllSubmitedAttendances();
@@ -148,10 +164,21 @@ const CourseStatistics = ({ route }) => {
               ) : (
                 <View style={{ margin: 20 }}>
                   <View>
-                    <Text style={{ textAlign: "center", fontSize: 15, fontWeight: "500", marginBottom: 20, marginTop: 20 }}>
-                      You don't have any attendance record on {selectedCourse} yet!
+                    <Text
+                      style={{
+                        textAlign: "center",
+                        fontSize: 15,
+                        fontWeight: "500",
+                        marginBottom: 20,
+                        marginTop: 20,
+                      }}
+                    >
+                      You don't have any attendance record on {selectedCourse}{" "}
+                      yet!
                     </Text>
-                    <Text style={{ textAlign: "center" }}>Attendances will be displayed after your first attendance.</Text>
+                    <Text style={{ textAlign: "center" }}>
+                      Attendances will be displayed after your first attendance.
+                    </Text>
                   </View>
                 </View>
               )}

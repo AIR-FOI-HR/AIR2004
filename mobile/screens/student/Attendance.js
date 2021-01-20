@@ -217,11 +217,13 @@ const Attendance = () => {
                 </Picker>
               </View>
             </View>
-            <FlatList
-              keyExtractor={(item) => item.id}
-              data={filteredData}
-              renderItem={({ item }) => <AttendanceItem item={item} />}
-            />
+            <View style={{ height: "94%" }}>
+              <FlatList
+                keyExtractor={(item) => item.id}
+                data={filteredData}
+                renderItem={({ item }) => <AttendanceItem item={item} />}
+              />
+            </View>
           </View>
         ) : (
           <View
