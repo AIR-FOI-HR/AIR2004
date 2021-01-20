@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, FlatList, ScrollView } from "react-native";
-import { Button, Text, Surface, Portal, Dialog, TextInput, FAB } from "react-native-paper";
+import {
+  Button,
+  Text,
+  Surface,
+  Portal,
+  Dialog,
+  TextInput,
+  FAB,
+} from "react-native-paper";
 import { BarChart } from "react-native-chart-kit";
 import { useSelector } from "react-redux";
 import { showMessage } from "react-native-flash-message";
@@ -18,7 +26,6 @@ import api from "../../utils/api";
 
 const Dashboard = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
-
   const [coursePasscode, setCoursePasscode] = useState("");
   const [visible, toggleVisible] = useState(false);
   const [enrolledCourses, setEnrolledCourses] = useState([]);
@@ -37,9 +44,17 @@ const Dashboard = ({ navigation }) => {
       api
         .get("/attendance")
         .then((data) => {
-          setTodayAttendanceData(data.data.data.filter((item) => moment().isSame(item.fullDate, "date")));
+          setTodayAttendanceData(
+            data.data.data.filter((item) =>
+              moment().isSame(item.fullDate, "date")
+            )
+          );
           setLastWeekAttendanceData(
-            data.data.data.filter((item) => moment().subtract(7, "days").isBefore(item.fullDate) && moment().isAfter(item.fullDate))
+            data.data.data.filter(
+              (item) =>
+                moment().subtract(7, "days").isBefore(item.fullDate) &&
+                moment().isAfter(item.fullDate)
+            )
           );
         })
         .finally(() => {
@@ -54,9 +69,12 @@ const Dashboard = ({ navigation }) => {
       {
         data: [
           lastWeekAttendanceData.filter((item) => item.day === "MONDAY").length,
-          lastWeekAttendanceData.filter((item) => item.day === "TUESDAY").length,
-          lastWeekAttendanceData.filter((item) => item.day === "WEDNESDAY").length,
-          lastWeekAttendanceData.filter((item) => item.day === "THURSDAY").length,
+          lastWeekAttendanceData.filter((item) => item.day === "TUESDAY")
+            .length,
+          lastWeekAttendanceData.filter((item) => item.day === "WEDNESDAY")
+            .length,
+          lastWeekAttendanceData.filter((item) => item.day === "THURSDAY")
+            .length,
           lastWeekAttendanceData.filter((item) => item.day === "FRIDAY").length,
         ],
       },
@@ -99,7 +117,8 @@ const Dashboard = ({ navigation }) => {
         } else {
           showMessage({
             message: "Error occured!",
-            description: "Please contact professor to add you manually or try again later!",
+            description:
+              "Please contact professor to add you manually or try again later!",
             type: "danger",
             duration: 5000,
             icon: "danger",
@@ -136,9 +155,13 @@ const Dashboard = ({ navigation }) => {
                 Recent attendance
               </Text>
 
-              <Text style={(styles.font, { marginLeft: 12, fontSize: 34 })}>{lastWeekAttendanceData.length}</Text>
+              <Text style={(styles.font, { marginLeft: 12, fontSize: 34 })}>
+                {lastWeekAttendanceData.length}
+              </Text>
 
-              <Text style={(styles.font, { marginLeft: 12 })}>in the last week</Text>
+              <Text style={(styles.font, { marginLeft: 12 })}>
+                in the last week
+              </Text>
 
               {lastWeekAttendanceData.length > 0 ? (
                 <View
@@ -194,17 +217,31 @@ const Dashboard = ({ navigation }) => {
                 </View>
               ) : (
                 <View style={{ margin: 20 }}>
-                  <Text style={{ textAlign: "center", fontSize: 15, fontWeight: "500", marginBottom: 20, marginTop: 20 }}>
+                  <Text
+                    style={{
+                      textAlign: "center",
+                      fontSize: 15,
+                      fontWeight: "500",
+                      marginBottom: 20,
+                      marginTop: 20,
+                    }}
+                  >
                     You don't have any attendance in the last week!
                   </Text>
-                  <Text style={{ textAlign: "center" }}>Attendances will be displayed after your QR code scanning today.</Text>
+                  <Text style={{ textAlign: "center" }}>
+                    Attendances will be displayed after your QR code scanning
+                    today.
+                  </Text>
                 </View>
               )}
             </Surface>
           </View>
 
           <View style={{ marginTop: 15 }}>
-            <Surface style={{ ...styles.graphContainer, height: 200 }} nestedScrollEnabled={true}>
+            <Surface
+              style={{ ...styles.graphContainer, height: 200 }}
+              nestedScrollEnabled={true}
+            >
               <Text
                 style={
                   (styles.font,
@@ -228,10 +265,21 @@ const Dashboard = ({ navigation }) => {
               ) : (
                 <View style={{ margin: 20 }}>
                   <View>
-                    <Text style={{ textAlign: "center", fontSize: 15, fontWeight: "500", marginBottom: 20, marginTop: 20 }}>
+                    <Text
+                      style={{
+                        textAlign: "center",
+                        fontSize: 15,
+                        fontWeight: "500",
+                        marginBottom: 20,
+                        marginTop: 20,
+                      }}
+                    >
                       You don't have any attendance record today!
                     </Text>
-                    <Text style={{ textAlign: "center" }}>Attendances will be displayed after your QR code scanning today.</Text>
+                    <Text style={{ textAlign: "center" }}>
+                      Attendances will be displayed after your QR code scanning
+                      today.
+                    </Text>
                   </View>
                 </View>
               )}
@@ -239,7 +287,14 @@ const Dashboard = ({ navigation }) => {
           </View>
 
           <View style={{ marginTop: 15 }}>
-            <Surface style={{ ...styles.graphContainer, height: 200, marginBottom: 100 }} nestedScrollEnabled={true}>
+            <Surface
+              style={{
+                ...styles.graphContainer,
+                height: 200,
+                marginBottom: 100,
+              }}
+              nestedScrollEnabled={true}
+            >
               <Text
                 style={
                   (styles.font,
@@ -259,23 +314,48 @@ const Dashboard = ({ navigation }) => {
                   keyExtractor={(item) => item.id}
                   data={enrolledCourses}
                   extraData={enrolledCourses.length}
-                  renderItem={({ item }) => <CourseItem id={item.id} courseName={item.name} />}
+                  renderItem={({ item }) => (
+                    <CourseItem id={item.id} courseName={item.name} />
+                  )}
                 />
               ) : (
                 <View style={{ margin: 20 }}>
                   <View>
-                    <Text style={{ textAlign: "center", fontSize: 15, fontWeight: "500", marginBottom: 20, marginTop: 20 }}>
+                    <Text
+                      style={{
+                        textAlign: "center",
+                        fontSize: 15,
+                        fontWeight: "500",
+                        marginBottom: 20,
+                        marginTop: 20,
+                      }}
+                    >
                       You don't have any course enrolled yet!
                     </Text>
-                    <Text style={{ textAlign: "center" }}>Courses will be displayed after your first enroll on course.</Text>
+                    <Text style={{ textAlign: "center" }}>
+                      Courses will be displayed after your first enroll on
+                      course.
+                    </Text>
                   </View>
                 </View>
               )}
 
               {user.themePreference === "dark" ? (
-                <MaterialCommunityIcons style={styles.plusIcon} color="white" name="plus" size={35} onPress={() => toggleVisible(true)} />
+                <MaterialCommunityIcons
+                  style={styles.plusIcon}
+                  color="white"
+                  name="plus"
+                  size={35}
+                  onPress={() => toggleVisible(true)}
+                />
               ) : (
-                <MaterialCommunityIcons style={styles.plusIcon} color="black" name="plus" size={35} onPress={() => toggleVisible(true)} />
+                <MaterialCommunityIcons
+                  style={styles.plusIcon}
+                  color="black"
+                  name="plus"
+                  size={35}
+                  onPress={() => toggleVisible(true)}
+                />
               )}
             </Surface>
           </View>
@@ -302,7 +382,9 @@ const Dashboard = ({ navigation }) => {
                   label="Enter course passcode"
                   value={coursePasscode}
                   mode="outlined"
-                  onChangeText={(coursePasscode) => setCoursePasscode(coursePasscode)}
+                  onChangeText={(coursePasscode) =>
+                    setCoursePasscode(coursePasscode)
+                  }
                 />
               </Dialog.Content>
               <Dialog.Actions>
@@ -324,7 +406,16 @@ const Dashboard = ({ navigation }) => {
           <Loading />
         </View>
       )}
-      <FAB style={styles.fab} small label="SCAN" icon="qrcode" color="black" onPress={() => navigation.push("QRScan")} />
+      {!loading && (
+        <FAB
+          style={styles.fab}
+          small
+          label="SCAN"
+          icon="qrcode"
+          color="black"
+          onPress={() => navigation.push("QRScan")}
+        />
+      )}
     </View>
   );
 };
