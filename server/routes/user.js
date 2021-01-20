@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/user");
+const auth = require("../middleware/auth");
 
 /**
  * @swagger
@@ -48,7 +49,7 @@ router.post("/login", userController.login);
  *        description: A successful response
  */
 
-router.post("/login/tablet", userController.loginTablet);
+router.post("/login/tablet", auth, userController.loginTablet);
 
 /**
  * @swagger
@@ -76,7 +77,7 @@ router.post("/login/tablet", userController.loginTablet);
  *        description: An unsuccessful response
  */
 
-router.post("/enroll", userController.enroll);
+router.post("/enroll", auth, userController.enroll);
 
 /**
  * @swagger
@@ -104,7 +105,7 @@ router.post("/enroll", userController.enroll);
  *        description: An unsuccessful response
  */
 
-router.post("/assignCourse", userController.assignCourse);
+router.post("/assignCourse", auth, userController.assignCourse);
 
 /**
  * @swagger
@@ -127,7 +128,7 @@ router.post("/assignCourse", userController.assignCourse);
  *        description: A successful response
  */
 
-router.get("/verify", userController.verify);
+router.get("/verify", auth, userController.verify);
 
 /**
  * @swagger
@@ -258,7 +259,7 @@ router.post("/:role/register", userController.register);
  *        description: An unsuccessful request
  */
 
-router.get("/details", userController.getSingle);
+router.get("/details", auth, userController.getSingle);
 
 /**
  * @swagger
