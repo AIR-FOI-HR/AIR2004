@@ -43,7 +43,7 @@ const LectureInProgress = ({ courseName, lectureType, tabletToken }) => {
       <AnimatedLoader
         visible={true}
         overlayColor="rgba(255,255,255,0.25)"
-        source={require("../assets/9513-preloader.json")}
+        source={require("../assets/animations/9513-preloader.json")}
         animationStyle={styles.lottie}
         speed={1}
       />

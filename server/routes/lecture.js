@@ -31,6 +31,24 @@ const lectureController = require("../controllers/lecture");
 
 router.post("/add", lectureController.add);
 
+/**
+ * @swagger
+ * /lecture/lecturesForTeacher:
+ *  get:
+ *    tags:
+ *    - "/lecture/"
+ *    summary: Get all past lectures of courses that have been assigned to a given teacher
+ *    parameters:
+ *    - in: header
+ *      name: Bearer
+ *      description: User token
+ *    responses:
+ *      '200':
+ *        description: A successful response
+ *      '400':
+ *        description: An unsuccessful response
+ */
+
 router.get("/lecturesForTeacher", lectureController.getLecturesForTeacher);
 
 /**

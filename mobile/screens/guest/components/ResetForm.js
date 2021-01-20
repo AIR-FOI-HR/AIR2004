@@ -13,8 +13,8 @@ const ResetPasswordSchema = Yup.object({
   email: Yup.string().email("You need to enter a valid email!").required("This field is required!"),
 });
 
-const ResetForm = ({ setStage, setRecoveryEmail }) => {
-  const [loading, SetLoading] = useState(false);
+const ResetForm = ({ setStage }) => {
+  const [loading, setLoading] = useState(false);
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -26,12 +26,11 @@ const ResetForm = ({ setStage, setRecoveryEmail }) => {
   });
 
   const handleSendCode = (values) => {
-    SetLoading(true);
+    setLoading(true);
     api
       .post("/user/resetCode", values)
       .then((data) => {
         if (data.data.success == true) {
-          setRecoveryEmail(values.email);
           setStage("VERIFY_CODE");
         }
       })
@@ -45,7 +44,7 @@ const ResetForm = ({ setStage, setRecoveryEmail }) => {
         });
       })
       .finally(() => {
-        SetLoading(false);
+        setLoading(false);
       });
   };
 
@@ -119,7 +118,7 @@ const styles = StyleSheet.create({
   description: {
     textAlign: "justify",
     fontSize: 15,
-    margin: 15,
+    margin: 25,
     lineHeight: 25,
   },
 });
