@@ -1,16 +1,16 @@
-import React, { useEffect, useCallback, useMemo, useRef } from "react";
+import React, { useEffect } from "react";
 import { View, StyleSheet, FlatList } from "react-native";
 import { IconButton, Text } from "react-native-paper";
 
 import { useDispatch, useSelector } from "react-redux";
-
-import BottomSheet, { BottomSheetFlatList } from "@gorhom/bottom-sheet";
 
 import api from "../../utils/api";
 import Loading from "../common/components/Loading";
 import { setCourses, setLectures } from "../../store/actions/teacher";
 import LectureItem from "./components/LectureItem";
 import CourseItem from "./components/CourseItem";
+import BottomSheet from "./components/BottomSheet";
+import BottomSheetBackground from "./components/BottomSheetBackground";
 
 const Courses = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -39,18 +39,6 @@ const Courses = ({ navigation }) => {
       .catch((error) => console.log(error));
   }, []);
 
-  // ref
-  const bottomSheetRef = useRef(null);
-
-  // variables
-  const snapPoints = useMemo(() => ["1%", "50%", "80%"], []);
-
-  // callbacks
-
-  const handleSheetChange = useCallback((index) => {
-    console.log("handleSheetChange", index);
-  }, []);
-
   return (
     <View style={styles.container}>
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
@@ -66,15 +54,7 @@ const Courses = ({ navigation }) => {
           keyExtractor={(course) => course.id}
         />
       )}
-
-      <BottomSheet ref={bottomSheetRef} snapPoints={snapPoints} onChange={handleSheetChange}>
-        <Text style={{ fontWeight: "bold", fontSize: 19, paddingLeft: 15 }}>Recent lectures</Text>
-        <BottomSheetFlatList
-          keyExtractor={(lecture) => lecture.id}
-          data={lectures}
-          renderItem={({ item }) => <LectureItem lecture={item} />}
-        />
-      </BottomSheet>
+      <BottomSheet lectures={lectures} />
     </View>
   );
 };

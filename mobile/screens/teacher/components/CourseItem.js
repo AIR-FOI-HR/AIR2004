@@ -2,9 +2,10 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 import BlankSpacer from "react-native-blank-spacer";
 import MaterialCommunityIcon from "react-native-vector-icons/MaterialCommunityIcons";
-import { Card, IconButton, Title, Text } from "react-native-paper";
+import { Card, IconButton, Title, Text, useTheme } from "react-native-paper";
 
 const CourseItem = ({ course, navigation }) => {
+  const isDarkTheme = useTheme().dark;
   return (
     <>
       <Card>
@@ -12,7 +13,7 @@ const CourseItem = ({ course, navigation }) => {
           <View style={{ flexDirection: "row", justifyContent: "flex-end", alignItems: "center" }}>
             <Title style={styles.cardTitle}>{course.name}</Title>
             <IconButton
-              icon={() => <MaterialCommunityIcon name="pencil-outline" size={20} />}
+              icon={() => <MaterialCommunityIcon name="pencil-outline" size={20} color={isDarkTheme == true ? "#FFF" : "#000"} />}
               onPress={() => navigation.push("EditCourse", { course, navigation })}
             />
           </View>
