@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, FlatList } from "react-native";
-import { Text } from "react-native-paper";
+import { Text, useTheme } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
 import { useSelector } from "react-redux";
 import { useIsFocused } from "@react-navigation/native";
@@ -17,7 +17,9 @@ const Attendance = () => {
   const [selectedFilter, setSelectedFilter] = useState("Courses");
   const [attendanceData, setAttendanceData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
+
   const isFocused = useIsFocused();
+  const isDarkTheme = useTheme().dark;
 
   const user = useSelector((state) => state.userState);
 
@@ -165,7 +167,7 @@ const Attendance = () => {
                     onChangeFilter(itemValue);
                   }}
                 >
-                  {user.themePreference === "dark" ? (
+                  {isDarkTheme ? (
                     <Picker.Item
                       color="#a6a6a6"
                       label="Courses"
@@ -175,7 +177,7 @@ const Attendance = () => {
                     <Picker.Item label="Courses" value="Courses" />
                   )}
 
-                  {user.themePreference === "dark" ? (
+                  {isDarkTheme ? (
                     <Picker.Item
                       color="#a6a6a6"
                       label="Attended"
@@ -185,7 +187,7 @@ const Attendance = () => {
                     <Picker.Item label="Attended" value="Attended" />
                   )}
 
-                  {user.themePreference === "dark" ? (
+                  {isDarkTheme ? (
                     <Picker.Item
                       color="#a6a6a6"
                       label="Missed"
@@ -195,7 +197,7 @@ const Attendance = () => {
                     <Picker.Item label="Missed" value="Missed" />
                   )}
 
-                  {user.themePreference === "dark" ? (
+                  {isDarkTheme ? (
                     <Picker.Item
                       color="#a6a6a6"
                       label="Last week"
@@ -205,7 +207,7 @@ const Attendance = () => {
                     <Picker.Item label="Last week" value="LastWeek" />
                   )}
 
-                  {user.themePreference === "dark" ? (
+                  {isDarkTheme ? (
                     <Picker.Item
                       color="#a6a6a6"
                       label="Last month"

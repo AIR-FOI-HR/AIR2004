@@ -1,11 +1,13 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
-import { Card, Paragraph } from "react-native-paper";
+import { Card, Paragraph, useTheme } from "react-native-paper";
 import Feather from "react-native-vector-icons/Feather";
 import { useSelector } from "react-redux";
 
 const AttendanceItem = ({ item }) => {
   const user = useSelector((state) => state.userState);
+
+  const isDarkTheme = useTheme().dark;
 
   console.log("user theme", user.themePreference);
 
@@ -15,7 +17,9 @@ const AttendanceItem = ({ item }) => {
         <View key={item.id} style={styles.card}>
           <View>
             <Paragraph>{item.attendanceTime}</Paragraph>
-            <Paragraph style={{ fontWeight: "bold" }}>{item.courseName}</Paragraph>
+            <Paragraph style={{ fontWeight: "bold" }}>
+              {item.courseName}
+            </Paragraph>
           </View>
         </View>
       </View>
@@ -26,18 +30,34 @@ const AttendanceItem = ({ item }) => {
         <Card style={styles.card}>
           <Card.Content style={{ flexDirection: "row" }}>
             <View style={{ marginRight: 20 }}>
-              <Paragraph style={{ fontSize: 30, lineHeight: 40 }}>{item.date}</Paragraph>
-              <Paragraph style={{ fontSize: 22, lineHeight: 22, alignSelf: "center" }}>{item.month}</Paragraph>
+              <Paragraph style={{ fontSize: 30, lineHeight: 40 }}>
+                {item.date}
+              </Paragraph>
+              <Paragraph
+                style={{ fontSize: 22, lineHeight: 22, alignSelf: "center" }}
+              >
+                {item.month}
+              </Paragraph>
             </View>
 
             <View>
               <Paragraph>{item.day}</Paragraph>
-              <Paragraph style={{ fontWeight: "bold", fontSize: 16, lineHeight: 24 }}>{item.courseName}</Paragraph>
-              {item.attendanceTime && <Paragraph>{item.attendanceTime}</Paragraph>}
+              <Paragraph
+                style={{ fontWeight: "bold", fontSize: 16, lineHeight: 24 }}
+              >
+                {item.courseName}
+              </Paragraph>
+              {item.attendanceTime && (
+                <Paragraph>{item.attendanceTime}</Paragraph>
+              )}
             </View>
 
             <View style={{ position: "absolute", right: 10, top: 7 }}>
-              <Feather name={item.present ? "check-circle" : "x-circle"} size={30} color={user.themePreference === "dark" ? "white" : "black"} />
+              <Feather
+                name={item.present ? "check-circle" : "x-circle"}
+                size={30}
+                color={isDarkTheme ? "white" : "black"}
+              />
             </View>
 
             <View style={{ position: "absolute", right: 10, bottom: 7 }}>

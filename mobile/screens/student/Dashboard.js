@@ -8,6 +8,7 @@ import {
   Dialog,
   TextInput,
   FAB,
+  useTheme,
 } from "react-native-paper";
 import { BarChart } from "react-native-chart-kit";
 import { useSelector } from "react-redux";
@@ -31,10 +32,12 @@ const Dashboard = ({ navigation }) => {
   const [enrolledCourses, setEnrolledCourses] = useState([]);
   const [todayAttendanceData, setTodayAttendanceData] = useState([]);
   const [lastWeekAttendanceData, setLastWeekAttendanceData] = useState([]);
+
   const isFocused = useIsFocused();
+  const isDarkTheme = useTheme().dark;
 
   const user = useSelector((state) => state.userState);
-  console.log("USER STATE", user);
+
   useEffect(() => {
     setLoading(true);
 
@@ -171,7 +174,7 @@ const Dashboard = ({ navigation }) => {
                     padding: 10,
                   }}
                 >
-                  {user.themePreference === "dark" ? (
+                  {isDarkTheme ? (
                     <BarChart
                       data={graphData}
                       showBarTops={true}
@@ -340,7 +343,7 @@ const Dashboard = ({ navigation }) => {
                 </View>
               )}
 
-              {user.themePreference === "dark" ? (
+              {isDarkTheme ? (
                 <MaterialCommunityIcons
                   style={styles.plusIcon}
                   color="white"
