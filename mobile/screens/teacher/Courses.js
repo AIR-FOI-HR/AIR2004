@@ -7,10 +7,10 @@ import { useDispatch, useSelector } from "react-redux";
 import api from "../../utils/api";
 import Loading from "../common/components/Loading";
 import { setCourses, setLectures } from "../../store/actions/teacher";
-import LectureItem from "./components/LectureItem";
+
 import CourseItem from "./components/CourseItem";
-import BottomSheet from "./components/BottomSheet";
-import BottomSheetBackground from "./components/BottomSheetBackground";
+
+import BottomSheetNavigation from "./components/BottomSheetNavigation";
 
 const Courses = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -27,15 +27,6 @@ const Courses = ({ navigation }) => {
         },
       })
       .then(({ data }) => dispatch(setCourses(data.data.assignedCourses)))
-      .catch((error) => console.log(error));
-    api
-      .get("/lecture/lecturesForTeacher", {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-          "Content-Type": "application/json",
-        },
-      })
-      .then(({ data }) => dispatch(setLectures(data.data)))
       .catch((error) => console.log(error));
   }, []);
 
@@ -54,7 +45,7 @@ const Courses = ({ navigation }) => {
           keyExtractor={(course) => course.id}
         />
       )}
-      <BottomSheet lectures={lectures} />
+      <BottomSheetNavigation />
     </View>
   );
 };

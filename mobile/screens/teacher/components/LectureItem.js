@@ -5,7 +5,7 @@ import BlankSpacer from "react-native-blank-spacer";
 import { Card, Paragraph, IconButton } from "react-native-paper";
 import { useTheme } from "react-native-paper";
 import MaterialIcon from "react-native-vector-icons/MaterialIcons";
-const LectureItem = ({ lecture }) => {
+const LectureItem = ({ lecture, navigation }) => {
   const isDarkTheme = useTheme().dark;
 
   return (
@@ -37,7 +37,7 @@ const LectureItem = ({ lecture }) => {
             <BlankSpacer height={10} />
             <IconButton
               icon={() => <MaterialIcon name="people-outline" size={35} color={isDarkTheme == true ? "#FFF" : "#000"} />}
-              onPress={() => console.log("do nothing, currently")}
+              onPress={() => navigation.navigate("Students", { lecture: lecture, navigation })}
             />
           </View>
         </Card.Content>

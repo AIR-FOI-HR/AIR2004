@@ -51,3 +51,10 @@ export const editCourse = (course) => {
     course,
   };
 };
+
+export const setStudentsForLecture = (students) => {
+  return {
+    type: "SET_STUDENTS_FOR_LECTURE",
+    students,
+  };
+};
