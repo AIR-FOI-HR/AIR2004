@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const lectureController = require("../controllers/lecture");
+const auth = require("../middleware/auth");
 
 /**
  * @swagger
@@ -49,7 +50,11 @@ router.post("/add", lectureController.add);
  *        description: An unsuccessful response
  */
 
-router.get("/lecturesForTeacher", lectureController.getLecturesForTeacher);
+router.get(
+  "/lecturesForTeacher",
+  auth,
+  lectureController.getLecturesForTeacher
+);
 
 /**
  * @swagger

@@ -1,7 +1,6 @@
 const Course = require("../models/course");
 const Lecture = require("../models/lecture");
 const User = require("../models/user");
-const jwt = require("jsonwebtoken");
 const moment = require("moment");
 
 const getDayName = (date, locale) => {
@@ -30,15 +29,17 @@ exports.getAll = async (req, res) => {
 };
 
 exports.getLecturesForTeacher = async (req, res) => {
-  const token = req.header("Authorization").replace("Bearer ", "");
-  let teacher = jwt.verify(token, process.env.JWT_SECRET);
+  let teacher = req.user;
   teacher = await User.findOne({ email: teacher.email });
+
   const teacherId = teacher._id;
   // find courses for teacher
   const coursesForTeacher = await Course.find({ assignedTeachers: teacherId });
 
   try {
-    const lecturesForTeacher = await Lecture.find({ course: coursesForTeacher }).populate("course");
+    const lecturesForTeacher = await Lecture.find({
+      course: coursesForTeacher,
+    }).populate("course");
     const data = lecturesForTeacher.map((lecture) => {
       return {
         id: lecture._id,
