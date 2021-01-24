@@ -60,6 +60,27 @@ exports.getLecturesForTeacher = async (req, res) => {
   }
 };
 
+exports.studentsForLecture = async (req, res) => {
+  const { lectureId } = req.body;
+
+  const fetchStudents = (students) => {
+    return Promise.all(
+      students.map(async (student) => {
+        const foundStudent = await User.findById(student);
+        return foundStudent.toJSON();
+      })
+    );
+  };
+
+  try {
+    const lecture = await Lecture.findById(lectureId);
+    let attendingStudents = await fetchStudents(lecture.attendingStudents);
+    res.status(200).json({ success: true, data: attendingStudents });
+  } catch (error) {
+    res.status(400).json({ success: false, error });
+  }
+};
+
 exports.update = async (req, res) => {
   try {
     const lecture = await Lecture.findById(req.params.id);
@@ -77,6 +98,6 @@ exports.delete = async (req, res) => {
     const data = lecture.toJSON();
     res.status(200).json({ success: true, data });
   } catch (error) {
-    res.status(400).json({ success: false, error }); 
+    res.status(400).json({ success: false, error });
   }
 };

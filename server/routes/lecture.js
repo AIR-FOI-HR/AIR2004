@@ -53,6 +53,26 @@ router.get("/lecturesForTeacher", lectureController.getLecturesForTeacher);
 
 /**
  * @swagger
+ * /lecture/studentsForLecture:
+ *  post:
+ *    tags:
+ *    - "/lecture/"
+ *    summary: Fetch all students that have attended a given lecture
+ *    parameters:
+ *    - in: header
+ *      name: Bearer
+ *      description: User token
+ *    responses:
+ *      '200':
+ *        description: A successful response
+ *      '400':
+ *        description: An unsuccessful response
+ */
+
+router.post("/studentsForLecture", lectureController.studentsForLecture);
+
+/**
+ * @swagger
  * /lecture/:
  *  get:
  *    tags:

@@ -4,6 +4,7 @@ const initialState = {
   trackingStarted: false,
   courses: null,
   lectures: null,
+  studentsForLecture: null,
 };
 
 const teacherReducer = (state = initialState, action) => {
@@ -61,6 +62,14 @@ const teacherReducer = (state = initialState, action) => {
         ],
       };
     }
+
+    case "SET_STUDENTS_FOR_LECTURE":
+      console.log("STUDENTS AREEE", action.students);
+      return {
+        ...state,
+        studentsForLecture: action.students,
+      };
+
     default:
       return state;
   }
