@@ -90,12 +90,7 @@ const Dashboard = ({ navigation }) => {
     toggleVisible(false);
 
     api
-      .post("/user/enroll", body, {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-          "Content-Type": "application/json",
-        },
-      })
+      .post("/user/enroll", body)
       .then(({ data }) => {
         console.log("ADDED COURSE", data.data.course);
         toggleVisible(false);
@@ -230,10 +225,6 @@ const Dashboard = ({ navigation }) => {
                     }}
                   >
                     You don't have any attendance in the last week!
-                  </Text>
-                  <Text style={{ textAlign: "center" }}>
-                    Attendances will be displayed after your QR code scanning
-                    today.
                   </Text>
                 </View>
               )}

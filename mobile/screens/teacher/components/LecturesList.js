@@ -10,12 +10,7 @@ const LecturesList = ({ navigation }) => {
   const dispatch = useDispatch();
   useEffect(() => {
     api
-      .get("/lecture/lecturesForTeacher", {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-          "Content-Type": "application/json",
-        },
-      })
+      .get("/lecture/lecturesForTeacher")
       .then(({ data }) => dispatch(setLectures(data.data)))
       .catch((error) => console.log(error));
   }, []);
@@ -23,7 +18,9 @@ const LecturesList = ({ navigation }) => {
     <BottomSheetFlatList
       keyExtractor={(lecture) => lecture.id}
       data={lectures}
-      renderItem={({ item }) => <LectureItem lecture={item} navigation={navigation} />}
+      renderItem={({ item }) => (
+        <LectureItem lecture={item} navigation={navigation} />
+      )}
     />
   );
 };

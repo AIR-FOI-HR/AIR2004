@@ -26,12 +26,7 @@ const Attendance = () => {
   useEffect(() => {
     setLoading(true);
     api
-      .get("/attendance", {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-          "Content-Type": "application/json",
-        },
-      })
+      .get("/attendance")
       .then(({ data }) => {
         setAttendanceData(data.data);
         setFilteredData(
@@ -82,12 +77,7 @@ const Attendance = () => {
 
       case "Missed":
         api
-          .get("attendance/missed", {
-            headers: {
-              Authorization: `Bearer ${user.token}`,
-              "Content-Type": "application/json",
-            },
-          })
+          .get("attendance/missed")
           .then(({ data }) => {
             setFilteredData(
               data.data.sort((a, b) =>

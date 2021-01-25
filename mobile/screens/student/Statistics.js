@@ -30,12 +30,7 @@ const Statistics = ({ navigation }) => {
   useEffect(() => {
     setLoading(true);
     api
-      .get("/user/details", {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-          "Content-Type": "application/json",
-        },
-      })
+      .get("/user/details")
       .then(({ data }) => {
         setEnrolledCourses(data.data.enrolledCourses);
       })

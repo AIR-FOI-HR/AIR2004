@@ -25,12 +25,7 @@ const CourseStatistics = ({ route }) => {
     const getAllSubmitedAttendances = async () => {
       setLoading(true);
       await api
-        .get("/attendance", {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-            "Content-Type": "application/json",
-          },
-        })
+        .get("/attendance")
         .then(({ data }) => {
           setAttendanceData(
             data.data
@@ -53,12 +48,7 @@ const CourseStatistics = ({ route }) => {
     const getAllMissedAttendances = async () => {
       setLoading(true);
       await api
-        .get("attendance/missed", {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-            "Content-Type": "application/json",
-          },
-        })
+        .get("attendance/missed")
         .then(({ data }) => {
           setMissedAttendanceData(
             data.data
@@ -79,12 +69,7 @@ const CourseStatistics = ({ route }) => {
     };
 
     api
-      .get("/user/details", {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-          "Content-Type": "application/json",
-        },
-      })
+      .get("/user/details")
       .then(({ data }) => {
         setEnrolledCourses(data.data.enrolledCourses);
       })

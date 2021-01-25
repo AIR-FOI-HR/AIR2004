@@ -20,28 +20,35 @@ const Courses = ({ navigation }) => {
 
   useEffect(() => {
     api
-      .get("/user/details", {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-          "Content-Type": "application/json",
-        },
-      })
+      .get("/user/details")
       .then(({ data }) => dispatch(setCourses(data.data.assignedCourses)))
       .catch((error) => console.log(error));
   }, []);
 
   return (
     <View style={styles.container}>
-      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
         <Text style={styles.pageTitle}>Your courses</Text>
-        <IconButton icon="plus" size={30} onPress={() => navigation.push("NewCourse")} />
+        <IconButton
+          icon="plus"
+          size={30}
+          onPress={() => navigation.push("NewCourse")}
+        />
       </View>
       {courses == null ? (
         <Loading />
       ) : (
         <FlatList
           data={courses}
-          renderItem={({ item }) => <CourseItem course={item} navigation={navigation} />}
+          renderItem={({ item }) => (
+            <CourseItem course={item} navigation={navigation} />
+          )}
           keyExtractor={(course) => course.id}
         />
       )}
