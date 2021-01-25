@@ -209,13 +209,35 @@ const Attendance = () => {
                 </Picker>
               </View>
             </View>
-            <View style={{ height: "94%" }}>
-              <FlatList
-                keyExtractor={(item) => item.id}
-                data={filteredData}
-                renderItem={({ item }) => <AttendanceItem item={item} />}
-              />
-            </View>
+
+            {filteredData.length !== 0 ? (
+              <View style={{ height: "94%" }}>
+                <FlatList
+                  keyExtractor={(item) => item.id}
+                  data={filteredData}
+                  renderItem={({ item }) => <AttendanceItem item={item} />}
+                />
+              </View>
+            ) : (
+              <View
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  justifyContent: "center",
+                  marginTop: "-10%",
+                }}
+              >
+                <Text
+                  style={{
+                    textAlign: "center",
+                    fontSize: 16,
+                    fontWeight: "500",
+                  }}
+                >
+                  There is no attendance data for specified filter!
+                </Text>
+              </View>
+            )}
           </View>
         ) : (
           <View
