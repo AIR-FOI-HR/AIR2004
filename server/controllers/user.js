@@ -13,17 +13,11 @@ exports.login = async (req, res) => {
   try {
     // Check if user exists
     const user = await User.findOne({ email });
-    if (!user)
-      return res
-        .status(401)
-        .json({ success: false, message: "Email or password not valid!" });
+    if (!user) return res.status(401).json({ success: false, message: "Invalid email or password!" });
 
     // Check if passwords match
     const match = await bcrypt.compareSync(password, user.password);
-    if (!match)
-      return res
-        .status(401)
-        .json({ success: false, message: "Email or password not valid!" });
+    if (!match) return res.status(401).json({ success: false, message: "Invalid email or password!" });
 
     // If it's student's first sign in, save his deviceUID
     // Otherwise, check student's deviceUID
@@ -36,8 +30,7 @@ exports.login = async (req, res) => {
       if (user.deviceUID !== deviceUID) {
         return res.status(401).json({
           success: false,
-          message:
-            "You have to sign in from your own device! If you think this is an error, please contact your teacher for assistance.",
+          message: "You have to sign in from your own device! If you think this is an error, please contact your teacher for assistance.",
         });
       }
     }
@@ -95,10 +88,7 @@ exports.loginTablet = async (req, res) => {
 exports.register = async (req, res) => {
   const { role } = req.params;
 
-  if (!["student", "teacher"].includes(role))
-    return res
-      .status(400)
-      .json({ success: false, error: "Valid roles are student, teacher" });
+  if (!["student", "teacher"].includes(role)) return res.status(400).json({ success: false, error: "Valid roles are student, teacher" });
 
   try {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
@@ -205,9 +195,7 @@ exports.getSingle = async (req, res) => {
   try {
     let user = req.user;
 
-    user = await User.findOne({ email: user.email })
-      .populate("enrolledCourses")
-      .populate("assignedCourses");
+    user = await User.findOne({ email: user.email }).populate("enrolledCourses").populate("assignedCourses");
     const data = user.toJSON();
     res.status(200).json({ success: true, data });
   } catch (error) {
@@ -220,9 +208,7 @@ exports.verify = async (req, res) => {
     const user = req.user;
     res.status(200).json({ success: true, user });
   } catch (error) {
-    res
-      .status(400)
-      .json({ success: false, error: "Invalid or missing token!" });
+    res.status(400).json({ success: false, error: "Invalid or missing token!" });
   }
 };
 
@@ -236,9 +222,7 @@ exports.enroll = async (req, res) => {
     let checkIfEnrolled = student.enrolledCourses.includes(course._id);
 
     if (checkIfEnrolled) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Course already enrolled." });
+      return res.status(400).json({ success: false, message: "Course already enrolled." });
     }
 
     student.enrolledCourses = student.enrolledCourses.concat(course._id);

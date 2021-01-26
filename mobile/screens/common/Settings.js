@@ -62,15 +62,15 @@ const Settings = () => {
           <Switch value={isSwitchOn} onValueChange={onToggleSwitch}></Switch>
         </View>
       )}
-      <BlankSpacer height={30} />
+      <BlankSpacer height={40} />
       <Pressable onPress={showThemeModal}>
         <View style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
           <MaterialCommunityIcon name="palette-outline" size={34} color={isDarkTheme ? "#fff" : "#000"} />
           <BlankSpacer width={10} />
 
-          <View style={{ display: "flex" }}>
+          <View style={{ display: "flex", flexDirection: "column", height: 45 }}>
             <Text style={{ flex: 1, fontSize: 17 }}>Theme</Text>
-            <BlankSpacer height={3} />
+            <BlankSpacer height={1} />
             <Text style={{ flex: 1, fontSize: 12, textTransform: "capitalize" }}>
               {themePreference == null || themePreference == "systemDefault" ? "System default" : themePreference}
             </Text>
