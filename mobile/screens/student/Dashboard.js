@@ -27,6 +27,9 @@ import api from "../../utils/api";
 
 const Dashboard = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
+  const [fabOpen, setFabOpen] = useState(false);
+  const [qrCodeString, setQrCodeString] = useState("");
+  const [showModal, setShowModal] = useState(false);
   const [coursePasscode, setCoursePasscode] = useState("");
   const [visible, toggleVisible] = useState(false);
   const [enrolledCourses, setEnrolledCourses] = useState([]);
@@ -125,6 +128,15 @@ const Dashboard = ({ navigation }) => {
       });
 
     setCoursePasscode("");
+  };
+
+  const handleManualSubmit = () => {
+    const body = { qrCodeString };
+
+    setShowModal(false);
+    setQrCodeString("");
+
+    console.log("QR code string: ", qrCodeString);
   };
 
   return (
@@ -394,6 +406,45 @@ const Dashboard = ({ navigation }) => {
               </Dialog.Actions>
             </Dialog>
           </Portal>
+
+          <Portal>
+            <Dialog
+              visible={showModal}
+              onDismiss={() => {
+                setShowModal(false);
+                setQrCodeString("");
+              }}
+            >
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  marginRight: 20,
+                }}
+              >
+                <Dialog.Title>Enter QR code string:</Dialog.Title>
+              </View>
+              <Dialog.Content>
+                <TextInput
+                  label="Enter QR code string"
+                  value={qrCodeString}
+                  mode="outlined"
+                  onChangeText={(qrCodeString) => setQrCodeString(qrCodeString)}
+                />
+              </Dialog.Content>
+              <Dialog.Actions>
+                <Button
+                  onPress={() => {
+                    setShowModal(false);
+                    setQrCodeString("");
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button onPress={() => handleManualSubmit()}>Confirm</Button>
+              </Dialog.Actions>
+            </Dialog>
+          </Portal>
         </ScrollView>
       ) : (
         <View>
@@ -401,13 +452,26 @@ const Dashboard = ({ navigation }) => {
         </View>
       )}
       {!loading && (
-        <FAB
+        <FAB.Group
+          open={fabOpen}
           style={styles.fab}
           small
-          label="SCAN"
-          icon="qrcode"
-          color="black"
-          onPress={() => navigation.push("QRScan")}
+          icon="plus"
+          actions={[
+            {
+              icon: "qrcode",
+              label: "Scan QR code",
+              style: { backgroundColor: "#62D7C5" },
+              onPress: () => navigation.push("QRScan"),
+            },
+            {
+              icon: "card-text-outline",
+              label: "Enter QR code string",
+              style: { backgroundColor: "#62D7C5" },
+              onPress: () => setShowModal(true),
+            },
+          ]}
+          onStateChange={({ open }) => setFabOpen(open)}
         />
       )}
     </View>
@@ -451,9 +515,10 @@ const styles = StyleSheet.create({
 
   fab: {
     position: "absolute",
-    margin: 17,
+    margin: 0,
     right: 0,
     bottom: 0,
+    zIndex: 2,
   },
 
   chipContainer: {
