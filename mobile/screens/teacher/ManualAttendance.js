@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { View, StyleSheet } from "react-native";
-import { Text, Button } from "react-native-paper";
-import { Picker } from "@react-native-picker/picker";
+import { Text, Button, TextInput } from "react-native-paper";
+import SearchableDropdown from 'react-native-searchable-dropdown';
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 import api from "../../utils/api";
@@ -15,8 +15,9 @@ const ManualAttendance = () => {
   const [selectedStudent, setSelectedStudent] = useState({});
 
   useEffect(() => {
-    api.get("/user/student").then((response) => {
-      const enrolledStudents = response.data.data.filter((student) => enrolledStudentsIds.includes(student.id));
+    api.get("/user/student").then((data) => {
+      console.log("ENROLLED STUDENTS: ", data.data.data);
+      const enrolledStudents = data.data.data.filter((student) => enrolledStudentsIds.includes(student.id));
       setEnrolledStudents(enrolledStudents);
     });
   }, []);
@@ -24,7 +25,7 @@ const ManualAttendance = () => {
   const handleSaveAttendance = () => {
     const body = {
       lecture: user.courseSelectedOnTablet.lecture.id,
-      user: selectedStudent,
+      user: selectedStudent.id,
     };
 
     api
@@ -39,20 +40,50 @@ const ManualAttendance = () => {
     <View style={styles.container}>
       <Text style={styles.radioButtonTitle}>Course name:</Text>
 
-      <Text>{user.courseSelectedOnTablet.course.name}</Text>
-      <Text style={styles.studentTitle}>Select lecture types:</Text>
-      <Text>{user.courseSelectedOnTablet.lecture.type}</Text>
+      <TextInput
+        style={styles.textInput}
+        value={user.courseSelectedOnTablet.course.name}
+        mode="outlined"
+        disabled="true"
+      />
+
+
+      <Text style={styles.studentTitle}>Lecture type:</Text>
+      <Text style={styles.lectureType}>{user.courseSelectedOnTablet.lecture.type}</Text>
 
       <Text style={styles.studentTitle}>Student:</Text>
-      <Picker
-        selectedValue={selectedStudent}
-        style={{ height: 50, width: "100%" }}
-        onValueChange={(itemValue, itemIndex) => setSelectedStudent(itemValue)}
-      >
-        {enrolledStudents.map(({ id, name, surname, jmbag }) => (
-          <Picker.Item key={id} label={`${name} ${surname} (${jmbag})`} value={id} />
-        ))}
-      </Picker>
+      <SearchableDropdown
+          onItemSelect={(student) => setSelectedStudent(student)}
+          containerStyle={{ padding: 5 }}
+          itemStyle={{
+            padding: 10,
+            marginTop: 2,
+            backgroundColor: '#ddd',
+            borderColor: '#bbb',
+            borderWidth: 1,
+            borderRadius: 5,
+          }}
+          itemTextStyle={{ color: '#222' }}
+          itemsContainerStyle={{ maxHeight: 140 }}
+          items={enrolledStudents}
+          textInputProps={
+            {
+              placeholder: `${Object.keys(selectedStudent).length === 0 ? `Ime Prezime (JMBAG)` : `${selectedStudent.name} ${selectedStudent.surname} (${selectedStudent.jmbag})`}`,
+              underlineColorAndroid: "transparent",
+              style: {
+                  padding: 12,
+                  borderWidth: 1,
+                  borderColor: '#ccc',
+                  borderRadius: 5,
+              },
+            }
+          }
+          listProps={
+            {
+              nestedScrollEnabled: true,
+            }
+          }
+        />
       <Button
         style={{ marginTop: 50 }}
         mode="contained"
@@ -85,6 +116,16 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     fontWeight: "bold",
     fontSize: 20,
+  },
+  lectureType: {
+    paddingTop:10,
+    fontSize: 18,
+  },
+  textInput: {
+    width: 330,
+    height: 50,
+    marginTop: 5,
+    paddingLeft: 5,
   },
 });
 export default ManualAttendance;
