@@ -30,7 +30,7 @@ const LectureItem = ({ lecture, navigation }) => {
           </View>
 
           <View style={{ flexDirection: "column", flex: 1, alignItems: "flex-end", justifyContent: "flex-start", alignSelf: "flex-start" }}>
-            <Text style={{ color: `${isDarkTheme == true ? "#FFF" : "#000"}` }}>
+            <Text style={{ color: `${isDarkTheme == true ? "#FFF" : "#000"}`, fontSize: 12 }}>
               {lecture.timeStart} - {lecture.timeEnd}
             </Text>
             <Paragraph>{lecture.lectureType}</Paragraph>
