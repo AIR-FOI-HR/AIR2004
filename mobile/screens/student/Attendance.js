@@ -1,33 +1,32 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, FlatList } from "react-native";
-import { Text } from "react-native-paper";
+import { Text, useTheme } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
 import { useSelector } from "react-redux";
 import { useIsFocused } from "@react-navigation/native";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 import AttendanceItem from "../student/components/AttendanceItem";
+import Loading from "../common/components/Loading";
 
 import api from "../../utils/api";
 
 const moment = require("moment");
 
 const Attendance = () => {
+  const [loading, setLoading] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState("Courses");
   const [attendanceData, setAttendanceData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
+
   const isFocused = useIsFocused();
+  const isDarkTheme = useTheme().dark;
 
   const user = useSelector((state) => state.userState);
 
   useEffect(() => {
+    setLoading(true);
     api
-      .get("/attendance", {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-          "Content-Type": "application/json",
-        },
-      })
+      .get("/attendance")
       .then(({ data }) => {
         setAttendanceData(data.data);
         setFilteredData(
@@ -40,7 +39,10 @@ const Attendance = () => {
           )
         );
       })
-      .catch((error) => console.log(error));
+      .catch((error) => console.log(error))
+      .finally(() => {
+        setLoading(false);
+      });
   }, [isFocused]);
 
   const onChangeFilter = (filterValue) => {
@@ -75,12 +77,7 @@ const Attendance = () => {
 
       case "Missed":
         api
-          .get("attendance/missed", {
-            headers: {
-              Authorization: `Bearer ${user.token}`,
-              "Content-Type": "application/json",
-            },
-          })
+          .get("attendance/missed")
           .then(({ data }) => {
             setFilteredData(
               data.data.sort((a, b) =>
@@ -136,74 +133,131 @@ const Attendance = () => {
 
   return (
     <View style={styles.container}>
-      <View style={{ flexDirection: "row" }}>
-        <Text
-          style={{
-            fontSize: 17,
-            marginLeft: 10,
-            marginBottom: 15,
-            marginTop: 5,
-          }}
-        >
-          Filter by:{" "}
-        </Text>
+      {!loading ? (
+        attendanceData.length !== 0 && !loading ? (
+          <View>
+            <View style={{ flexDirection: "row" }}>
+              <Text
+                style={{
+                  fontSize: 17,
+                  marginLeft: 10,
+                  marginBottom: 15,
+                  marginTop: 5,
+                }}
+              >
+                Filter by:{" "}
+              </Text>
 
-        <View style={{ marginLeft: 10, marginTop: -6 }}>
-          <Picker
-            selectedValue={selectedFilter}
-            style={{ height: 50, width: 160 }}
-            mode={"dialog"}
-            onValueChange={(itemValue) => {
-              onChangeFilter(itemValue);
-            }}
+              <View style={{ marginLeft: 10, marginTop: -6 }}>
+                <Picker
+                  selectedValue={selectedFilter}
+                  style={{ height: 50, width: 160 }}
+                  mode={"dialog"}
+                  onValueChange={(itemValue) => {
+                    onChangeFilter(itemValue);
+                  }}
+                >
+                  {isDarkTheme ? (
+                    <Picker.Item
+                      color="#a6a6a6"
+                      label="Courses"
+                      value="Courses"
+                    />
+                  ) : (
+                    <Picker.Item label="Courses" value="Courses" />
+                  )}
+
+                  {isDarkTheme ? (
+                    <Picker.Item
+                      color="#a6a6a6"
+                      label="Attended"
+                      value="Attended"
+                    />
+                  ) : (
+                    <Picker.Item label="Attended" value="Attended" />
+                  )}
+
+                  {isDarkTheme ? (
+                    <Picker.Item
+                      color="#a6a6a6"
+                      label="Missed"
+                      value="Missed"
+                    />
+                  ) : (
+                    <Picker.Item label="Missed" value="Missed" />
+                  )}
+
+                  {isDarkTheme ? (
+                    <Picker.Item
+                      color="#a6a6a6"
+                      label="Last week"
+                      value="LastWeek"
+                    />
+                  ) : (
+                    <Picker.Item label="Last week" value="LastWeek" />
+                  )}
+
+                  {isDarkTheme ? (
+                    <Picker.Item
+                      color="#a6a6a6"
+                      label="Last month"
+                      value="LastMonth"
+                    />
+                  ) : (
+                    <Picker.Item label="Last month" value="LastMonth" />
+                  )}
+                </Picker>
+              </View>
+            </View>
+
+            {filteredData.length !== 0 ? (
+              <View style={{ height: "94%" }}>
+                <FlatList
+                  keyExtractor={(item) => item.id}
+                  data={filteredData}
+                  renderItem={({ item }) => <AttendanceItem item={item} />}
+                />
+              </View>
+            ) : (
+              <View
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  justifyContent: "center",
+                  marginTop: "-10%",
+                }}
+              >
+                <Text
+                  style={{
+                    textAlign: "center",
+                    fontSize: 16,
+                    fontWeight: "500",
+                  }}
+                >
+                  There is no attendance data for specified filter!
+                </Text>
+              </View>
+            )}
+          </View>
+        ) : (
+          <View
+            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
           >
-            {user.themePreference === "dark" ? (
-              <Picker.Item color="#a6a6a6" label="Courses" value="Courses" />
-            ) : (
-              <Picker.Item label="Courses" value="Courses" />
-            )}
-
-            {user.themePreference === "dark" ? (
-              <Picker.Item color="#a6a6a6" label="Attended" value="Attended" />
-            ) : (
-              <Picker.Item label="Attended" value="Attended" />
-            )}
-
-            {user.themePreference === "dark" ? (
-              <Picker.Item color="#a6a6a6" label="Missed" value="Missed" />
-            ) : (
-              <Picker.Item label="Missed" value="Missed" />
-            )}
-
-            {user.themePreference === "dark" ? (
-              <Picker.Item color="#a6a6a6" label="Last week" value="LastWeek" />
-            ) : (
-              <Picker.Item label="Last week" value="LastWeek" />
-            )}
-
-            {user.themePreference === "dark" ? (
-              <Picker.Item
-                color="#a6a6a6"
-                label="Last month"
-                value="LastMonth"
-              />
-            ) : (
-              <Picker.Item label="Last month" value="LastMonth" />
-            )}
-          </Picker>
-        </View>
-      </View>
-
-      {filteredData.length !== 0 ? (
-        <FlatList
-          keyExtractor={(item) => item.id}
-          data={filteredData}
-          renderItem={({ item }) => <AttendanceItem item={item} />}
-        />
+            <View>
+              <Text
+                style={{ fontSize: 19, fontWeight: "500", marginBottom: 20 }}
+              >
+                You don't have any attendance record yet!
+              </Text>
+              <Text style={{ textAlign: "center" }}>
+                Attendances will be displayed after your first attendance.
+              </Text>
+            </View>
+          </View>
+        )
       ) : (
-        <View style={{ marginLeft: 20 }}>
-          <MaterialCommunityIcons name="cloud-sync-outline" size={26} />
-          <Text style={styles.font}>No data found!</Text>
+        <View>
+          <Loading />
         </View>
       )}
     </View>

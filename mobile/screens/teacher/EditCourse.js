@@ -33,7 +33,7 @@ const EditCourse = ({ route }) => {
   });
 
   const handleEditCourse = (editedCourse) => {
-    api.post(`/course/update/${course.id}`, editedCourse).then((data) => {
+    api.put(`/course/${course.id}`, editedCourse).then((data) => {
       dispatch(editCourse(data.data.course));
       navigation.goBack();
       showMessage({

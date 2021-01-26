@@ -1,28 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, FlatList } from "react-native";
-import {
-  Text,
-  Surface,
-  DefaultTheme,
-  Provider as PaperProvider,
-} from "react-native-paper";
+import { Text, Surface } from "react-native-paper";
 import { useSelector } from "react-redux";
-import { LineChart } from "react-native-chart-kit";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import AnimatedLoader from "react-native-animated-loader";
 
 import AttendanceItem from "../student/components/AttendanceItem";
+import Loading from "../common/components/Loading";
 
 import api from "../../utils/api";
 
 const moment = require("moment");
 
 const CourseStatistics = ({ route }) => {
+  const [loading, setLoading] = useState(false);
   const [enrolledCourses, setEnrolledCourses] = useState([]);
   const [attendanceData, setAttendanceData] = useState([]);
   const [missedAttendanceData, setMissedAttendanceData] = useState([]);
   const [lectureData, setLectureData] = useState([]);
-  const [animationVisible, setAnimationVisible] = useState(true);
   const { courseId } = route.params;
   const { selectedCourse } = route.params;
 
@@ -30,13 +23,9 @@ const CourseStatistics = ({ route }) => {
 
   useEffect(() => {
     const getAllSubmitedAttendances = async () => {
+      setLoading(true);
       await api
-        .get("/attendance", {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-            "Content-Type": "application/json",
-          },
-        })
+        .get("/attendance")
         .then(({ data }) => {
           setAttendanceData(
             data.data
@@ -50,17 +39,16 @@ const CourseStatistics = ({ route }) => {
               )
           );
         })
-        .catch((error) => console.log(error));
+        .catch((error) => console.log(error))
+        .finally(() => {
+          setLoading(false);
+        });
     };
 
     const getAllMissedAttendances = async () => {
+      setLoading(true);
       await api
-        .get("attendance/missed", {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-            "Content-Type": "application/json",
-          },
-        })
+        .get("attendance/missed")
         .then(({ data }) => {
           setMissedAttendanceData(
             data.data
@@ -74,16 +62,14 @@ const CourseStatistics = ({ route }) => {
               .filter((item) => item.courseName === selectedCourse)
           );
         })
-        .catch((error) => console.log(error));
+        .catch((error) => console.log(error))
+        .finally(() => {
+          setLoading(false);
+        });
     };
 
     api
-      .get("/user/details", {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-          "Content-Type": "application/json",
-        },
-      })
+      .get("/user/details")
       .then(({ data }) => {
         setEnrolledCourses(data.data.enrolledCourses);
       })
@@ -100,24 +86,11 @@ const CourseStatistics = ({ route }) => {
 
     getAllSubmitedAttendances();
     getAllMissedAttendances();
-
-    setTimeout(() => {
-      setAnimationVisible(false);
-    }, 2700);
   }, []);
 
   return (
     <View style={styles.container}>
-      {animationVisible === true ? (
-        <AnimatedLoader
-          visible={animationVisible}
-          overlayColor="rgba(255,255,255,0)"
-          source={require("../../assets/animations/935-loading.json")}
-          animationStyle={styles.lottie}
-          speed={1}
-          loop={false}
-        />
-      ) : (
+      {!loading ? (
         <View>
           <View>
             <Surface
@@ -174,13 +147,32 @@ const CourseStatistics = ({ route }) => {
                   renderItem={({ item }) => <AttendanceItem item={item} />}
                 />
               ) : (
-                <View style={{ marginLeft: 20 }}>
-                  <MaterialCommunityIcons name="cloud-sync-outline" size={26} />
-                  <Text style={styles.font}>No data found!</Text>
+                <View style={{ margin: 20 }}>
+                  <View>
+                    <Text
+                      style={{
+                        textAlign: "center",
+                        fontSize: 15,
+                        fontWeight: "500",
+                        marginBottom: 20,
+                        marginTop: 20,
+                      }}
+                    >
+                      You don't have any attendance record on {selectedCourse}{" "}
+                      yet!
+                    </Text>
+                    <Text style={{ textAlign: "center" }}>
+                      Attendances will be displayed after your first attendance.
+                    </Text>
+                  </View>
                 </View>
               )}
             </Surface>
           </View>
+        </View>
+      ) : (
+        <View>
+          <Loading />
         </View>
       )}
     </View>

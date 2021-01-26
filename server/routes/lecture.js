@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const lectureController = require("../controllers/lecture");
+const auth = require("../middleware/auth");
 
 /**
  * @swagger
@@ -31,7 +32,49 @@ const lectureController = require("../controllers/lecture");
 
 router.post("/add", lectureController.add);
 
-router.get("/lecturesForTeacher", lectureController.getLecturesForTeacher);
+/**
+ * @swagger
+ * /lecture/lecturesForTeacher:
+ *  get:
+ *    tags:
+ *    - "/lecture/"
+ *    summary: Get all past lectures of courses that have been assigned to a given teacher
+ *    parameters:
+ *    - in: header
+ *      name: Bearer
+ *      description: User token
+ *    responses:
+ *      '200':
+ *        description: A successful response
+ *      '400':
+ *        description: An unsuccessful response
+ */
+
+router.get(
+  "/lecturesForTeacher",
+  auth,
+  lectureController.getLecturesForTeacher
+);
+
+/**
+ * @swagger
+ * /lecture/studentsForLecture:
+ *  post:
+ *    tags:
+ *    - "/lecture/"
+ *    summary: Fetch all students that have attended a given lecture
+ *    parameters:
+ *    - in: header
+ *      name: Bearer
+ *      description: User token
+ *    responses:
+ *      '200':
+ *        description: A successful response
+ *      '400':
+ *        description: An unsuccessful response
+ */
+
+router.post("/studentsForLecture", lectureController.studentsForLecture);
 
 /**
  * @swagger

@@ -8,64 +8,62 @@ import {
   Dialog,
   TextInput,
   FAB,
+  useTheme,
 } from "react-native-paper";
 import { BarChart } from "react-native-chart-kit";
 import { useSelector } from "react-redux";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { showMessage } from "react-native-flash-message";
 import { useIsFocused } from "@react-navigation/native";
+import axios from "axios";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 const moment = require("moment");
 
 import CourseItem from "../student/components/CourseItem";
 import AttendanceItem from "../student/components/AttendanceItem";
+import Loading from "../common/components/Loading";
 
 import api from "../../utils/api";
 
 const Dashboard = ({ navigation }) => {
+  const [loading, setLoading] = useState(false);
   const [coursePasscode, setCoursePasscode] = useState("");
   const [visible, toggleVisible] = useState(false);
   const [enrolledCourses, setEnrolledCourses] = useState([]);
   const [todayAttendanceData, setTodayAttendanceData] = useState([]);
   const [lastWeekAttendanceData, setLastWeekAttendanceData] = useState([]);
+
   const isFocused = useIsFocused();
+  const isDarkTheme = useTheme().dark;
 
   const user = useSelector((state) => state.userState);
 
   useEffect(() => {
-    api
-      .get("/user/details", {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-          "Content-Type": "application/json",
-        },
-      })
-      .then(({ data }) => {
-        setEnrolledCourses(data.data.enrolledCourses);
-      })
-      .catch((error) => console.log(error));
+    setLoading(true);
 
-    api
-      .get("/attendance", {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-          "Content-Type": "application/json",
-        },
-      })
-      .then(({ data }) => {
-        setTodayAttendanceData(
-          data.data.filter((item) => moment().isSame(item.fullDate, "date"))
-        );
+    api.get("/user/details").then((data) => {
+      setEnrolledCourses(data.data.data.enrolledCourses);
 
-        setLastWeekAttendanceData(
-          data.data.filter(
-            (item) =>
-              moment().subtract(7, "days").isBefore(item.fullDate) &&
-              moment().isAfter(item.fullDate)
-          )
-        );
-      })
-      .catch((error) => console.log(error));
+      api
+        .get("/attendance")
+        .then((data) => {
+          setTodayAttendanceData(
+            data.data.data.filter((item) =>
+              moment().isSame(item.fullDate, "date")
+            )
+          );
+          setLastWeekAttendanceData(
+            data.data.data.filter(
+              (item) =>
+                moment().subtract(7, "days").isBefore(item.fullDate) &&
+                moment().isAfter(item.fullDate)
+            )
+          );
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    });
   }, [isFocused]);
 
   const graphData = {
@@ -92,12 +90,7 @@ const Dashboard = ({ navigation }) => {
     toggleVisible(false);
 
     api
-      .post("/user/enroll", body, {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-          "Content-Type": "application/json",
-        },
-      })
+      .post("/user/enroll", body)
       .then(({ data }) => {
         console.log("ADDED COURSE", data.data.course);
         toggleVisible(false);
@@ -136,274 +129,287 @@ const Dashboard = ({ navigation }) => {
 
   return (
     <View>
-      <ScrollView style={styles.container}>
-        <Text style={styles.title}>
-          Hi,{" "}
-          <Text style={{ fontWeight: "bold" }}>
-            {user.name} {user.surname}!
+      {!loading ? (
+        <ScrollView style={styles.container}>
+          <Text style={styles.title}>
+            Hi,{" "}
+            <Text style={{ fontWeight: "bold" }}>
+              {user.name} {user.surname}!
+            </Text>
           </Text>
-        </Text>
-
-        <View style={{ marginTop: 25 }}>
-          <Text style={styles.font}>Here's your summary for today:</Text>
-          <Surface style={{ ...styles.graphContainer, marginTop: 20 }}>
-            <Text
-              style={
-                (styles.font,
-                {
-                  marginLeft: 12,
-                  marginTop: 12,
-                  fontWeight: "bold",
-                })
-              }
-            >
-              Recent attendance
-            </Text>
-
-            <Text style={(styles.font, { marginLeft: 12, fontSize: 34 })}>
-              {lastWeekAttendanceData.length}
-            </Text>
-
-            <Text style={(styles.font, { marginLeft: 12 })}>
-              in the last week
-            </Text>
-
-            {lastWeekAttendanceData.length > 0 ? (
-              <View
-                style={{
-                  marginTop: 10,
-                  marginLeft: -10,
-                  padding: 10,
-                }}
+          <View style={{ marginTop: 25 }}>
+            <Text style={styles.font}>Here's your summary for today:</Text>
+            <Surface style={{ ...styles.graphContainer, marginTop: 20 }}>
+              <Text
+                style={
+                  (styles.font,
+                  {
+                    marginLeft: 12,
+                    marginTop: 12,
+                    fontWeight: "bold",
+                  })
+                }
               >
-                {user.themePreference === "dark" ? (
-                  <BarChart
-                    data={graphData}
-                    showBarTops={true}
-                    showValuesOnTopOfBars={true}
-                    withInnerLines={false}
-                    segments={5}
-                    withHorizontalLabels={false}
-                    width={320}
-                    height={220}
-                    withCustomBarColorFromData={true}
-                    flatColor={true}
-                    chartConfig={{
-                      backgroundGradientFrom: "#272727",
-                      backgroundGradientTo: "#272727",
-                      data: graphData.datasets,
-                      decimalPlaces: 2,
-                      color: () => "#731ff0",
-                      labelColor: () => "#6a6a6a",
+                Recent attendance
+              </Text>
+
+              <Text style={(styles.font, { marginLeft: 12, fontSize: 34 })}>
+                {lastWeekAttendanceData.length}
+              </Text>
+
+              <Text style={(styles.font, { marginLeft: 12 })}>
+                in the last week
+              </Text>
+
+              {lastWeekAttendanceData.length > 0 ? (
+                <View
+                  style={{
+                    marginTop: 10,
+                    marginLeft: -10,
+                    padding: 10,
+                  }}
+                >
+                  {isDarkTheme ? (
+                    <BarChart
+                      data={graphData}
+                      showBarTops={true}
+                      showValuesOnTopOfBars={true}
+                      withInnerLines={false}
+                      segments={5}
+                      withHorizontalLabels={false}
+                      width={320}
+                      height={220}
+                      withCustomBarColorFromData={true}
+                      flatColor={true}
+                      chartConfig={{
+                        backgroundGradientFrom: "#272727",
+                        backgroundGradientTo: "#272727",
+                        data: graphData.datasets,
+                        decimalPlaces: 2,
+                        color: () => "#731ff0",
+                        labelColor: () => "#6a6a6a",
+                      }}
+                    />
+                  ) : (
+                    <BarChart
+                      data={graphData}
+                      showBarTops={true}
+                      showValuesOnTopOfBars={true}
+                      withInnerLines={false}
+                      segments={5}
+                      withHorizontalLabels={false}
+                      width={320}
+                      height={220}
+                      withCustomBarColorFromData={true}
+                      flatColor={true}
+                      chartConfig={{
+                        backgroundGradientFrom: "#ffffff",
+                        backgroundGradientTo: "#ffffff",
+                        data: graphData.datasets,
+                        decimalPlaces: 2,
+                        color: () => "#731ff0",
+                        labelColor: () => "#6a6a6a",
+                      }}
+                    />
+                  )}
+                </View>
+              ) : (
+                <View style={{ margin: 20 }}>
+                  <Text
+                    style={{
+                      textAlign: "center",
+                      fontSize: 15,
+                      fontWeight: "500",
+                      marginBottom: 20,
+                      marginTop: 20,
                     }}
-                  />
-                ) : (
-                  <BarChart
-                    data={graphData}
-                    showBarTops={true}
-                    showValuesOnTopOfBars={true}
-                    withInnerLines={false}
-                    segments={5}
-                    withHorizontalLabels={false}
-                    width={320}
-                    height={220}
-                    withCustomBarColorFromData={true}
-                    flatColor={true}
-                    chartConfig={{
-                      backgroundGradientFrom: "#ffffff",
-                      backgroundGradientTo: "#ffffff",
-                      data: graphData.datasets,
-                      decimalPlaces: 2,
-                      color: () => "#731ff0",
-                      labelColor: () => "#6a6a6a",
-                    }}
-                  />
-                )}
-              </View>
-            ) : (
-              <View style={{ marginLeft: 20 }}>
-                {user.themePreference === "dark" ? (
-                  <MaterialCommunityIcons
-                    color="white"
-                    name="cloud-sync-outline"
-                    size={26}
-                  />
-                ) : (
-                  <MaterialCommunityIcons
-                    color="black"
-                    name="cloud-sync-outline"
-                    size={26}
-                  />
-                )}
-                <Text style={styles.font}>No data found!</Text>
-              </View>
-            )}
-          </Surface>
-        </View>
+                  >
+                    You don't have any attendance in the last week!
+                  </Text>
+                </View>
+              )}
+            </Surface>
+          </View>
 
-        <View style={{ marginTop: 15 }}>
-          <Surface
-            style={{ ...styles.graphContainer, height: 200 }}
-            nestedScrollEnabled={true}
-          >
-            <Text
-              style={
-                (styles.font,
-                {
-                  margin: 12,
-                  marginBottom: 5,
-                  fontWeight: "bold",
-                })
-              }
+          <View style={{ marginTop: 15 }}>
+            <Surface
+              style={{ ...styles.graphContainer, height: 200 }}
+              nestedScrollEnabled={true}
             >
-              Your attendance today
-            </Text>
+              <Text
+                style={
+                  (styles.font,
+                  {
+                    margin: 12,
+                    marginBottom: 5,
+                    fontWeight: "bold",
+                  })
+                }
+              >
+                Your attendance today
+              </Text>
 
-            {todayAttendanceData.length !== 0 ? (
-              <FlatList
-                nestedScrollEnabled={true}
-                keyExtractor={(item) => item.id}
-                data={todayAttendanceData}
-                renderItem={({ item }) => <AttendanceItem item={item} />}
-              />
-            ) : (
-              <View style={{ marginLeft: 20 }}>
-                {user.themePreference === "dark" ? (
-                  <MaterialCommunityIcons
-                    color="white"
-                    name="cloud-sync-outline"
-                    size={26}
-                  />
-                ) : (
-                  <MaterialCommunityIcons
-                    color="black"
-                    name="cloud-sync-outline"
-                    size={26}
-                  />
-                )}
-                <Text style={styles.font}>No data found!</Text>
-              </View>
-            )}
-          </Surface>
-        </View>
+              {todayAttendanceData.length !== 0 ? (
+                <FlatList
+                  nestedScrollEnabled={true}
+                  keyExtractor={(item) => item.id}
+                  data={todayAttendanceData}
+                  renderItem={({ item }) => <AttendanceItem item={item} />}
+                />
+              ) : (
+                <View style={{ margin: 20 }}>
+                  <View>
+                    <Text
+                      style={{
+                        textAlign: "center",
+                        fontSize: 15,
+                        fontWeight: "500",
+                        marginBottom: 20,
+                        marginTop: 20,
+                      }}
+                    >
+                      You don't have any attendance record today!
+                    </Text>
+                    <Text style={{ textAlign: "center" }}>
+                      Attendances will be displayed after your QR code scanning
+                      today.
+                    </Text>
+                  </View>
+                </View>
+              )}
+            </Surface>
+          </View>
 
-        <View style={{ marginTop: 15 }}>
-          <Surface
-            style={{ ...styles.graphContainer, height: 200, marginBottom: 100 }}
-            nestedScrollEnabled={true}
-          >
-            <Text
-              style={
-                (styles.font,
-                {
-                  margin: 12,
-                  marginBottom: 5,
-                  fontWeight: "bold",
-                })
-              }
-            >
-              Courses
-            </Text>
-
-            {enrolledCourses.length !== 0 ? (
-              <FlatList
-                nestedScrollEnabled={true}
-                keyExtractor={(item) => item.id}
-                data={enrolledCourses}
-                extraData={enrolledCourses.length}
-                renderItem={({ item }) => (
-                  <CourseItem id={item.id} courseName={item.name} />
-                )}
-              />
-            ) : (
-              <View style={{ marginLeft: 20 }}>
-                {user.themePreference === "dark" ? (
-                  <MaterialCommunityIcons
-                    color="white"
-                    name="cloud-sync-outline"
-                    size={26}
-                  />
-                ) : (
-                  <MaterialCommunityIcons
-                    color="black"
-                    name="cloud-sync-outline"
-                    size={26}
-                  />
-                )}
-                <Text style={styles.font}>No data found!</Text>
-              </View>
-            )}
-
-            {user.themePreference === "dark" ? (
-              <MaterialCommunityIcons
-                style={styles.plusIcon}
-                color="white"
-                name="plus"
-                size={35}
-                onPress={() => toggleVisible(true)}
-              />
-            ) : (
-              <MaterialCommunityIcons
-                style={styles.plusIcon}
-                color="black"
-                name="plus"
-                size={35}
-                onPress={() => toggleVisible(true)}
-              />
-            )}
-          </Surface>
-        </View>
-
-        <Portal>
-          <Dialog
-            visible={visible}
-            onDismiss={() => {
-              toggleVisible(false);
-              setCoursePasscode("");
-            }}
-          >
-            <View
+          <View style={{ marginTop: 15 }}>
+            <Surface
               style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                marginRight: 20,
+                ...styles.graphContainer,
+                height: 200,
+                marginBottom: 100,
+              }}
+              nestedScrollEnabled={true}
+            >
+              <Text
+                style={
+                  (styles.font,
+                  {
+                    margin: 12,
+                    marginBottom: 5,
+                    fontWeight: "bold",
+                  })
+                }
+              >
+                Courses
+              </Text>
+
+              {enrolledCourses.length !== 0 ? (
+                <FlatList
+                  nestedScrollEnabled={true}
+                  keyExtractor={(item) => item.id}
+                  data={enrolledCourses}
+                  extraData={enrolledCourses.length}
+                  renderItem={({ item }) => (
+                    <CourseItem id={item.id} courseName={item.name} />
+                  )}
+                />
+              ) : (
+                <View style={{ margin: 20 }}>
+                  <View>
+                    <Text
+                      style={{
+                        textAlign: "center",
+                        fontSize: 15,
+                        fontWeight: "500",
+                        marginBottom: 20,
+                        marginTop: 20,
+                      }}
+                    >
+                      You don't have any course enrolled yet!
+                    </Text>
+                    <Text style={{ textAlign: "center" }}>
+                      Courses will be displayed after your first enroll on
+                      course.
+                    </Text>
+                  </View>
+                </View>
+              )}
+
+              {isDarkTheme ? (
+                <MaterialCommunityIcons
+                  style={styles.plusIcon}
+                  color="white"
+                  name="plus"
+                  size={35}
+                  onPress={() => toggleVisible(true)}
+                />
+              ) : (
+                <MaterialCommunityIcons
+                  style={styles.plusIcon}
+                  color="black"
+                  name="plus"
+                  size={35}
+                  onPress={() => toggleVisible(true)}
+                />
+              )}
+            </Surface>
+          </View>
+
+          <Portal>
+            <Dialog
+              visible={visible}
+              onDismiss={() => {
+                toggleVisible(false);
+                setCoursePasscode("");
               }}
             >
-              <Dialog.Title>Enter course join password:</Dialog.Title>
-            </View>
-            <Dialog.Content>
-              <TextInput
-                label="Enter course passcode"
-                value={coursePasscode}
-                mode="outlined"
-                onChangeText={(coursePasscode) =>
-                  setCoursePasscode(coursePasscode)
-                }
-              />
-            </Dialog.Content>
-            <Dialog.Actions>
-              <Button
-                onPress={() => {
-                  toggleVisible(false);
-                  setCoursePasscode("");
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  marginRight: 20,
                 }}
               >
-                Cancel
-              </Button>
-              <Button onPress={() => handleSubmitAddCourse()}>Confirm</Button>
-            </Dialog.Actions>
-          </Dialog>
-        </Portal>
-      </ScrollView>
-
-      <FAB
-        style={styles.fab}
-        small
-        label="SCAN"
-        icon="qrcode"
-        color="black"
-        onPress={() => navigation.push("QRScan")}
-      />
+                <Dialog.Title>Enter course join password:</Dialog.Title>
+              </View>
+              <Dialog.Content>
+                <TextInput
+                  label="Enter course passcode"
+                  value={coursePasscode}
+                  mode="outlined"
+                  onChangeText={(coursePasscode) =>
+                    setCoursePasscode(coursePasscode)
+                  }
+                />
+              </Dialog.Content>
+              <Dialog.Actions>
+                <Button
+                  onPress={() => {
+                    toggleVisible(false);
+                    setCoursePasscode("");
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button onPress={() => handleSubmitAddCourse()}>Confirm</Button>
+              </Dialog.Actions>
+            </Dialog>
+          </Portal>
+        </ScrollView>
+      ) : (
+        <View>
+          <Loading />
+        </View>
+      )}
+      {!loading && (
+        <FAB
+          style={styles.fab}
+          small
+          label="SCAN"
+          icon="qrcode"
+          color="black"
+          onPress={() => navigation.push("QRScan")}
+        />
+      )}
     </View>
   );
 };

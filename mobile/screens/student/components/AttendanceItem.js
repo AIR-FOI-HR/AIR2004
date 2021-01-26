@@ -1,13 +1,15 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
-import { Card, Paragraph } from "react-native-paper";
+import { Card, Paragraph, useTheme } from "react-native-paper";
 import Feather from "react-native-vector-icons/Feather";
 import { useSelector } from "react-redux";
 
 const AttendanceItem = ({ item }) => {
-  const user = useSelector((state) => state);
+  const user = useSelector((state) => state.userState);
 
-  console.log("user theme", user.userState.themePreference);
+  const isDarkTheme = useTheme().dark;
+
+  console.log("user theme", user.themePreference);
 
   if (item.present === undefined) {
     return (
@@ -51,21 +53,11 @@ const AttendanceItem = ({ item }) => {
             </View>
 
             <View style={{ position: "absolute", right: 10, top: 7 }}>
-              {item.present && user.userState.themePreference === "dark" && (
-                <Feather name="check-circle" size={30} color="white" />
-              )}
-
-              {item.present && user.userState.themePreference === "light" && (
-                <Feather name="check-circle" size={30} color="black" />
-              )}
-
-              {!item.present && user.userState.themePreference === "dark" && (
-                <Feather name="x-circle" size={30} color="white" />
-              )}
-
-              {!item.present && user.userState.themePreference === "light" && (
-                <Feather name="x-circle" size={30} color="black" />
-              )}
+              <Feather
+                name={item.present ? "check-circle" : "x-circle"}
+                size={30}
+                color={isDarkTheme ? "white" : "black"}
+              />
             </View>
 
             <View style={{ position: "absolute", right: 10, bottom: 7 }}>

@@ -1,4 +1,3 @@
-const jwt = require("jsonwebtoken");
 const Attendance = require("../models/attendance");
 const User = require("../models/user");
 const Lecture = require("../models/lecture");
@@ -52,10 +51,9 @@ exports.delete = async (req, res) => {
 
 exports.getAll = async (req, res) => {
   try {
-    const token = req.header("Authorization").replace("Bearer ", "");
-    let studentTokenData = jwt.verify(token, process.env.JWT_SECRET);
+    let user = req.user;
 
-    let student = await User.find({ jmbag: studentTokenData.jmbag });
+    let student = await User.find({ jmbag: user.jmbag });
 
     const allAttendances = await Attendance.find({
       user: student[0]._id,
@@ -89,10 +87,9 @@ exports.getAll = async (req, res) => {
 
 exports.getMissed = async (req, res) => {
   try {
-    const token = req.header("Authorization").replace("Bearer ", "");
-    let studentTokenData = jwt.verify(token, process.env.JWT_SECRET);
+    let user = req.user;
 
-    let student = await User.find({ jmbag: studentTokenData.jmbag });
+    let student = await User.find({ jmbag: user.jmbag });
 
     const missedAttendance = await Lecture.find().populate({
       path: "course",
@@ -103,11 +100,14 @@ exports.getMissed = async (req, res) => {
         if (
           item.course.enrolledStudents.includes(student[0]._id) &&
           !item.attendingStudents.includes(student[0]._id)
-        ) {
+        )
           return item;
-        }
       })
-      .filter((item) => item !== undefined);
+      .filter(
+        (item) => item !== undefined && item.course.name === "Matematics 2"
+      );
+
+    console.log("MISSED DATA: ", missed);
 
     const data = missed.map((attendance) => {
       return {

@@ -1,10 +1,6 @@
 import React, { useState } from "react";
-import { StyleSheet, View, TouchableWithoutFeedback, Keyboard, Text } from "react-native";
-import { useDispatch } from "react-redux";
-import { HelperText, TextInput, Button } from "react-native-paper";
-import * as Yup from "yup";
+import { StyleSheet } from "react-native";
 
-import api from "../../utils/api";
 import ResetForm from "./components/ResetForm";
 import CodeForm from "./components/CodeForm";
 import NewPasswordForm from "./components/NewPasswordForm";
@@ -17,13 +13,13 @@ const stages = {
 
 const ResetPassword = ({ navigation }) => {
   const [stage, setStage] = useState(stages.REQUEST_CODE);
-  const [recoveryEmail, setRecoveryEmail] = useState("");
+  const [resetCode, setResetCode] = useState("");
 
   return (
     <>
-      {stage === stages.REQUEST_CODE && <ResetForm setStage={setStage} setRecoveryEmail={setRecoveryEmail} />}
-      {stage === stages.VERIFY_CODE && <CodeForm setStage={setStage} recoveryEmail={recoveryEmail} />}
-      {stage === stages.CHANGE_PASSWORD && <NewPasswordForm setStage={setStage} recoveryEmail={recoveryEmail} navigation={navigation} />}
+      {stage === stages.REQUEST_CODE && <ResetForm setStage={setStage} />}
+      {stage === stages.VERIFY_CODE && <CodeForm setStage={setStage} setResetCode={setResetCode} />}
+      {stage === stages.CHANGE_PASSWORD && <NewPasswordForm setStage={setStage} resetCode={resetCode} navigation={navigation} />}
     </>
   );
 };

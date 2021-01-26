@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const sgMail = require("@sendgrid/mail");
 const User = require("../models/user");
 const Course = require("../models/course");
+const PasswordResetToken = require("../models/passwordResetToken");
 const moment = require("moment");
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
@@ -12,16 +13,16 @@ exports.login = async (req, res) => {
   try {
     // Check if user exists
     const user = await User.findOne({ email });
-    if (!user) return res.status(401).json({ success: false, message: "Email or password not valid!" });
+    if (!user) return res.status(401).json({ success: false, message: "Invalid email or password!" });
 
     // Check if passwords match
     const match = await bcrypt.compareSync(password, user.password);
-    if (!match) return res.status(401).json({ success: false, message: "Email or password not valid!" });
+    if (!match) return res.status(401).json({ success: false, message: "Invalid email or password!" });
 
     // If it's student's first sign in, save his deviceUID
     // Otherwise, check student's deviceUID
     if (user.userType === "student") {
-      if (!user.deviceUID) {
+      if (user.deviceUID === "null") {
         user.deviceUID = deviceUID;
         await user.save();
       }
@@ -29,7 +30,7 @@ exports.login = async (req, res) => {
       if (user.deviceUID !== deviceUID) {
         return res.status(401).json({
           success: false,
-          message: "You have to sign in from your own device! If you think this is an error, please contact your teacher for assitance.",
+          message: "You have to sign in from your own device! If you think this is an error, please contact your teacher for assistance.",
         });
       }
     }
@@ -65,9 +66,7 @@ exports.login = async (req, res) => {
 
 exports.loginTablet = async (req, res) => {
   try {
-    // Validate JWT
-    const token = req.header("Authorization")?.replace("Bearer ", "");
-    const user = jwt.verify(token, process.env.JWT_SECRET);
+    let user = req.user;
 
     // Validate authentication token from QR code
     const attendanceToken = req.body.attendanceToken;
@@ -110,18 +109,17 @@ exports.resetCode = async (req, res) => {
   try {
     const resetCode = Math.floor(100000 + Math.random() * 900000); // broj od 6 znamenki
 
-    const user = await User.findOneAndUpdate(
-      { email },
-      {
-        code: resetCode.toString(),
-        verified: false,
-        expires_timestamp: moment().add(10, "minutes").unix().toString(),
-        created_timestamp: moment().unix().toString(),
-      }
-    );
+    const user = await User.findOne({ email });
     if (!user) {
       throw "You have entered an invalid e-mail address!";
     }
+
+    // Generate a password reset token
+    const passwordResetToken = new PasswordResetToken({
+      user: user._id,
+      code: resetCode.toString(),
+    });
+    await passwordResetToken.save();
 
     const msg = {
       to: `${req.body.email}`,
@@ -139,19 +137,15 @@ exports.resetCode = async (req, res) => {
 };
 
 exports.verifyResetCode = async (req, res) => {
-  const { recoveryEmail, resetCode } = req.body;
+  const { resetCode } = req.body;
 
   try {
-    let user = await User.findOne({ email: recoveryEmail });
+    const passwordResetToken = await PasswordResetToken.findOne({
+      code: resetCode,
+    });
 
-    if (parseInt(moment().unix().toString()) >= parseInt(user.expires_timestamp)) {
-      throw "Validation code has expired!";
-    }
-    if (user.code != resetCode.toString()) {
-      throw "Validation code is invalid!";
-    }
-    user.verified = true;
-    await user.save();
+    if (!passwordResetToken) throw "Reset code is invalid or has expired!";
+
     res.status(200).json({ success: true, verified: true });
   } catch (error) {
     res.status(400).json({ success: false, error });
@@ -159,17 +153,19 @@ exports.verifyResetCode = async (req, res) => {
 };
 
 exports.resetPassword = async (req, res) => {
-  const { email, password } = req.body;
+  const { password, resetCode } = req.body;
   try {
-    const user = await User.findOne({ email });
+    const passwordResetToken = await PasswordResetToken.findOne({
+      code: resetCode,
+    });
+
+    const user = await User.findOne({ _id: passwordResetToken.user });
 
     const hashedPassword = await bcrypt.hash(password, 10);
     user.password = hashedPassword;
-    user.verified = false;
-    user.created_timestamp = "";
-    user.expires_timestamp = "";
 
     await user.save();
+    await passwordResetToken.deleteOne();
 
     res.status(200).json({ success: true });
   } catch (error) {
@@ -197,8 +193,8 @@ exports.getAllUsers = async (req, res) => {
 
 exports.getSingle = async (req, res) => {
   try {
-    const token = req.header("Authorization").replace("Bearer ", "");
-    let user = jwt.verify(token, process.env.JWT_SECRET);
+    let user = req.user;
+
     user = await User.findOne({ email: user.email }).populate("enrolledCourses").populate("assignedCourses");
     const data = user.toJSON();
     res.status(200).json({ success: true, data });
@@ -209,8 +205,7 @@ exports.getSingle = async (req, res) => {
 
 exports.verify = async (req, res) => {
   try {
-    const token = req.header("Authorization").replace("Bearer ", "");
-    const user = jwt.verify(token, process.env.JWT_SECRET);
+    const user = req.user;
     res.status(200).json({ success: true, user });
   } catch (error) {
     res.status(400).json({ success: false, error: "Invalid or missing token!" });
@@ -219,8 +214,7 @@ exports.verify = async (req, res) => {
 
 exports.enroll = async (req, res) => {
   try {
-    const token = req.header("Authorization").replace("Bearer ", "");
-    let student = jwt.verify(token, process.env.JWT_SECRET);
+    let student = req.user;
 
     student = await User.findOne({ jmbag: student.jmbag });
     const course = await Course.findOne({ passcode: req.body.passcode });
@@ -247,8 +241,7 @@ exports.enroll = async (req, res) => {
 
 exports.assignCourse = async (req, res) => {
   try {
-    const token = req.header("Authorization").replace("Bearer ", "");
-    let teacher = jwt.verify(token, process.env.JWT_SECRET);
+    let teacher = req.user;
 
     teacher = await User.findOne({ email: teacher.email });
 

@@ -58,3 +58,10 @@ export const restoreTeacherData = (teacher) => {
     teacher,
   };
 };
+
+export const setStudentsForLecture = (students) => {
+  return {
+    type: "SET_STUDENTS_FOR_LECTURE",
+    students,
+  };
+};

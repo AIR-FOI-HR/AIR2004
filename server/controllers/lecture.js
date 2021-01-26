@@ -1,7 +1,6 @@
 const Course = require("../models/course");
 const Lecture = require("../models/lecture");
 const User = require("../models/user");
-const jwt = require("jsonwebtoken");
 const moment = require("moment");
 
 const getDayName = (date, locale) => {
@@ -30,15 +29,17 @@ exports.getAll = async (req, res) => {
 };
 
 exports.getLecturesForTeacher = async (req, res) => {
-  const token = req.header("Authorization").replace("Bearer ", "");
-  let teacher = jwt.verify(token, process.env.JWT_SECRET);
+  let teacher = req.user;
   teacher = await User.findOne({ email: teacher.email });
+
   const teacherId = teacher._id;
   // find courses for teacher
   const coursesForTeacher = await Course.find({ assignedTeachers: teacherId });
 
   try {
-    const lecturesForTeacher = await Lecture.find({ course: coursesForTeacher }).populate("course");
+    const lecturesForTeacher = await Lecture.find({
+      course: coursesForTeacher,
+    }).populate("course");
     const data = lecturesForTeacher.map((lecture) => {
       return {
         id: lecture._id,
@@ -55,6 +56,27 @@ exports.getLecturesForTeacher = async (req, res) => {
       };
     });
     res.status(200).json({ success: true, data });
+  } catch (error) {
+    res.status(400).json({ success: false, error });
+  }
+};
+
+exports.studentsForLecture = async (req, res) => {
+  const { lectureId } = req.body;
+
+  const fetchStudents = (students) => {
+    return Promise.all(
+      students.map(async (student) => {
+        const foundStudent = await User.findById(student);
+        return foundStudent.toJSON();
+      })
+    );
+  };
+
+  try {
+    const lecture = await Lecture.findById(lectureId);
+    let attendingStudents = await fetchStudents(lecture.attendingStudents);
+    res.status(200).json({ success: true, data: attendingStudents });
   } catch (error) {
     res.status(400).json({ success: false, error });
   }
@@ -77,6 +99,6 @@ exports.delete = async (req, res) => {
     const data = lecture.toJSON();
     res.status(200).json({ success: true, data });
   } catch (error) {
-    res.status(400).json({ success: false, error }); 
+    res.status(400).json({ success: false, error });
   }
 };

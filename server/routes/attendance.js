@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const attendanceController = require("../controllers/attendance");
+const auth = require("../middleware/auth");
 
 /**
  * @swagger
@@ -37,7 +38,7 @@ router.post("/add", attendanceController.add);
  *      '200':
  *        description: A successful response
  */
-router.get("/", attendanceController.getAll);
+router.get("/", auth, attendanceController.getAll);
 
 /**
  * @swagger
@@ -63,6 +64,6 @@ router.get("/", attendanceController.getAll);
  */
 router.post("/mark", attendanceController.markAttendance);
 router.delete("/:id", attendanceController.delete);
-router.get("/missed", attendanceController.getMissed)
+router.get("/missed", auth, attendanceController.getMissed);
 
 module.exports = router;

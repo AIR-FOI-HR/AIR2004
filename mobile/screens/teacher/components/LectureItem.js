@@ -1,10 +1,13 @@
 import React from "react";
-import { View } from "react-native";
+import { View, Text } from "react-native";
+
 import BlankSpacer from "react-native-blank-spacer";
 import { Card, Paragraph, IconButton } from "react-native-paper";
+import { useTheme } from "react-native-paper";
 import MaterialIcon from "react-native-vector-icons/MaterialIcons";
-const LectureItem = ({ lecture }) => {
-  console.log("LECTURE", lecture);
+const LectureItem = ({ lecture, navigation }) => {
+  const isDarkTheme = useTheme().dark;
+
   return (
     <View>
       <Card
@@ -27,14 +30,14 @@ const LectureItem = ({ lecture }) => {
           </View>
 
           <View style={{ flexDirection: "column", flex: 1, alignItems: "flex-end", justifyContent: "flex-start", alignSelf: "flex-start" }}>
-            <Paragraph>
+            <Text style={{ color: `${isDarkTheme == true ? "#FFF" : "#000"}`, fontSize: 12 }}>
               {lecture.timeStart} - {lecture.timeEnd}
-            </Paragraph>
+            </Text>
             <Paragraph>{lecture.lectureType}</Paragraph>
             <BlankSpacer height={10} />
             <IconButton
-              icon={() => <MaterialIcon name="people-outline" size={35} />}
-              onPress={() => console.log("do nothing, currently")}
+              icon={() => <MaterialIcon name="people-outline" size={35} color={isDarkTheme == true ? "#FFF" : "#000"} />}
+              onPress={() => navigation.navigate("Students", { lecture: lecture, navigation })}
             />
           </View>
         </Card.Content>
