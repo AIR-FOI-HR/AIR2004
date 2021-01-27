@@ -13,6 +13,9 @@ const signOutTable = async ({ attendanceToken, lecture }) => {
 
   // Mark lecture as finished
   await Lecture.findByIdAndUpdate(lecture, { $set: { timeEnd: Date.now() } });
+
+  // Remove lecture from in progress array
+  global.lecturesInProgress = global.lecturesInProgress.filter((x) => x.attendanceToken != attendanceToken);
 };
 
 module.exports = signOutTable;

@@ -3,6 +3,7 @@ import { View, StyleSheet, Dimensions, Text } from "react-native";
 import AnimatedLoader from "react-native-animated-loader";
 import { useSelector } from "react-redux";
 import { Headline } from "react-native-paper";
+import BlankSpacer from "react-native-blank-spacer";
 import QRCode from "react-native-qrcode-svg";
 
 import AnimatedCheckmark from "../components/AnimatedCheckmark";
@@ -26,11 +27,10 @@ const LectureInProgress = ({ courseName, lectureType, tabletToken }) => {
       <View style={styles.qrContainer}>
         <Text style={styles.text}>Please scan the QR code using Unittend application to mark your attendance</Text>
         {successfulScan && <AnimatedCheckmark />}
-        <QRCode
-          value={JSON.stringify({ code: tabletToken.code, attendanceToken: user.attendanceToken, lecture: tabletToken.lecture })}
-          style={styles.qr}
-          size={Dimensions.get("screen").height * 0.45}
-        />
+        <QRCode value={JSON.stringify({ code: tabletToken.code })} style={styles.qr} size={Dimensions.get("screen").height * 0.45} />
+        <BlankSpacer height={20} />
+        <Text style={{ fontSize: 18 }}>You can also enter this code to manually mark your attendance:</Text>
+        <Text style={{ fontWeight: "bold", fontSize: 24 }}>{tabletToken.code}</Text>
       </View>
     );
 

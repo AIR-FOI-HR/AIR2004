@@ -6,6 +6,7 @@ module.exports = (req, res, next) => {
     let user = jwt.verify(token, process.env.JWT_SECRET);
 
     req.user = user;
+    req.token = token;
 
     next();
   } catch {

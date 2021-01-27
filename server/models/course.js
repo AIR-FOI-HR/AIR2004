@@ -4,6 +4,7 @@ const courseSchema = mongoose.Schema({
   name: {
     type: String,
     required: true,
+    unique: true,
   },
   passcode: {
     type: String,

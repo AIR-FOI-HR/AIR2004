@@ -22,7 +22,7 @@ exports.login = async (req, res) => {
     // If it's student's first sign in, save his deviceUID
     // Otherwise, check student's deviceUID
     if (user.userType === "student") {
-      if (user.deviceUID === "null") {
+      if (!user.deviceUID) {
         user.deviceUID = deviceUID;
         await user.save();
       }
@@ -70,12 +70,12 @@ exports.loginTablet = async (req, res) => {
 
     // Validate authentication token from QR code
     const attendanceToken = req.body.attendanceToken;
-
+    console.log("USER");
     // Send response to the tablet where the teacher signed in
     global.io
       .of("/tablet")
       .to(attendanceToken)
-      .emit("login success", { ...user, token, attendanceToken });
+      .emit("login success", { ...user, token: req.token, attendanceToken });
 
     // Send response to the mobile app
     res.status(200).json({ success: true });
@@ -193,9 +193,11 @@ exports.getAllUsers = async (req, res) => {
 
 exports.getSingle = async (req, res) => {
   try {
-    let user = req.user;
+    console.log("GET SINGLE");
 
+    let user = req.user;
     user = await User.findOne({ email: user.email }).populate("enrolledCourses").populate("assignedCourses");
+
     const data = user.toJSON();
     res.status(200).json({ success: true, data });
   } catch (error) {

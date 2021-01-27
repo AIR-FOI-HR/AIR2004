@@ -6,6 +6,12 @@ const startTracking = async (socket, data) => {
   const lecture = data.lecture;
   const attendance = await new Attendance({ lecture }).save();
 
+  // Mark that lecture as in progress
+  global.lecturesInProgress.push({
+    lecture,
+    attendanceToken,
+  });
+
   global.io.of("/tablet").to(attendanceToken).emit("attendance code", { code: attendance.qrCode, lecture: lecture, attendanceToken });
 };
 

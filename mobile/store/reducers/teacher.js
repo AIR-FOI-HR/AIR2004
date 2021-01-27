@@ -19,6 +19,7 @@ const teacherReducer = (state = initialState, action) => {
         ...state,
         attendanceToken: null,
         courseSelectedOnTablet: null,
+        trackingStarted: false,
       };
 
     case "SET_COURSE_SELECTED_ON_TABLET":
@@ -69,7 +70,6 @@ const teacherReducer = (state = initialState, action) => {
       };
     }
     case "SET_STUDENTS_FOR_LECTURE":
-      console.log("STUDENTS AREEE", action.students);
       return {
         ...state,
         studentsForLecture: action.students,
