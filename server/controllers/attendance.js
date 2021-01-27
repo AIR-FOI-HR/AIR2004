@@ -2,6 +2,7 @@ const Attendance = require("../models/attendance");
 const User = require("../models/user");
 const Lecture = require("../models/lecture");
 const moment = require("moment");
+const lecture = require("../models/lecture");
 
 function getDayName(date, locale) {
   return date.toLocaleDateString(locale, { weekday: "long" }).toUpperCase();
@@ -114,23 +115,39 @@ exports.getMissed = async (req, res) => {
 };
 
 exports.markAttendance = async (req, res) => {
-  const { code: qrCode, user } = req.body;
+  console.log("BODY", req.body);
+  const code = req.body.code;
+  const user = req.body.user;
 
   try {
+    const foundAttendance = await Attendance.findOne({ qrCode: code });
+    console.log("found attendance", foundAttendance);
+    const lectureInProgress = global.lecturesInProgress.find((x) => x.lecture == foundAttendance.lecture);
+
     // Check if that user has already marked attendance on that lecture
-    const alreadyMarked = await Attendance.findOne({ qrCode, user });
+    const alreadyMarked = await Attendance.findOne({ lecture: lectureInProgress.lecture, user });
+
+    console.log("Already marked ", alreadyMarked);
 
     if (alreadyMarked) return res.status(400).json({ success: false });
 
     // Update attendance document with the code
-    const attendance = await Attendance.findOneAndUpdate({ qrCode, user: null }, { $set: { user, modifiedAt: Date.now() } }, { new: true });
+    const attendance = await Attendance.findOneAndUpdate(
+      { qrCode: code, user: null },
+      { $set: { user, modifiedAt: Date.now() } },
+      { new: true }
+    );
+
     const lectureToRecord = await Lecture.findById(attendance.lecture);
 
     // Get attendance token for that lecture
-    const attendanceToken = global.lecturesInProgress.find((x) => x.lecture === attendance.lecture).attendanceToken;
+    const attendanceToken = lectureInProgress?.attendanceToken;
 
-    // SLOZITI
-    lectureToRecord.attendingStudents.push(user);
+    if (!attendanceToken) return res.status(400).json({ success: false });
+
+    // Add user into array of students that submit attendance for this lecture
+    lectureToRecord.attendingStudents = [...lectureToRecord.attendingStudents, user];
+    await lectureToRecord.save();
 
     // If the update didn't succeed (the qrCode is either invalid or it has been already used) return 400
     if (!attendance) return res.status(400).json({ success: false });
@@ -147,6 +164,7 @@ exports.markAttendance = async (req, res) => {
 
     res.status(200).json({ success: true });
   } catch (error) {
+    console.log("ERROR", error);
     res.status(400).json({ success: false, error });
   }
 };

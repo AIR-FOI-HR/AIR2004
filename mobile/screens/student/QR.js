@@ -22,6 +22,7 @@ const QR = ({ navigation }) => {
         icon: "success",
       });
     } catch (error) {
+      console.log("ERRORRRR", error.response.data);
       showMessage({
         message: "Error occured!",
         description:

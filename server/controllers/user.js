@@ -193,8 +193,6 @@ exports.getAllUsers = async (req, res) => {
 
 exports.getSingle = async (req, res) => {
   try {
-    console.log("GET SINGLE");
-
     let user = req.user;
     user = await User.findOne({ email: user.email }).populate("enrolledCourses").populate("assignedCourses");
 

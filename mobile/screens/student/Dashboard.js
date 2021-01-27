@@ -111,7 +111,7 @@ const Dashboard = ({ navigation }) => {
 
   const handleManualSubmit = () => {
     api
-      .post("/attendance/mark", { qrCode: qrCodeString, user })
+      .post("/attendance/mark", { code: qrCodeString, user: user.userId })
       .then((data) => {
         setShowModal(false);
         setQrCodeString("");
@@ -124,6 +124,7 @@ const Dashboard = ({ navigation }) => {
         });
       })
       .catch((error) => {
+        console.log("ERRORRRR", error.response.error);
         showMessage({
           message: "Error occured!",
           description:

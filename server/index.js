@@ -6,6 +6,8 @@ const routes = require("./routes");
 const swaggerJsDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 
+global.lecturesInProgress = [];
+
 // Connect to the database
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,

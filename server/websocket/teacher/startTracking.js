@@ -12,6 +12,8 @@ const startTracking = async (socket, data) => {
     attendanceToken,
   });
 
+  console.log("LECTURES IN PROGRESS", global.lecturesInProgress);
+
   global.io.of("/tablet").to(attendanceToken).emit("attendance code", { code: attendance.qrCode, lecture: lecture, attendanceToken });
 };
 

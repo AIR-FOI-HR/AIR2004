@@ -1,8 +1,6 @@
 const tabletNamespace = require("./tablet");
 const teacherNamespace = require("./teacher");
 
-global.lecturesInProgress = [];
-
 const websocket = (server) => {
   global.io = require("socket.io")(server);
   console.log("WebSocket server started!");
