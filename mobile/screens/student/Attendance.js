@@ -4,6 +4,7 @@ import { Text, useTheme } from "react-native-paper";
 import { useSelector } from "react-redux";
 import { useIsFocused } from "@react-navigation/native";
 import DropDownPicker from "react-native-dropdown-picker";
+import { Picker } from "@react-native-picker/picker";
 
 import AttendanceItem from "../student/components/AttendanceItem";
 import Loading from "../common/components/Loading";
@@ -104,35 +105,82 @@ const Attendance = () => {
               >
                 Filter by:{" "}
               </Text>
-              <View
-                style={{
-                  ...(Platform.OS !== "android" && {
-                    zIndex: 10,
-                  }),
-                }}
-              >
-                <DropDownPicker
-                  items={[
-                    { label: "Courses", value: "Courses" },
-                    { label: "Attended", value: "Attended" },
-                    { label: "Missed", value: "Missed" },
-                    { label: "Last week", value: "LastWeek" },
-                    { label: "Last month", value: "LastMonth" },
-                  ]}
-                  style={{ backgroundColor: isDarkTheme ? "#272727" : "#fff" }}
-                  arrowColor={isDarkTheme ? "#fff" : "#000"}
-                  labelStyle={{ color: isDarkTheme ? "#fff" : "#000" }}
-                  defaultValue={"Courses"}
-                  containerStyle={{ height: 40, width: 200 }}
-                  dropDownStyle={{ backgroundColor: isDarkTheme ? "#272727" : "#fff" }}
-                  itemStyle={{
-                    justifyContent: "flex-start",
-                  }}
-                  onChangeItem={(item) => onChangeFilter(item.value)}
-                />
-              </View>
-            </View>
 
+              {Platform.OS == "android" && (
+                <View style={{ marginLeft: 10, marginTop: -6 }}>
+                  <Picker
+                    selectedValue={selectedFilter}
+                    style={{ height: 50, width: 160 }}
+                    mode={"dialog"}
+                    onValueChange={(itemValue) => {
+                      onChangeFilter(itemValue);
+                    }}
+                  >
+                    {isDarkTheme ? (
+                      <Picker.Item color="#a6a6a6" label="Courses" value="Courses" />
+                    ) : (
+                      <Picker.Item label="Courses" value="Courses" />
+                    )}
+
+                    {isDarkTheme ? (
+                      <Picker.Item color="#a6a6a6" label="Attended" value="Attended" />
+                    ) : (
+                      <Picker.Item label="Attended" value="Attended" />
+                    )}
+
+                    {isDarkTheme ? (
+                      <Picker.Item color="#a6a6a6" label="Missed" value="Missed" />
+                    ) : (
+                      <Picker.Item label="Missed" value="Missed" />
+                    )}
+
+                    {isDarkTheme ? (
+                      <Picker.Item color="#a6a6a6" label="Last week" value="LastWeek" />
+                    ) : (
+                      <Picker.Item label="Last week" value="LastWeek" />
+                    )}
+
+                    {isDarkTheme ? (
+                      <Picker.Item color="#a6a6a6" label="Last month" value="LastMonth" />
+                    ) : (
+                      <Picker.Item label="Last month" value="LastMonth" />
+                    )}
+                  </Picker>
+                </View>
+              )}
+
+              {Platform.OS == "ios" && (
+                <View
+                  style={{
+                    ...(Platform.OS !== "android"
+                      ? {
+                          zIndex: 10,
+                        }
+                      : { position: "relative" }),
+                  }}
+                >
+                  <DropDownPicker
+                    items={[
+                      { label: "Courses", value: "Courses" },
+                      { label: "Attended", value: "Attended" },
+                      { label: "Missed", value: "Missed" },
+                      { label: "Last week", value: "LastWeek" },
+                      { label: "Last month", value: "LastMonth" },
+                    ]}
+                    style={{ backgroundColor: isDarkTheme ? "#272727" : "#fff" }}
+                    arrowColor={isDarkTheme ? "#fff" : "#000"}
+                    labelStyle={{ color: isDarkTheme ? "#fff" : "#000" }}
+                    defaultValue={"Courses"}
+                    containerStyle={{ height: 40, width: 200 }}
+                    dropDownStyle={{ backgroundColor: isDarkTheme ? "#272727" : "#fff" }}
+                    itemStyle={{
+                      flexDirection: "column",
+                    }}
+                    onChangeItem={(item) => onChangeFilter(item.value)}
+                  />
+                </View>
+              )}
+            </View>
             {filteredData.length !== 0 ? (
               <View style={{ height: "94%" }}>
                 <FlatList keyExtractor={(item) => item.id} data={filteredData} renderItem={({ item }) => <AttendanceItem item={item} />} />

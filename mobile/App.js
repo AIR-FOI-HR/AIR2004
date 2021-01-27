@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { DarkTheme as NavigationDarkTheme, DefaultTheme as NavigationDefaultTheme, NavigationContainer } from "@react-navigation/native";
 import merge from "deepmerge";
 import React, { useEffect, useState } from "react";
-import { Appearance } from "react-native";
+import { Appearance, LogBox } from "react-native";
 import FlashMessage from "react-native-flash-message";
 import { DarkTheme as PaperDarkTheme, DefaultTheme as PaperDefaultTheme, Provider as PaperProvider } from "react-native-paper";
 import { Provider } from "react-redux";
@@ -14,6 +14,8 @@ import store from "./store/index";
 
 const CombinedDefaultTheme = merge(PaperDefaultTheme, NavigationDefaultTheme);
 const CombinedDarkTheme = merge(PaperDarkTheme, NavigationDarkTheme);
+
+LogBox.ignoreAllLogs();
 
 const App = () => {
   const [globalTheme, setGlobalTheme] = useState();

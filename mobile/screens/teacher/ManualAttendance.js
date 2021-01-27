@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { View, StyleSheet } from "react-native";
 import { Text, Button, TextInput } from "react-native-paper";
-import SearchableDropdown from 'react-native-searchable-dropdown';
+import SearchableDropdown from "react-native-searchable-dropdown";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-
+import { showMessage } from "react-native-flash-message";
 import api from "../../utils/api";
 
 const ManualAttendance = () => {
@@ -18,7 +18,11 @@ const ManualAttendance = () => {
     api.get("/user/student").then((data) => {
       console.log("ENROLLED STUDENTS: ", data.data.data);
       const enrolledStudents = data.data.data.filter((student) => enrolledStudentsIds.includes(student.id));
-      setEnrolledStudents(enrolledStudents);
+      setEnrolledStudents(
+        enrolledStudents.map((student) => {
+          return { ...student, name: `${student.name} ${student.surname}, ${student.jmbag} ` };
+        })
+      );
     });
   }, []);
 
@@ -32,58 +36,68 @@ const ManualAttendance = () => {
       .post("/attendance/add", body)
       .then(({ data }) => {
         console.log("MANUAL ATTENDANCE ADDED");
+        showMessage({
+          message: "Thank you!",
+          description: "Attendance has been successfully saved!",
+          type: "success",
+          duration: 5000,
+          icon: "success",
+        });
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        showMessage({
+          message: "Error occured!",
+          description: "An error has occured!",
+          type: "danger",
+          duration: 7000,
+          icon: "danger",
+        });
+        console.log(error);
+      });
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.radioButtonTitle}>Course name:</Text>
 
-      <TextInput
-        style={styles.textInput}
-        value={user.courseSelectedOnTablet.course.name}
-        mode="outlined"
-        disabled="true"
-      />
-
+      <TextInput style={styles.textInput} value={user.courseSelectedOnTablet.course.name} mode="outlined" disabled="true" />
 
       <Text style={styles.studentTitle}>Lecture type:</Text>
       <Text style={styles.lectureType}>{user.courseSelectedOnTablet.lecture.type}</Text>
 
       <Text style={styles.studentTitle}>Student:</Text>
       <SearchableDropdown
-          onItemSelect={(student) => setSelectedStudent(student)}
-          containerStyle={{ padding: 5 }}
-          itemStyle={{
-            padding: 10,
-            marginTop: 2,
-            backgroundColor: '#ddd',
-            borderColor: '#bbb',
+        onItemSelect={(student) => setSelectedStudent(student)}
+        containerStyle={{ padding: 5 }}
+        itemStyle={{
+          padding: 10,
+          marginTop: 2,
+          backgroundColor: "#ddd",
+          borderColor: "#bbb",
+          borderWidth: 1,
+          borderRadius: 5,
+        }}
+        itemTextStyle={{ color: "#222" }}
+        itemsContainerStyle={{ maxHeight: 140 }}
+        items={enrolledStudents}
+        textInputProps={{
+          placeholder: `${
+            Object.keys(selectedStudent).length === 0
+              ? `Ime Prezime (JMBAG)`
+              : `${selectedStudent.name} ${selectedStudent.surname} (${selectedStudent.jmbag})`
+          }`,
+          underlineColorAndroid: "transparent",
+          style: {
+            padding: 12,
             borderWidth: 1,
+            borderColor: "#ccc",
             borderRadius: 5,
-          }}
-          itemTextStyle={{ color: '#222' }}
-          itemsContainerStyle={{ maxHeight: 140 }}
-          items={enrolledStudents}
-          textInputProps={
-            {
-              placeholder: `${Object.keys(selectedStudent).length === 0 ? `Ime Prezime (JMBAG)` : `${selectedStudent.name} ${selectedStudent.surname} (${selectedStudent.jmbag})`}`,
-              underlineColorAndroid: "transparent",
-              style: {
-                  padding: 12,
-                  borderWidth: 1,
-                  borderColor: '#ccc',
-                  borderRadius: 5,
-              },
-            }
-          }
-          listProps={
-            {
-              nestedScrollEnabled: true,
-            }
-          }
-        />
+          },
+        }}
+        listProps={{
+          nestedScrollEnabled: true,
+        }}
+      />
       <Button
         style={{ marginTop: 50 }}
         mode="contained"
@@ -118,7 +132,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   lectureType: {
-    paddingTop:10,
+    paddingTop: 10,
     fontSize: 18,
   },
   textInput: {
