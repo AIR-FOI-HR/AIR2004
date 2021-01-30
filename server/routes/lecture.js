@@ -18,16 +18,18 @@ const auth = require("../middleware/auth");
  *        type: "object"
  *        properties:
  *          course:
- *            type: "number"
+ *            type: "string"
  *          type:
  *            type: "string"
- *          time start:
+ *          timeStart:
  *            type: "date"
- *          time end:
+ *          timeEnd:
  *            type: "date"
  *    responses:
  *      '200':
  *        description: A successful response
+ *      '400':
+ *        description: An unsuccessful response
  */
 
 router.post("/add", lectureController.add);
@@ -39,22 +41,14 @@ router.post("/add", lectureController.add);
  *    tags:
  *    - "/lecture/"
  *    summary: Get all past lectures of courses that have been assigned to a given teacher
- *    parameters:
- *    - in: header
- *      name: Bearer
- *      description: User token
  *    responses:
  *      '200':
- *        description: A successful response
+ *        description: A successful response, containing past lectures for the given teacher
  *      '400':
  *        description: An unsuccessful response
  */
 
-router.get(
-  "/lecturesForTeacher",
-  auth,
-  lectureController.getLecturesForTeacher
-);
+router.get("/lecturesForTeacher", auth, lectureController.getLecturesForTeacher);
 
 /**
  * @swagger
@@ -63,13 +57,9 @@ router.get(
  *    tags:
  *    - "/lecture/"
  *    summary: Fetch all students that have attended a given lecture
- *    parameters:
- *    - in: header
- *      name: Bearer
- *      description: User token
  *    responses:
  *      '200':
- *        description: A successful response
+ *        description: A successful response, containing all students that have attended a given lecture
  *      '400':
  *        description: An unsuccessful response
  */
@@ -85,7 +75,9 @@ router.post("/studentsForLecture", lectureController.studentsForLecture);
  *    summary: Get all lectures
  *    responses:
  *      '200':
- *        description: A successful response
+ *        description: A list of all lectures
+ *      '400':
+ *        description: An unsuccessful response
  */
 
 router.get("/", lectureController.getAll);

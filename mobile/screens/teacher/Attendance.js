@@ -51,42 +51,50 @@ const Attendance = ({ navigation }) => {
         </View>
       </View>
     );
-
-  return (
-    <View>
-      <View style={{ width: "100%", height: "100%" }}>
-        <FAB.Group
-          open={fabOpen}
-          style={styles.fab}
-          small
-          icon="plus"
-          actions={[
-            {
-              icon: "account-plus",
-              label: "Manual entry",
-              style: { backgroundColor: "#62D7C5" },
-              onPress: () => navigation.push("ManualAttendance"),
-            },
-            {
-              icon: "check-all",
-              label: "Finish tracking",
-              style: { backgroundColor: "#62D7C5" },
-              onPress: () => navigation.navigate("Dashboard"),
-            },
-          ]}
-          onStateChange={({ open }) => setFabOpen(open)}
-        />
-        <View style={{ margin: 10 }}>
-          <Text style={styles.title}>Now tracking:</Text>
-          <Text style={styles.courseName}>{teacher.courseSelectedOnTablet.course.name}</Text>
-          <ActivityIndicator animating={true} size={40} style={{ paddingVertical: 10 }} />
+  if (teacher.trackingStarted == true)
+    return (
+      <View>
+        <View style={{ width: "100%", height: "100%" }}>
+          <FAB.Group
+            open={fabOpen}
+            style={styles.fab}
+            small
+            icon="plus"
+            actions={[
+              {
+                icon: "account-plus",
+                label: "Manual entry",
+                style: { backgroundColor: "#62D7C5" },
+                onPress: () => navigation.push("ManualAttendance"),
+              },
+              {
+                icon: "check-all",
+                label: "Finish tracking",
+                style: { backgroundColor: "#62D7C5" },
+                onPress: () => navigation.navigate("Dashboard"),
+              },
+            ]}
+            onStateChange={({ open }) => setFabOpen(open)}
+          />
+          <View style={{ margin: 10 }}>
+            <Text style={styles.title}>Now tracking:</Text>
+            <Text style={styles.courseName}>{teacher.courseSelectedOnTablet.course.name}</Text>
+            <ActivityIndicator animating={true} size={40} style={{ paddingVertical: 10 }} />
+          </View>
+          <ScrollView>
+            {!attendances.length && <Text style={{ textAlign: "center" }}>There are no marked attendances yet!</Text>}
+            {attendances.map((attendance) => (
+              <StudentAttendanceCard key={attendance.id} data={attendance} />
+            ))}
+          </ScrollView>
         </View>
-        <ScrollView>
-          {!attendances.length && <Text style={{ textAlign: "center" }}>There are no marked attendances yet!</Text>}
-          {attendances.map((attendance) => (
-            <StudentAttendanceCard key={attendance.id} data={attendance} />
-          ))}
-        </ScrollView>
+      </View>
+    );
+  return (
+    <View style={styles.container}>
+      <View>
+        <Text style={{ textAlign: "center", fontSize: 20, fontWeight: "500", marginBottom: 20 }}>Attendance marking is not started!</Text>
+        <Text style={{ textAlign: "center" }}>Please start tracking the attendance.</Text>
       </View>
     </View>
   );

@@ -26,7 +26,7 @@ const QR = ({ navigation }) => {
       showMessage({
         message: "Error occured!",
         description:
-          "You either scanned an invalid QR code or you have already marked your attendance to this lecture. If you think this is an error, please ask the teacher for assitance.",
+          "You either scanned an invalid QR code or you have already marked your attendance to this lecture. If you think this is an error, please ask the teacher for assistance.",
         type: "danger",
         duration: 7000,
         icon: "danger",

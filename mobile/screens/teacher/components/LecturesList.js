@@ -5,7 +5,6 @@ import api from "../../../utils/api";
 import LectureItem from "./LectureItem";
 import { setLectures } from "../../../store/actions/teacher";
 const LecturesList = ({ navigation }) => {
-  const user = useSelector((state) => state.userState);
   const lectures = useSelector((state) => state.teacherState.lectures);
   const dispatch = useDispatch();
   useEffect(() => {
@@ -18,9 +17,7 @@ const LecturesList = ({ navigation }) => {
     <BottomSheetFlatList
       keyExtractor={(lecture) => lecture.id}
       data={lectures}
-      renderItem={({ item }) => (
-        <LectureItem lecture={item} navigation={navigation} />
-      )}
+      renderItem={({ item }) => <LectureItem lecture={item} navigation={navigation} />}
     />
   );
 };

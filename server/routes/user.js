@@ -24,6 +24,8 @@ const auth = require("../middleware/auth");
  *    responses:
  *      '200':
  *        description: A successful response
+ *      '400':
+ *        description: An unsuccessful response
  */
 
 router.post("/login", userController.login);
@@ -47,6 +49,8 @@ router.post("/login", userController.login);
  *    responses:
  *      '200':
  *        description: A successful response
+ *      '400':
+ *        description: An unsuccessful response
  */
 
 router.post("/login/tablet", auth, userController.loginTablet);
@@ -59,9 +63,6 @@ router.post("/login/tablet", auth, userController.loginTablet);
  *    - "/user/"
  *    summary: Enroll a student into a specified course
  *    parameters:
- *    - in: header
- *      name: Bearer
- *      description: User token
  *    - name: "body"
  *      in: "body"
  *      description: "Course join passcode"
@@ -256,7 +257,7 @@ router.post("/:role/register", userController.register);
  *      '200':
  *        description: Detailed information about the requested user
  *      '400':
- *        description: An unsuccessful request
+ *        description: An unsuccessful response
  */
 
 router.get("/details", auth, userController.getSingle);
@@ -271,6 +272,8 @@ router.get("/details", auth, userController.getSingle);
  *    responses:
  *      '200':
  *        description: A successful response
+ *      '400':
+ *        description: An unsuccessful response
  */
 
 router.get("/:role", userController.getAllUsers);
