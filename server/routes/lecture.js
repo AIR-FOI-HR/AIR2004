@@ -96,11 +96,8 @@ router.get("/", lectureController.getAll);
  *    responses:
  *      '200':
  *        description: A successful response
- * /lecture/:id
- *  delete:
- *    tags:
- *    - "/lecture/"
- *    summary: Delete lecture by id
+ *      '400':
+ *        description: An unsuccessful response
  */
 
 router.delete("/:id", lectureController.delete);
@@ -119,11 +116,8 @@ router.delete("/:id", lectureController.delete);
  *    responses:
  *      '200':
  *        description: A successful response
- * /lecture/update/:id
- *  update:
- *    tags:
- *    - "/lecture/"
- *    summary: Update lecture by id
+ *      '400':
+ *        description: An unsuccessful response
  */
 
 router.post("/update/:id", lectureController.update);
