@@ -292,34 +292,28 @@ router.get("/:role", userController.getAllUsers);
  *    responses:
  *      '200':
  *        description: A successful response
- * /user/:id
- *  delete:
- *    tags:
- *    - "/user/"
- *    summary: Delete user by id
+ *      '400':
+ *        description: An unsuccessful response
  */
 
 router.delete("/:id", userController.delete);
 
 /** @swagger
-* /user/:
-*  update:
-*    tags:
-*    - "/user/"
-*    summary: Update user with the given ID
-*    parameters:
-*    - name: "id"
-*      in: "path"
-*      description: "User ID"
-*    responses:
-*      '200':
-*        description: A successful response
-* /user/update/:id
-*  update:
-*    tags:
-*    - "/user/"
-*    summary: Update user by id
-*/
+ * /user/:
+ *  update:
+ *    tags:
+ *    - "/user/"
+ *    summary: Update user with the given ID
+ *    parameters:
+ *    - name: "id"
+ *      in: "path"
+ *      description: "User ID"
+ *    responses:
+ *      '200':
+ *        description: A successful response
+ *      '400':
+ *        description: An unsuccessful response
+ */
 
 router.post("/update/:id", userController.update);
 
