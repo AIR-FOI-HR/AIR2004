@@ -58,7 +58,9 @@ router.get("/:id/details", courseController.getSingle);
  *    summary: Get all courses
  *    responses:
  *      '200':
- *        description: A successful response
+ *        description: A successful response, with all courses
+ *      '400':
+ *        description: An unsuccessful response
  */
 
 router.get("/", courseController.getAll);
@@ -77,6 +79,8 @@ router.get("/", courseController.getAll);
  *    responses:
  *      '200':
  *        description: A successful response
+ *      '400':
+ *        description: An unsuccessful response
  */
 
 router.delete("/:id", courseController.delete);
@@ -95,6 +99,8 @@ router.delete("/:id", courseController.delete);
  *    responses:
  *      '200':
  *        description: A successful response
+ *      '400':
+ *        description: An unsucessful response
  */
 
 router.put("/:id", courseController.update);

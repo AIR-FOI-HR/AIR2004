@@ -1,19 +1,6 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  StyleSheet,
-  FlatList,
-  TouchableWithoutFeedback,
-} from "react-native";
-import {
-  Text,
-  Surface,
-  Card,
-  Paragraph,
-  DefaultTheme,
-  Provider as PaperProvider,
-  FAB,
-} from "react-native-paper";
+import { View, StyleSheet, FlatList, TouchableWithoutFeedback } from "react-native";
+import { Text, Surface, Card, Paragraph, DefaultTheme, Provider as PaperProvider, FAB } from "react-native-paper";
 import { useSelector } from "react-redux";
 import { showMessage, hideMessage } from "react-native-flash-message";
 
@@ -86,9 +73,7 @@ const Statistics = ({ navigation }) => {
                           }}
                         >
                           <Card.Content>
-                            <Paragraph style={{ fontWeight: "bold" }}>
-                              {item.name}
-                            </Paragraph>
+                            <Paragraph style={{ fontWeight: "bold" }}>{item.name}</Paragraph>
                           </Card.Content>
                         </Card>
                       </TouchableWithoutFeedback>
@@ -114,9 +99,7 @@ const Statistics = ({ navigation }) => {
                 >
                   You don't have any course enrolled yet!
                 </Text>
-                <Text style={{ textAlign: "center" }}>
-                  Courses will be displayed after your first enroll on course.
-                </Text>
+                <Text style={{ textAlign: "center" }}>Courses will be displayed after your first enroll on course.</Text>
               </View>
             )}
           </View>

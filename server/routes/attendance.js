@@ -36,7 +36,9 @@ router.post("/add", attendanceController.add);
  *    summary: Get all attendances by student
  *    responses:
  *      '200':
- *        description: A successful response
+ *        description: A successful response, with all attendances for a given student
+ *      '400':
+ *        description: An unsuccessful response
  */
 router.get("/by-student", auth, attendanceController.getAllByStudent);
 
@@ -49,7 +51,9 @@ router.get("/by-student", auth, attendanceController.getAllByStudent);
  *    summary: Get all attendances
  *    responses:
  *      '200':
- *        description: A successful response
+ *        description: A successful response, with all attendances
+ *      '400':
+ *        description: An unsuccessful response
  */
 router.get("/", auth, attendanceController.getAll);
 
@@ -80,49 +84,35 @@ router.post("/mark", attendanceController.markAttendance);
 /**
  * @swagger
  * /attendance/delete/:id:
- *  post:
+ *  delete:
  *    tags:
  *    - "/attendance/"
  *    summary: Delete attendance
  *    parameters:
- *    - name: "body"
- *      in: "body"
- *      description: "Attendance's data"
- *      schema:
- *        type: "object"
- *        properties:
- *          code:
- *            type: "string"
- *          user:
- *            type: "string"
+ *    - name: "id"
+ *      in: "path"
+ *      description: "Attendance ID"
  *    responses:
  *      '200':
- *        description: A successful response
+ *        description: A successful response, denoting that the attendance has been successfully deleted
+ *      '400':
+ *        description: An unsuccessful response
  */
 router.delete("/:id", attendanceController.delete);
 
 /**
  * @swagger
  * /attendance/missed:
- *  post:
+ *  get:
  *    tags:
  *    - "/attendance/"
  *    summary: Get missed attendances
- *    parameters:
- *    - name: "body"
- *      in: "body"
- *      description: "Attendance's data"
- *      schema:
- *        type: "object"
- *        properties:
- *          code:
- *            type: "string"
- *          user:
- *            type: "string"
  *    responses:
  *      '200':
- *        description: A successful response
+ *        description: A successful response with all missed attendances
+ *      '400':
+ *        description: An unsuccessful response
  */
-router.get("/missed", attendanceController.getMissed);
+router.get("/missed", auth, attendanceController.getMissed);
 
 module.exports = router;

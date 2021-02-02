@@ -242,6 +242,8 @@ router.post("/resetPassword", userController.resetPassword);
  *    responses:
  *      '200':
  *        description: A successful response
+ *      '400':
+ *        description: An unsuccesful response
  */
 
 router.post("/:role/register", userController.register);
@@ -298,9 +300,10 @@ router.get("/:role", userController.getAllUsers);
 
 router.delete("/:id", userController.delete);
 
-/** @swagger
+/**
+ * @swagger
  * /user/:
- *  update:
+ *  post:
  *    tags:
  *    - "/user/"
  *    summary: Update user with the given ID
@@ -316,6 +319,24 @@ router.delete("/:id", userController.delete);
  */
 
 router.post("/update/:id", userController.update);
+
+/**
+ * @swagger
+ * /user/:
+ *  put:
+ *    tags:
+ *    - "/user/"
+ *    summary: Given a user's ID, reset user's device ID
+ *    parameters:
+ *    - name: "id"
+ *      in: "path"
+ *      description: "User ID"
+ *    responses:
+ *      '200':
+ *        description: A successful response, denoting that the user's device UID has been successfully deleted
+ *      '400':
+ *        description: An unsuccessful response
+ */
 
 router.put("/reset-uid/:id", userController.resetUID);
 
