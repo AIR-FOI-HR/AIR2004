@@ -53,6 +53,7 @@ exports.getSingle = async (req, res) => {
     res.status(400).json({ success: false, error });
   }
 };
+
 exports.delete = async (req, res) => {
   try {
     const course = await (await Course.findById(req.params.id)).deleteOne();

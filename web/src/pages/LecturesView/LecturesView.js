@@ -7,6 +7,7 @@ import api from "../../api/api";
 import { useStyles } from "./styles";
 import { useHistory } from "react-router-dom"
 import { Button } from "@material-ui/core";
+import { useSelector } from "react-redux";
 
 const LecturesView = () => {
   const classes = useStyles();
@@ -19,20 +20,64 @@ const LecturesView = () => {
       setAllLectures(response.data.data);
     });
   }, []);
-  const redirect = () => {
+
+  const add = () => {
     history.push('/lectures/add');
   };
+
+  const edit = () => {
+    history.push('/lectures/edit');
+  };
+
+  const selectedLecture = useSelector(state => state.lectureEdit);
+
+  const deleteLecture = (selectedLecture) => {
+    if (selectedLecture !== null) {
+      console.log('delete lecture: ', selectedLecture);
+    api
+      .delete(`/lecture/${selectedLecture.id}`, {
+        headers: { "Content-Type": "application/json" },
+      })
+      .then((response) => {
+        console.log("RESPONSE", response);
+        //setSnackBarData({ isOpen: true, response: response.data.success });
+        history.go(0);
+      })
+      .catch((error) => {
+        //setSnackBarData({ isOpen: true, response: false });
+      });
+    }
+  } 
+
   return (
     <>
       <Grid container className={classes.container}>
-      <Button
+        <Button
           type="add"
           variant="contained"
           color="primary"
-          className={classes.add}
-          onClick={redirect}
+          className={classes.button}
+          onClick={add}
         >
-          New lecture
+          New
+        </Button>
+        <Button
+          type="delete"
+          variant="contained"
+          color="secondary"
+          className={classes.button}
+          onClick={() => deleteLecture(selectedLecture)}
+        >
+          Delete
+        </Button>
+        <Button
+          type="update"
+          variant="contained"
+          color="default"
+          className={classes.button}
+          onClick={edit}
+        >
+          Edit
         </Button>
         <Grid item>
           <Paper

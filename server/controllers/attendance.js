@@ -45,6 +45,18 @@ exports.delete = async (req, res) => {
 exports.getAll = async (req, res) => {
   try {
     let user = req.user;
+    const allAttendances = await Attendance.find();
+    const data = allAttendances.map((attendance) => attendance.toJSON());
+    res.status(200).json({ success: true, data });
+  } catch (error) {
+    res.status(400).json({ success: false, error });
+  }
+};
+
+exports.getAllByStudent = async (req, res) => {
+  try {
+    const token = req.header("Authorization").replace("Bearer ", "");
+    let studentTokenData = jwt.verify(token, process.env.JWT_SECRET);
 
     let student = await User.find({ jmbag: user.jmbag });
 

@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import MUIDataTable from "mui-datatables";
 import { useDispatch } from "react-redux";
 import { courseEdit } from "../../../store/actions/userActions";
+import api from "../../../api/api";
 
-const columns = ["Name", "Passcode", "Allowed absences", "Enrolled students"];
+const columns = ["Name", "Passcode", "Teachers", "Allowed absences",  "Enrolled students"];
 
 let ids = [];
 
@@ -31,7 +32,8 @@ const CoursesDataTable = ({ courses }) => {
        id: ids[rowMeta.rowIndex],
        name: rowData[0],
        passcode: rowData[1],
-       allowedAbsences: rowData[2]
+       teachers: rowData[2],
+       allowedAbsences: rowData[3]
     };
     addBackground(rowMeta.rowIndex)
     setIndex(rowMeta.rowIndex);
@@ -39,13 +41,19 @@ const CoursesDataTable = ({ courses }) => {
   };
 
   const options = {
-    selectableRows: false,
+    selectableRows: "none",
     onRowClick: handleRowClick
   };
-  
+
   courses.map((course) => {
     ids.push(course.id);
-    let _course = [course.name, course.passcode, course.allowedAbsences, course.enrolledStudents ? course.enrolledStudents.length : 0];
+
+    let _course = [
+      course.name, 
+      course.passcode, 
+      course.assignedTeachers,
+      course.allowedAbsences, 
+      course.enrolledStudents ? course.enrolledStudents.length : 0];
 
     data.push(_course);
   });

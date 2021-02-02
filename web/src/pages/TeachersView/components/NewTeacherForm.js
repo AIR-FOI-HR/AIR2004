@@ -77,12 +77,12 @@ const NewTeacherForm = () => {
         console.log("RESPONSE", response);
         setSnackBarData({ isOpen: true, response: response.data.success });
         reset();
+        history.push('/teachers');
       })
       .catch((error) => {
         setSnackBarData({ isOpen: true, response: false });
         reset();
       });
-      history.push('/teachers');
   };
   return (
     <>

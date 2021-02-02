@@ -1,64 +1,61 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { TextField, Button, Typography, Snackbar } from "@material-ui/core";
 import { useForm } from "react-hook-form";
 import Alert from "../../../components/Alert";
 import * as Yup from "yup";
 import { useHistory } from "react-router-dom";
+import { useSelector, useDispatch } from  "react-redux";
+import { teacherEdit } from "../../../store/actions/userActions";
 
 import api from "../../../api/api";
 
 import { yupResolver } from "@hookform/resolvers/yup";
-const initialValues = {
-  name: "",
-  surname: "",
-  email: "",
-  password: "",
-  jmbag: "",
-  phoneNumber: "",
-};
+
+const positiveInteger = Yup.number()
+  .integer("Only integers are accepted!")
+  .typeError("Only integers are accepted!")
+  .positive("You need to enter a positive integer!")
+  .nullable()
+  .transform((value, originalValue) => (originalValue.trim() === "" ? null : value));
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required("This field is required!"),
   surname: Yup.string().required("This field is required!"),
-  email: Yup.string()
-    .email("You need to enter a valid email!")
-    .required("This field is required!"),
-  password: Yup.string().required("This field is required!"),
-  jmbag: Yup.string()
-    .length(10, "JMBAG must be 10 characters long!")
-    .required("This field is required!"),
-  phoneNumber: Yup.string()
-    .min(10, "Phone number must be 10-15 characters long!")
-    .max(15, "Phone number must be 10-15 characters long!")
-    .required("This field is required!"),
+  email: Yup.string().required("This field is required!"),
+  phoneNumber: Yup.string().required("This field is required!")
 });
 
-const NewStudentForm = () => {
+const EditTeacherForm = () => {
+  const selectedTeacher = useSelector((state) => state.teacherEdit);
+
+  const dispatch = useDispatch();
+
   const [SnackbarData, setSnackBarData] = useState({
     isOpen: false,
     response: null,
   });
-  const handleSnackBarClose = (event, reason) =>
-    setSnackBarData({ ...SnackbarData, isOpen: false });
+  const handleSnackBarClose = (event, reason) => setSnackBarData({ ...SnackbarData, isOpen: false });
   const classes = useStyles();
   const { register, handleSubmit, errors, reset } = useForm({
     mode: "onChange",
     resolver: yupResolver(validationSchema),
-    defaultValues: initialValues,
+    defaultValues: selectedTeacher
   });
   const history = useHistory();
   const onSubmit = (data) => {
-    console.log("FORM DATA", data);
+    const teacher = { data, id: selectedTeacher.id }
+    console.log('teacher: ', teacher)
+    
     api
-      .post("/user/student/register", JSON.stringify(data), {
+      .post(`/user/update/${teacher.id}`, JSON.stringify(teacher.data), {
         headers: { "Content-Type": "application/json" },
       })
       .then((response) => {
         console.log("RESPONSE", response);
         setSnackBarData({ isOpen: true, response: response.data.success });
         reset();
-        history.push('/students');
+        history.push('/teachers');
       })
       .catch((error) => {
         setSnackBarData({ isOpen: true, response: false });
@@ -80,12 +77,14 @@ const NewStudentForm = () => {
           fullWidth
           id="name"
           autoComplete="name"
+          value={selectedTeacher.name}
+          onChange={({ target }) => dispatch(teacherEdit({...selectedTeacher, name: target.value}))}
         />
         {errors.name?.message && <Typography>{errors.name.message}</Typography>}
 
         <TextField
           name="surname"
-          label="Surname"
+          label="Surame"
           variant="outlined"
           margin="normal"
           required
@@ -93,10 +92,10 @@ const NewStudentForm = () => {
           fullWidth
           id="surname"
           autoComplete="surname"
+          value={selectedTeacher.surname}
+          onChange={({ target }) => dispatch(teacherEdit({...selectedTeacher, surname: target.value}))}
         />
-        {errors.surname?.message && (
-          <Typography>{errors.surname.message}</Typography>
-        )}
+        {errors.surname?.message && <Typography>{errors.surname.message}</Typography>}
 
         <TextField
           name="email"
@@ -108,40 +107,11 @@ const NewStudentForm = () => {
           fullWidth
           id="email"
           autoComplete="email"
+          value={selectedTeacher.email}
+          onChange={({ target }) => dispatch(teacherEdit({...selectedTeacher, email: target.value}))}
         />
-        {errors.email?.message && (
-          <Typography>{errors.email.message}</Typography>
-        )}
+        {errors.email?.message && <Typography>{errors.email.message}</Typography>}
 
-        <TextField
-          name="password"
-          label="Password"
-          variant="outlined"
-          margin="normal"
-          required
-          type="password"
-          inputRef={register}
-          fullWidth
-          id="password"
-          autoComplete="password"
-        />
-        {errors.password?.message && (
-          <Typography>{errors.password.message}</Typography>
-        )}
-        <TextField
-          name="jmbag"
-          label="JMBAG"
-          variant="outlined"
-          margin="normal"
-          required
-          inputRef={register}
-          fullWidth
-          id="jmbag"
-          autoComplete="jmbag"
-        />
-        {errors.jmbag?.message && (
-          <Typography>{errors.jmbag.message}</Typography>
-        )}
         <TextField
           name="phoneNumber"
           label="Phone number"
@@ -152,33 +122,19 @@ const NewStudentForm = () => {
           fullWidth
           id="phoneNumber"
           autoComplete="phoneNumber"
+          value={selectedTeacher.phoneNumber}
+          onChange={({ target }) => dispatch(teacherEdit({...selectedTeacher, phoneNumber: target.value}))}
         />
-        {errors.phoneNumber?.message && (
-          <Typography>{errors.phoneNumber.message}</Typography>
-        )}
-        <Button
-          type="submit"
-          fullWidth
-          variant="contained"
-          color="primary"
-          className={classes.submit}
-        >
-          Add new student
+        {errors.phoneNumber?.message && <Typography>{errors.phoneNumber.message}</Typography>}
+
+        <Button type="submit" fullWidth variant="contained" color="primary" className={classes.submit}>
+          Update teacher
         </Button>
       </form>
-      <Snackbar
-        open={SnackbarData.isOpen}
-        autoHideDuration={4000}
-        onClose={handleSnackBarClose}
-      >
+      <Snackbar open={SnackbarData.isOpen} autoHideDuration={4000} onClose={handleSnackBarClose}>
         {SnackbarData.response != null && (
-          <Alert
-            onClose={handleSnackBarClose}
-            severity={SnackbarData.response == false ? "error" : "success"}
-          >
-            {SnackbarData.response == false
-              ? "Unable to register new student! Please check your data!"
-              : "Successfully registered new student!"}
+          <Alert onClose={handleSnackBarClose} severity={SnackbarData.response == false ? "error" : "success"}>
+            {SnackbarData.response == false ? "Unable to update teacher! Please check your data!" : "Teacher successfully updated!"}
           </Alert>
         )}
       </Snackbar>
@@ -186,7 +142,7 @@ const NewStudentForm = () => {
   );
 };
 
-export default NewStudentForm;
+export default EditTeacherForm;
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -195,11 +151,9 @@ const useStyles = makeStyles((theme) => ({
     overflow: "auto",
     flexDirection: "column",
   },
-
   Paper: {
     height: "fit-content",
   },
-
   form: {
     width: "60%",
     marginTop: theme.spacing(1),

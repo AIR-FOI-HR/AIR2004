@@ -17,3 +17,31 @@ export const courseEdit = (row) => {
     selectedRow: row
   }
 };
+
+export const studentEdit = (row) => {
+  return {
+    type: "EDIT_STUDENT",
+    selectedRow: row
+  }
+};
+
+export const teacherEdit = (row) => {
+  return {
+    type: "EDIT_TEACHER",
+    selectedRow: row
+  }
+};
+
+export const lectureEdit = (row) => {
+  return {
+    type: "EDIT_LECTURE",
+    selectedRow: row
+  }
+};
+
+export const attendanceEdit = (row) => {
+  return {
+    type: "EDIT_ATTENDANCE",
+    selectedRow: row
+  }
+};

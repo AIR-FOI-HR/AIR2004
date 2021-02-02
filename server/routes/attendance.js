@@ -33,6 +33,19 @@ router.post("/add", attendanceController.add);
  *  get:
  *    tags:
  *    - "/attendance/"
+ *    summary: Get all attendances by student
+ *    responses:
+ *      '200':
+ *        description: A successful response
+ */
+router.get("/by-student", attendanceController.getAllByStudent);
+
+/**
+ * @swagger
+ * /attendance/:
+ *  get:
+ *    tags:
+ *    - "/attendance/"
  *    summary: Get all attendances
  *    responses:
  *      '200':
@@ -63,7 +76,53 @@ router.get("/", auth, attendanceController.getAll);
  *        description: A successful response
  */
 router.post("/mark", attendanceController.markAttendance);
+
+/**
+ * @swagger
+ * /attendance/delete/:id:
+ *  post:
+ *    tags:
+ *    - "/attendance/"
+ *    summary: Delete attendance
+ *    parameters:
+ *    - name: "body"
+ *      in: "body"
+ *      description: "Attendance's data"
+ *      schema:
+ *        type: "object"
+ *        properties:
+ *          code:
+ *            type: "string"
+ *          user:
+ *            type: "string"
+ *    responses:
+ *      '200':
+ *        description: A successful response
+ */
 router.delete("/:id", attendanceController.delete);
-router.get("/missed", auth, attendanceController.getMissed);
+
+/**
+ * @swagger
+ * /attendance/missed:
+ *  post:
+ *    tags:
+ *    - "/attendance/"
+ *    summary: Get missed attendances
+ *    parameters:
+ *    - name: "body"
+ *      in: "body"
+ *      description: "Attendance's data"
+ *      schema:
+ *        type: "object"
+ *        properties:
+ *          code:
+ *            type: "string"
+ *          user:
+ *            type: "string"
+ *    responses:
+ *      '200':
+ *        description: A successful response
+ */
+router.get("/missed", attendanceController.getMissed);
 
 module.exports = router;

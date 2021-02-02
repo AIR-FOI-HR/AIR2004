@@ -6,7 +6,8 @@ import clsx from "clsx";
 import { Button } from "@material-ui/core";
 import TeachersDataTable from "./components/TeachersDataTable";
 import api from "../../api/api";
-import { useHistory } from "react-router-dom"
+import { useHistory } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const TeachersView = () => {
   const classes = useStyles();
@@ -19,20 +20,64 @@ const TeachersView = () => {
       setAllTeachers(response.data.data);
     });
   }, []);
-  const redirect = () => {
+  
+  const add = () => {
     history.push('/teachers/add');
   };
+
+  const edit = () => {
+    history.push('/teachers/edit');
+  };
+
+  const selectedTeacher = useSelector(state => state.teacherEdit);
+
+  const deleteTeacher = (selectedTeacher) => {
+    if (selectedTeacher !== null) {
+      console.log('delete teacher: ', selectedTeacher);
+    api
+      .delete(`/user/${selectedTeacher.id}`, {
+        headers: { "Content-Type": "application/json" },
+      })
+      .then((response) => {
+        console.log("RESPONSE", response);
+        //setSnackBarData({ isOpen: true, response: response.data.success });
+        history.go(0);
+      })
+      .catch((error) => {
+        //setSnackBarData({ isOpen: true, response: false });
+      });
+    }
+  } 
+
   return (
     <>
       <Grid container className={classes.container}>
-      <Button
+        <Button
           type="add"
           variant="contained"
           color="primary"
-          className={classes.add}
-          onClick={redirect}
+          className={classes.button}
+          onClick={add}
         >
-          New teacher
+          New
+        </Button>
+        <Button
+          type="delete"
+          variant="contained"
+          color="secondary"
+          className={classes.button}
+          onClick={() => deleteTeacher(selectedTeacher)}
+        >
+          Delete
+        </Button>
+        <Button
+          type="update"
+          variant="contained"
+          color="default"
+          className={classes.button}
+          onClick={edit}
+        >
+          Edit
         </Button>
         <Grid item>
           <Paper

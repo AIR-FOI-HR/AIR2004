@@ -13,6 +13,7 @@ const useStyles = makeStyles((theme) => ({
   Paper: {
     height: "fit-content",
     margin: "2%",
+    width: "650px"
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
@@ -20,6 +21,9 @@ const useStyles = makeStyles((theme) => ({
   },
   container: {
     margin: "5% 25%"
+  },
+  button: {
+    margin: theme.spacing(1),
   },
 }));
 
