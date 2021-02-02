@@ -25,7 +25,7 @@ const auth = require("../middleware/auth");
  *      '200':
  *        description: A successful response
  */
-router.post("/add", auth, attendanceController.add);
+router.post("/add", attendanceController.add);
 
 /**
  * @swagger
@@ -38,7 +38,7 @@ router.post("/add", auth, attendanceController.add);
  *      '200':
  *        description: A successful response
  */
-router.get("/by-student", attendanceController.getAllByStudent);
+router.get("/by-student", auth, attendanceController.getAllByStudent);
 
 /**
  * @swagger
