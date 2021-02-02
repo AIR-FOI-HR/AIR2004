@@ -48,7 +48,7 @@ const Dashboard = ({ navigation }) => {
       setEnrolledCourses(data.data.data.enrolledCourses);
 
       api
-        .get("/by-student")
+        .get("attendance/by-student")
         .then((data) => {
           setTodayAttendanceData(
             data.data.data.filter((item) =>

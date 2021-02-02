@@ -26,7 +26,7 @@ const Attendance = () => {
   useEffect(() => {
     setLoading(true);
     api
-      .get("/by-student")
+      .get("attendance/by-student")
       .then(({ data }) => {
         setAttendanceData(data.data);
         setFilteredData(
