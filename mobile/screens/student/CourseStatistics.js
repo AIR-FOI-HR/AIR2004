@@ -25,7 +25,7 @@ const CourseStatistics = ({ route }) => {
     const getAllSubmitedAttendances = async () => {
       setLoading(true);
       await api
-        .get("/attendance")
+        .get("/by-student")
         .then(({ data }) => {
           setAttendanceData(
             data.data

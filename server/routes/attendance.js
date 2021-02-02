@@ -25,7 +25,7 @@ const auth = require("../middleware/auth");
  *      '200':
  *        description: A successful response
  */
-router.post("/add", attendanceController.add);
+router.post("/add", auth, attendanceController.add);
 
 /**
  * @swagger
