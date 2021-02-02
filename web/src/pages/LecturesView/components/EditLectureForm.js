@@ -3,28 +3,37 @@ import { makeStyles } from "@material-ui/core/styles";
 import { TextField, Button, Typography, Snackbar, MenuItem } from "@material-ui/core";
 import { useForm } from "react-hook-form";
 import Alert from "../../../components/Alert";
-import ReactHookFormSelect from "./ReactHookFormSelect";
 import * as Yup from "yup";
 import { useHistory } from "react-router-dom";
+import { useSelector, useDispatch } from  "react-redux";
+import { lectureEdit } from "../../../store/actions/userActions";
+import ReactHookFormSelect from "./ReactHookFormSelect";
 
 import api from "../../../api/api";
 
 import { yupResolver } from "@hookform/resolvers/yup";
-const initialValues = {
-  course: "",
-  type: "",
-  timeStart: "",
-  timeEnd: "",
-};
+
+const moment = require("moment");
+
+const positiveInteger = Yup.number()
+  .integer("Only integers are accepted!")
+  .typeError("Only integers are accepted!")
+  .positive("You need to enter a positive integer!")
+  .nullable()
+  .transform((value, originalValue) => (originalValue.trim() === "" ? null : value));
 
 const validationSchema = Yup.object().shape({
-  course: Yup.number().required("This field is required!"),
+  course: Yup.string().required("This field is required!"),
   type: Yup.string().required("This field is required!"),
   timeStart: Yup.date().required("This field is required!"),
-  timeEnd: Yup.date().required("This field is required!"),
+  timeEnd: Yup.date().required("This field is required!")
 });
 
-const NewLectureForm = () => {
+const EditLectureForm = () => {
+  const selectedLecture = useSelector((state) => state.lectureEdit);
+
+  const dispatch = useDispatch();
+
   const [SnackbarData, setSnackBarData] = useState({
     isOpen: false,
     response: null,
@@ -33,6 +42,8 @@ const NewLectureForm = () => {
   const classes = useStyles();
   const { register, handleSubmit, errors, reset, control } = useForm({
     mode: "onChange",
+    resolver: yupResolver(validationSchema),
+    defaultValues: selectedLecture
   });
 
   const [allCourses, setAllCourses] = useState([]);
@@ -42,11 +53,16 @@ const NewLectureForm = () => {
       setAllCourses(response.data.data);
     });
   }, []);
+
   const history = useHistory();
   const onSubmit = (data) => {
-    console.log('lecture data: ', data);
+    const lecture = { id: selectedLecture.id, 
+                      type: data.type, 
+                      timeStart: moment(data.timeStart).format("yyy-MM-DDTHH:mm:ss.SSS"),
+                      timeEnd: moment(data.timeEnd).format("yyy-MM-DDTHH:mm:ss.SSS")
+                    } 
     api
-      .post("/lecture/add", JSON.stringify(data), {
+      .post(`/lecture/update/${lecture.id}`, JSON.stringify(lecture), {
         headers: { "Content-Type": "application/json" },
       })
       .then((response) => {
@@ -66,7 +82,7 @@ const NewLectureForm = () => {
     <>
       <form onSubmit={handleSubmit(onSubmit)} className={classes.form}>
 
-        <ReactHookFormSelect
+      <ReactHookFormSelect
           id="course"
           name="course"
           label="Course name"
@@ -75,6 +91,8 @@ const NewLectureForm = () => {
           margin="normal"
           defaultValue="None"
           fullWidth
+          //value={selectedLecture.courseId}
+          onChange={({ target }) => dispatch(lectureEdit({...selectedLecture, courseId: target.value}))}
         >
           {allCourses.map((item) => (
             <MenuItem key={item.id} value={item.id}>
@@ -82,6 +100,7 @@ const NewLectureForm = () => {
             </MenuItem>
           ))}
         </ReactHookFormSelect>
+
         <ReactHookFormSelect
           id="type"
           name="type"
@@ -91,6 +110,8 @@ const NewLectureForm = () => {
           margin="normal"
           defaultValue="None"
           fullWidth
+          value={selectedLecture.type}
+          onChange={({ target }) => dispatch(lectureEdit({...selectedLecture, type: target.value}))}
         >
           <MenuItem value={"Lecture"}>Lecture</MenuItem>
           <MenuItem value={"Seminar"}>Seminar</MenuItem>
@@ -98,19 +119,31 @@ const NewLectureForm = () => {
         </ReactHookFormSelect>
 
         <label htmlFor="timeStart" className={classes.label}>Time start</label>
-        <input name="timeStart" type="datetime-local" ref={register} className={classes.datetime}/>
+        <input 
+          name="timeStart" 
+          type="datetime-local" 
+          ref={register} 
+          value={moment(selectedLecture.timeStart).format("yyy-MM-DDTHH:mm")}
+          onChange={({ target }) => dispatch(lectureEdit({...selectedLecture, timeStart: target.value}))}
+          className={classes.datetime}/>
 
         <label htmlFor="timeEnd" className={classes.label}>Time end</label>
-        <input name="timeEnd" type="datetime-local" ref={register} className={classes.datetime}/>
+        <input 
+          name="timeEnd" 
+          type="datetime-local" 
+          ref={register} 
+          value={moment(selectedLecture.timeEnd).format("yyy-MM-DDTHH:mm")}
+          onChange={({ target }) => dispatch(lectureEdit({...selectedLecture, timeEnd: target.value}))}
+          className={classes.datetime}/>
 
         <Button type="submit" fullWidth variant="contained" color="primary" className={classes.submit}>
-          Add new lecture
+          Update lecture
         </Button>
       </form>
       <Snackbar open={SnackbarData.isOpen} autoHideDuration={4000} onClose={handleSnackBarClose}>
         {SnackbarData.response != null && (
-          <Alert onClose={handleSnackBarClose} severity={SnackbarData.response === false ? "error" : "success"}>
-            {SnackbarData.response === false ? "Unable to add a new lecture! Please check your data!" : "Lecture successfully added!"}
+          <Alert onClose={handleSnackBarClose} severity={SnackbarData.response == false ? "error" : "success"}>
+            {SnackbarData.response == false ? "Unable to update lecture! Please check your data!" : "Course successfully updated!"}
           </Alert>
         )}
       </Snackbar>
@@ -118,7 +151,7 @@ const NewLectureForm = () => {
   );
 };
 
-export default NewLectureForm;
+export default EditLectureForm;
 
 const useStyles = makeStyles((theme) => ({
   datetime: {
@@ -157,16 +190,4 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(3, 0, 2),
     width: "100%",
   },
-  formControl: {
-    margin: theme.spacing(1),
-    width: "100%",
-  },
-  selectEmpty: {
-    marginTop: theme.spacing(2),
-  },
-  dateTime: {
-    display: "flex",
-    justifyContent: "space-between",
-    width: "auto"
-  }
 }));

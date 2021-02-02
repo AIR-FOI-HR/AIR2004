@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const Course = require("../models/course");
 
 exports.add = async (req, res) => {
+  console.log('req:', req.body);
   try {
     await new Course({
       ...req.body,
@@ -42,6 +43,7 @@ exports.getSingle = async (req, res) => {
     res.status(400).json({ success: false, error });
   }
 };
+
 exports.delete = async (req, res) => {
   try {
     const course = await (await Course.findById(req.params.id)).deleteOne();

@@ -12,6 +12,7 @@ const useStyles = makeStyles((theme) => ({
   Paper: {
     height: "fit-content",
     margin: "2%",
+    width: "650px"
   },
   submit: {
     margin: theme.spacing(3, 0, 2),

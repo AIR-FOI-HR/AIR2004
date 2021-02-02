@@ -208,3 +208,14 @@ exports.delete = async (req, res) => {
     res.status(400).json({ success: false, error }); 
   }
 };
+
+exports.resetUID = async (req, res) => {
+  try {
+    const student = await User.findById(req.params.id);
+    student.deviceUID = 'null';
+    student.save(); 
+    res.status(200).json({ success: true, student });
+  } catch (error) {
+    res.status(400).json({ success: false, error});
+  }
+};

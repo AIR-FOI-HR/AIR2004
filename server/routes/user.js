@@ -222,4 +222,51 @@ router.get("/details", userController.getSingle);
 
 router.get("/:role", userController.getAllUsers);
 
+/**
+ * @swagger
+ * /user/:
+ *  delete:
+ *    tags:
+ *    - "/user/"
+ *    summary: Delete user with the given ID
+ *    parameters:
+ *    - name: "id"
+ *      in: "path"
+ *      description: "User ID"
+ *    responses:
+ *      '200':
+ *        description: A successful response
+ * /user/:id
+ *  delete:
+ *    tags:
+ *    - "/user/"
+ *    summary: Delete user by id
+ */
+
+router.delete("/:id", userController.delete);
+
+/** @swagger
+* /user/:
+*  update:
+*    tags:
+*    - "/user/"
+*    summary: Update user with the given ID
+*    parameters:
+*    - name: "id"
+*      in: "path"
+*      description: "User ID"
+*    responses:
+*      '200':
+*        description: A successful response
+* /user/update/:id
+*  update:
+*    tags:
+*    - "/user/"
+*    summary: Update user by id
+*/
+
+router.post("/update/:id", userController.update);
+
+router.put("/reset-uid/:id", userController.resetUID);
+
 module.exports = router;

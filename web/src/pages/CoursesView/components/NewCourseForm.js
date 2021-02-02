@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { TextField, Button, Typography, Snackbar } from "@material-ui/core";
 import { useForm } from "react-hook-form";
 import Alert from "../../../components/Alert";
 import * as Yup from "yup";
 import { useHistory } from "react-router-dom";
+import { Multiselect } from 'multiselect-react-dropdown';
 
 import api from "../../../api/api";
 
@@ -33,6 +34,7 @@ const NewCourseForm = () => {
     isOpen: false,
     response: null,
   });
+  const [selectedValues, setSelectedValues] = useState([]);
   const handleSnackBarClose = (event, reason) => setSnackBarData({ ...SnackbarData, isOpen: false });
   const classes = useStyles();
   const { register, handleSubmit, errors, reset } = useForm({
@@ -40,10 +42,13 @@ const NewCourseForm = () => {
     resolver: yupResolver(validationSchema),
     defaultValues: initialValues,
   });
+  
   const history = useHistory();
   const onSubmit = (data) => {
+    const teachers = selectedValues.map(teacher => teacher.id);
+    console.log("SUBMITTED DATA", data);
     api
-      .post("/course/add", JSON.stringify(data), {
+      .post("/course/add", JSON.stringify({...data, teachers}), {
         headers: { "Content-Type": "application/json" },
       })
       .then((response) => {
@@ -59,8 +64,23 @@ const NewCourseForm = () => {
   };
   console.log("SNACKBAR response", SnackbarData.response);
 
+  const [allTeachers, setAllTeachers] = useState([]);
+  useEffect(() => {
+    api.get("/user/teacher").then((response) => setAllTeachers(response.data.data));
+  }, []);
+
+  const onSelect = (item) => {
+    
+    setSelectedValues(...selectedValues, item);
+  };
+
+  const onRemove = (item) => {
+    //setSelectedValues([...selectedValues, item]);
+  };
+
   return (
     <>
+    {console.log('all teachers: ', allTeachers)}
       <form onSubmit={handleSubmit(onSubmit)} className={classes.form}>
         <TextField
           name="name"
@@ -87,6 +107,15 @@ const NewCourseForm = () => {
           autoComplete="passcode"
         />
         {errors.passcode?.message && <Typography>{errors.passcode.message}</Typography>}
+
+        <Multiselect
+          options={allTeachers} 
+          selectedValues={selectedValues} 
+          onSelect={onSelect} 
+          onRemove={onRemove} 
+          displayValue="surname"
+          ref={register}
+        />
 
         <TextField
           name="allowedAbsences"

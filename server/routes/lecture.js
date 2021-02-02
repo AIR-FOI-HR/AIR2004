@@ -47,4 +47,50 @@ router.get("/lecturesForTeacher", lectureController.getLecturesForTeacher);
 
 router.get("/", lectureController.getAll);
 
+/**
+ * @swagger
+ * /lecture/:
+ *  delete:
+ *    tags:
+ *    - "/lecture/"
+ *    summary: Delete lecture with the given ID
+ *    parameters:
+ *    - name: "id"
+ *      in: "path"
+ *      description: "Lecture ID"
+ *    responses:
+ *      '200':
+ *        description: A successful response
+ * /lecture/:id
+ *  delete:
+ *    tags:
+ *    - "/lecture/"
+ *    summary: Delete lecture by id
+ */
+
+router.delete("/:id", lectureController.delete);
+
+/**
+ * @swagger
+ * /lecture/:
+ *  update:
+ *    tags:
+ *    - "/lecture/"
+ *    summary: Update lecture with the given ID
+ *    parameters:
+ *    - name: "id"
+ *      in: "path"
+ *      description: "Lecture ID"
+ *    responses:
+ *      '200':
+ *        description: A successful response
+ * /lecture/update/:id
+ *  update:
+ *    tags:
+ *    - "/lecture/"
+ *    summary: Update lecture by id
+ */
+
+router.post("/update/:id", lectureController.update);
+
 module.exports = router;

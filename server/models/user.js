@@ -23,6 +23,11 @@ const userSchema = mongoose.Schema({
     type: String,
     required: false,
     validate: /^[0-9]{10}$/,
+    unique: true
+  },
+  deviceUID: {
+    type: String,
+    unique: true,
   },
   phoneNumber: {
     type: String,

@@ -18,6 +18,7 @@ const lectureSchema = mongoose.Schema({
   timeEnd: {
     type: Date,
     required: false,
+    default: Date.now,
   },
   attendingStudents: [ { 
       type: mongoose.Schema.Types.ObjectId,
