@@ -20,9 +20,6 @@ const Attendance = ({ navigation }) => {
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    console.log("attendance token", teacher.attendanceToken);
-    console.log("course selected", teacher.courseSelectedOnTablet.lecture.id);
-
     if (!teacher.courseSelectedOnTablet) return;
 
     socket.current = io(WSS_URL + "/teacher", {

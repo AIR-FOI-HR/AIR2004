@@ -97,11 +97,9 @@ exports.getMissed = async (req, res) => {
       path: "course",
     });
 
-    const missed = missedAttendance
-      .map((item) => {
-        if (item.course.enrolledStudents.includes(student[0]._id) && !item.attendingStudents.includes(student[0]._id)) return item;
-      })
-      .filter((item) => item !== undefined && item.course.name === "Matematics 2");
+    const missed = missedAttendance.map((item) => {
+      if (item.course.enrolledStudents.includes(student[0]._id) && !item.attendingStudents.includes(student[0]._id)) return item;
+    });
 
     const data = missed.map((attendance) => {
       return {
