@@ -131,8 +131,15 @@ exports.markAttendance = async (req, res) => {
 
     // Check if that user has already marked attendance on that lecture
     const alreadyMarked = await Attendance.findOne({ lecture: lectureInProgress.lecture, user });
-
     if (alreadyMarked) return res.status(400).json({ success: false });
+
+    // Get the lecture
+    const lectureToRecord = await Lecture.findById(lectureInProgress.lecture);
+
+    // Check if student has enrolled that course
+    const courseId = lectureToRecord.course;
+    const student = await User.findById(user);
+    if (!student.enrolledCourses.includes(courseId)) return res.status(400).json({ success: false });
 
     // Update attendance document with the code
     const attendance = await Attendance.findOneAndUpdate(
@@ -140,19 +147,6 @@ exports.markAttendance = async (req, res) => {
       { $set: { user, modifiedAt: Date.now() } },
       { new: true }
     );
-
-    const lectureToRecord = await Lecture.findById(attendance.lecture);
-
-    // Check if student has enrolled that course
-    const courseId = lectureToRecord.course;
-
-    console.log("COURSE ID", courseId);
-
-    const student = await User.findById(user);
-
-    console.log("STUDENT", student);
-
-    if (!student.enrolledCourses.includes(courseId)) return res.status(400).json({ success: false });
 
     // Get attendance token for that lecture
     const attendanceToken = lectureInProgress?.attendanceToken;
