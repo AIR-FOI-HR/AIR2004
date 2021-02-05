@@ -5,7 +5,6 @@ import { BarChart } from "react-native-chart-kit";
 import { useSelector } from "react-redux";
 import { showMessage } from "react-native-flash-message";
 import { useIsFocused } from "@react-navigation/native";
-import axios from "axios";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 const moment = require("moment");
@@ -32,7 +31,7 @@ const Dashboard = ({ navigation }) => {
 
   const user = useSelector((state) => state.userState);
 
-  useEffect(() => {
+  const fetchData = () => {
     setLoading(true);
 
     api.get("/user/details").then((data) => {
@@ -50,6 +49,10 @@ const Dashboard = ({ navigation }) => {
           setLoading(false);
         });
     });
+  };
+
+  useEffect(() => {
+    fetchData();
   }, [isFocused]);
 
   const graphData = {
@@ -75,7 +78,6 @@ const Dashboard = ({ navigation }) => {
     api
       .post("/user/enroll", body)
       .then(({ data }) => {
-        console.log("ADDED COURSE", data.data.course);
         toggleVisible(false);
         setEnrolledCourses(enrolledCourses.concat(data.data.course));
         showMessage({
@@ -122,9 +124,9 @@ const Dashboard = ({ navigation }) => {
           duration: 5000,
           icon: "success",
         });
+        fetchData();
       })
       .catch((error) => {
-        console.log("ERRORRRR", error.response.error);
         showMessage({
           message: "Error occured!",
           description:

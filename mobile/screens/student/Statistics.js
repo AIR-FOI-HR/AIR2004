@@ -1,18 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, FlatList, TouchableWithoutFeedback } from "react-native";
-import { Text, Surface, Card, Paragraph, DefaultTheme, Provider as PaperProvider, FAB } from "react-native-paper";
-import { useSelector } from "react-redux";
-import { showMessage, hideMessage } from "react-native-flash-message";
+import { Text, Card, Paragraph, Provider as PaperProvider, FAB } from "react-native-paper";
 
 import Loading from "../common/components/Loading";
 
 import api from "../../utils/api";
+import { useIsFocused } from "@react-navigation/native";
 
 const Statistics = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const [enrolledCourses, setEnrolledCourses] = useState([]);
-
-  const user = useSelector((state) => state.userState);
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     setLoading(true);
@@ -25,7 +23,7 @@ const Statistics = ({ navigation }) => {
       .finally(() => {
         setLoading(false);
       });
-  }, []);
+  }, [isFocused]);
 
   return (
     <View>

@@ -76,7 +76,7 @@ exports.getAllByStudent = async (req, res) => {
         day: getDayName(attendance.modifiedAt, "en-US"),
         courseName: attendance.lecture.course.name,
         lectureType: attendance.lecture.type,
-        attendanceTime: moment(attendance.modifiedAt).format("HH:mm"),
+        attendanceTime: moment(attendance.modifiedAt).add(1, "h").format("HH:mm"),
         present: true,
       };
     });
@@ -142,6 +142,11 @@ exports.markAttendance = async (req, res) => {
     );
 
     const lectureToRecord = await Lecture.findById(attendance.lecture);
+
+    // Check if student has enrolled that course
+    const courseId = lectureToRecord.course;
+    const student = await User.findById(user);
+    if (!student.enrolledCourses.includes(courseId)) return res.status(400).json({ success: false });
 
     // Get attendance token for that lecture
     const attendanceToken = lectureInProgress?.attendanceToken;
