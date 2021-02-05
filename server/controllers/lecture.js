@@ -43,8 +43,8 @@ exports.getLecturesForTeacher = async (req, res) => {
     const data = lecturesForTeacher.map((lecture) => {
       return {
         id: lecture._id,
-        timeStart: moment(lecture.timeStart).format("hh:mm"),
-        timeEnd: moment(lecture.timeEnd).format("hh:mm"),
+        timeStart: moment(lecture.timeStart).add(1, "h").format("hh:mm"),
+        timeEnd: moment(lecture.timeEnd).add(1, "h").format("hh:mm"),
         type: lecture.type,
         course: lecture.course.name,
         enrolledStudents: lecture.course.enrolledStudents,
