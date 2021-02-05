@@ -5,6 +5,7 @@ const app = express();
 const routes = require("./routes");
 const swaggerJsDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
+const cors = require("cors");
 
 global.lecturesInProgress = [];
 
@@ -40,6 +41,7 @@ const swaggerDocs = swaggerJsDoc(swaggerOptions);
 if (process.env.NODE_ENV !== "production") app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // REST API
+app.use(cors());
 app.use(express.json());
 app.use("/api", routes);
 
