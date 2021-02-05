@@ -19,6 +19,10 @@ const Attendance = ({ navigation }) => {
   useEffect(() => {
     if (!teacher.courseSelectedOnTablet) return;
 
+    const unsubscribe = navigation.addListener("blur", () => {
+      setAttendances([]);
+    });
+
     socket.current = io(WSS_URL + "/teacher", {
       query: {
         attendanceToken: teacher.attendanceToken,
@@ -37,7 +41,10 @@ const Attendance = ({ navigation }) => {
       setAttendances((old) => [data, ...old]);
     });
 
-    return () => socket.current.disconnect();
+    return () => {
+      socket.current.disconnect();
+      unsubscribe();
+    };
   }, []);
 
   if (!teacher.courseSelectedOnTablet)
