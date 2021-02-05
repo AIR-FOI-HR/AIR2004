@@ -149,7 +149,7 @@ const Dashboard = ({ navigation }) => {
             </Text>
           </Text>
           <View style={{ marginTop: 25 }}>
-            <Text style={styles.font}>Here's your summary for today:</Text>
+            <Text style={styles.font}>Here's your summary:</Text>
             <Surface style={{ ...styles.graphContainer, marginTop: 20 }}>
               <Text
                 style={
