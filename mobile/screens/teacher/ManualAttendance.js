@@ -35,6 +35,7 @@ const ManualAttendance = () => {
     api
       .post("/attendance/add", body)
       .then(({ data }) => {
+        console.log("DATA", data.data);
         dispatch(addAttendance(data.data));
         showMessage({
           message: "Thank you!",

@@ -5,7 +5,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { ActivityIndicator, FAB } from "react-native-paper";
 import StudentAttendanceCard from "./components/StudentAttendanceCard";
 import { ScrollView } from "react-native-gesture-handler";
-import { setAllAttendacnes, addAttendance } from "../../store/actions/teacher";
+import { useIsFocused } from "@react-navigation/native";
+import { setAllAttendances, addAttendance } from "../../store/actions/teacher";
 import { io } from "socket.io-client";
 import { WSS_URL } from "../../constants";
 
@@ -16,8 +17,12 @@ const Attendance = ({ navigation }) => {
   const attendances = useSelector((state) => state.teacherState.attendances);
   const [fabOpen, setFabOpen] = useState(false);
   const socket = useRef();
+  const isFocused = useIsFocused();
 
   useEffect(() => {
+    console.log("attendance token", teacher.attendanceToken);
+    console.log("course selected", teacher.courseSelectedOnTablet.lecture.id);
+
     if (!teacher.courseSelectedOnTablet) return;
 
     socket.current = io(WSS_URL + "/teacher", {
@@ -41,7 +46,7 @@ const Attendance = ({ navigation }) => {
     return () => {
       socket.current.disconnect();
     };
-  }, []);
+  }, [isFocused]);
 
   if (!teacher.courseSelectedOnTablet)
     return (
