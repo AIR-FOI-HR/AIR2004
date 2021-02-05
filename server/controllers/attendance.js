@@ -145,7 +145,13 @@ exports.markAttendance = async (req, res) => {
 
     // Check if student has enrolled that course
     const courseId = lectureToRecord.course;
+
+    console.log("COURSE ID", courseId);
+
     const student = await User.findById(user);
+
+    console.log("STUDENT", student);
+
     if (!student.enrolledCourses.includes(courseId)) return res.status(400).json({ success: false });
 
     // Get attendance token for that lecture
