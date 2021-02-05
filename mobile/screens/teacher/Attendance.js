@@ -5,23 +5,20 @@ import { useDispatch, useSelector } from "react-redux";
 import { ActivityIndicator, FAB } from "react-native-paper";
 import StudentAttendanceCard from "./components/StudentAttendanceCard";
 import { ScrollView } from "react-native-gesture-handler";
+import { setAllAttendacnes, addAttendance } from "../../store/actions/teacher";
 import { io } from "socket.io-client";
 import { WSS_URL } from "../../constants";
 
 const Attendance = ({ navigation }) => {
   const dispatch = useDispatch();
   const teacher = useSelector((state) => state.teacherState);
-  const [attendances, setAttendances] = useState([]);
 
+  const attendances = useSelector((state) => state.teacherState.attendances);
   const [fabOpen, setFabOpen] = useState(false);
   const socket = useRef();
 
   useEffect(() => {
     if (!teacher.courseSelectedOnTablet) return;
-
-    const unsubscribe = navigation.addListener("blur", () => {
-      setAttendances([]);
-    });
 
     socket.current = io(WSS_URL + "/teacher", {
       query: {
@@ -34,16 +31,15 @@ const Attendance = ({ navigation }) => {
     });
 
     socket.current.on("all attendances", (data) => {
-      setAttendances(data);
+      dispatch(setAllAttendances(data));
     });
 
     socket.current.on("new attendance", (data) => {
-      setAttendances((old) => [data, ...old]);
+      dispatch(addAttendance(data));
     });
 
     return () => {
       socket.current.disconnect();
-      unsubscribe();
     };
   }, []);
 

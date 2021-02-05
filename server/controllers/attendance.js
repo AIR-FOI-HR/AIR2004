@@ -10,12 +10,12 @@ function getDayName(date, locale) {
 
 exports.add = async (req, res) => {
   try {
-    await new Attendance({
+    const attendance = await new Attendance({
       ...req.body,
     }).save();
     const lectureId = req.body.lecture;
     Lecture.findOneAndUpdate({ _id: lectureId }, { $push: { attendingStudents: req.body.user } }, function (err, affected, resp) {});
-    res.status(200).json({ success: true });
+    res.status(200).json({ success: true, data: attendance });
   } catch (error) {
     res.status(400).json({ success: false, error });
   }

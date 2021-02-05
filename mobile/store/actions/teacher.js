@@ -65,3 +65,17 @@ export const setStudentsForLecture = (students) => {
     students,
   };
 };
+
+export const setAllAttendances = (attendances) => {
+  return {
+    type: "SET_ALL_ATTENDANCES",
+    attendances,
+  };
+};
+
+export const addAttendance = (attendance) => {
+  return {
+    type: "ADD_ATTENDANCE",
+    attendance,
+  };
+};

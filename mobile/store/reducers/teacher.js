@@ -5,6 +5,7 @@ const initialState = {
   courses: null,
   lectures: null,
   studentsForLecture: null,
+  attendances: [],
 };
 
 const teacherReducer = (state = initialState, action) => {
@@ -20,6 +21,7 @@ const teacherReducer = (state = initialState, action) => {
         attendanceToken: null,
         courseSelectedOnTablet: null,
         trackingStarted: false,
+        attendances: [],
       };
 
     case "SET_COURSE_SELECTED_ON_TABLET":
@@ -73,6 +75,18 @@ const teacherReducer = (state = initialState, action) => {
       return {
         ...state,
         studentsForLecture: action.students,
+      };
+
+    case "SET_ALL_ATTENDANCES":
+      return {
+        ...state,
+        attendances: action.attendances,
+      };
+
+    case "ADD_ATTENDANCE":
+      return {
+        ...state,
+        attendances: [...state.attendances, action.attendance],
       };
 
     default:

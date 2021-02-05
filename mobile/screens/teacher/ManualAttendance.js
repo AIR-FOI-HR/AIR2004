@@ -1,22 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { View, StyleSheet } from "react-native";
 import { Text, Button, TextInput } from "react-native-paper";
 import SearchableDropdown from "react-native-searchable-dropdown";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { showMessage } from "react-native-flash-message";
+import { addAttendance } from "../../store/actions/teacher";
 import api from "../../utils/api";
 
 const ManualAttendance = () => {
   const user = useSelector((state) => state.teacherState);
-
+  const dispatch = useDispatch();
   const enrolledStudentsIds = user.courseSelectedOnTablet.course.enrolledStudents;
   const [enrolledStudents, setEnrolledStudents] = useState([]);
   const [selectedStudent, setSelectedStudent] = useState({});
 
   useEffect(() => {
     api.get("/user/student").then((data) => {
-      console.log("ENROLLED STUDENTS: ", data.data.data);
       const enrolledStudents = data.data.data.filter((student) => enrolledStudentsIds.includes(student.id));
       setEnrolledStudents(
         enrolledStudents.map((student) => {
@@ -35,7 +35,7 @@ const ManualAttendance = () => {
     api
       .post("/attendance/add", body)
       .then(({ data }) => {
-        console.log("MANUAL ATTENDANCE ADDED");
+        dispatch(addAttendance(data.data));
         showMessage({
           message: "Thank you!",
           description: "Attendance has been successfully saved!",
