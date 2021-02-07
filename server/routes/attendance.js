@@ -55,7 +55,7 @@ router.get("/by-student", auth, attendanceController.getAllByStudent);
  *      '400':
  *        description: An unsuccessful response
  */
-router.get("/", auth, attendanceController.getAll);
+router.get("/", attendanceController.getAll);
 
 /**
  * @swagger

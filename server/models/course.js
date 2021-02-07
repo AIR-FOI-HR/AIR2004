@@ -16,7 +16,6 @@ const courseSchema = mongoose.Schema({
     type: Number,
     default: 3,
     required: true,
-    //validate: /^[0-9]{2}$/,
   },
   enrolledStudents: [
     {

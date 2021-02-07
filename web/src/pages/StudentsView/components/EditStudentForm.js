@@ -33,6 +33,20 @@ const EditStudentForm = () => {
   
   const dispatch = useDispatch();
 
+  const [SnackbarData, setSnackBarData] = useState({
+    isOpen: false,
+    response: null,
+  });
+  const handleSnackBarClose = (event, reason) => setSnackBarData({ ...SnackbarData, isOpen: false });
+  const classes = useStyles();
+  const { register, handleSubmit, errors, reset } = useForm({
+    mode: "onChange",
+    resolver: yupResolver(validationSchema),
+    defaultValues: selectedStudent
+  });
+
+  const history = useHistory();
+
   const resetUID = () => {
     api
       .put(`/user/reset-uid/${selectedStudent.id}`, JSON.stringify(selectedStudent.data), {
@@ -47,18 +61,6 @@ const EditStudentForm = () => {
       });
   };
 
-  const [SnackbarData, setSnackBarData] = useState({
-    isOpen: false,
-    response: null,
-  });
-  const handleSnackBarClose = (event, reason) => setSnackBarData({ ...SnackbarData, isOpen: false });
-  const classes = useStyles();
-  const { register, handleSubmit, errors, reset } = useForm({
-    mode: "onChange",
-    resolver: yupResolver(validationSchema),
-    defaultValues: selectedStudent
-  });
-  const history = useHistory();
   const onSubmit = (data) => {
     const student = { data, id: selectedStudent.id }
     console.log('student: ', student)
@@ -82,6 +84,7 @@ const EditStudentForm = () => {
 
   return (
     <>
+    {console.log('update student')}
       <form onSubmit={handleSubmit(onSubmit)} className={classes.form}>
         <TextField
           name="name"

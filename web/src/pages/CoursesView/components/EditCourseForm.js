@@ -47,7 +47,7 @@ const EditCourseForm = () => {
     console.log('course: ', course)
     
     api
-      .post(`/course/update/${course.id}`, JSON.stringify(course.data), {
+      .put(`/course/${course.id}`, JSON.stringify(course.data), {
         headers: { "Content-Type": "application/json" },
       })
       .then((response) => {

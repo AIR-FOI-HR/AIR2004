@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import { courseEdit } from "../../../store/actions/userActions";
 import api from "../../../api/api";
 
-const columns = ["Name", "Passcode", "Teachers", "Allowed absences",  "Enrolled students"];
+const columns = ["Name", "Passcode", "Allowed absences",  "Enrolled students"];
 
 let ids = [];
 
@@ -32,8 +32,7 @@ const CoursesDataTable = ({ courses }) => {
        id: ids[rowMeta.rowIndex],
        name: rowData[0],
        passcode: rowData[1],
-       teachers: rowData[2],
-       allowedAbsences: rowData[3]
+       allowedAbsences: rowData[2]
     };
     addBackground(rowMeta.rowIndex)
     setIndex(rowMeta.rowIndex);
@@ -51,7 +50,6 @@ const CoursesDataTable = ({ courses }) => {
     let _course = [
       course.name, 
       course.passcode, 
-      course.assignedTeachers,
       course.allowedAbsences, 
       course.enrolledStudents ? course.enrolledStudents.length : 0];
 

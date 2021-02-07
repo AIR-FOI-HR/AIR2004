@@ -56,6 +56,7 @@ const EditLectureForm = () => {
 
   const history = useHistory();
   const onSubmit = (data) => {
+    console.log('data: ', data);
     const lecture = { id: selectedLecture.id, 
                       type: data.type, 
                       timeStart: moment(data.timeStart).format("yyy-MM-DDTHH:mm:ss.SSS"),
@@ -81,8 +82,7 @@ const EditLectureForm = () => {
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)} className={classes.form}>
-
-      <ReactHookFormSelect
+      <TextField
           id="course"
           name="course"
           label="Course name"
@@ -91,15 +91,10 @@ const EditLectureForm = () => {
           margin="normal"
           defaultValue="None"
           fullWidth
-          //value={selectedLecture.courseId}
-          onChange={({ target }) => dispatch(lectureEdit({...selectedLecture, courseId: target.value}))}
+          disabled="true"
+          value={selectedLecture.course}
         >
-          {allCourses.map((item) => (
-            <MenuItem key={item.id} value={item.id}>
-              {item.name}
-            </MenuItem>
-          ))}
-        </ReactHookFormSelect>
+        </TextField>
 
         <ReactHookFormSelect
           id="type"

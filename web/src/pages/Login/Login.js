@@ -21,7 +21,6 @@ const initialValues = {
 
 const validationSchema = Yup.object().shape({
   email: Yup.string()
-    .email("You need to enter a valid email!")
     .required("This field is required!"),
   password: Yup.string().required("This field is required!"),
 });
@@ -175,7 +174,7 @@ const useStyles = makeStyles((theme) => ({
   },
   container: {
     width: "100%",
-    height: "100%",
+    height: "500px",
     display: "flex",
     justifyContent: "center",
     alignItems: "center"

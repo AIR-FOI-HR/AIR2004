@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { TextField, Button, Typography, Snackbar } from "@material-ui/core";
+import { TextField, Button, Typography, Snackbar, MenuItem } from "@material-ui/core";
 import { useForm } from "react-hook-form";
 import Alert from "../../../components/Alert";
 import * as Yup from "yup";
 import { useHistory } from "react-router-dom";
-import { Multiselect } from 'multiselect-react-dropdown';
+import ReactHookFormSelect from "../../LecturesView/components/ReactHookFormSelect";
 
 import api from "../../../api/api";
 
@@ -37,50 +37,42 @@ const NewCourseForm = () => {
   const [selectedValues, setSelectedValues] = useState([]);
   const handleSnackBarClose = (event, reason) => setSnackBarData({ ...SnackbarData, isOpen: false });
   const classes = useStyles();
-  const { register, handleSubmit, errors, reset } = useForm({
+  const { register, handleSubmit, errors, reset, control } = useForm({
     mode: "onChange",
     resolver: yupResolver(validationSchema),
     defaultValues: initialValues,
   });
+
+  const [allTeachers, setAllTeachers] = useState([]);
+  useEffect(() => {
+    api.get("/user/teacher").then((response) => {
+      console.log("RESPONSE", response.data.data);
+      setAllTeachers(response.data.data);
+    });
+  }, []);
   
   const history = useHistory();
   const onSubmit = (data) => {
-    const teachers = selectedValues.map(teacher => teacher.id);
     console.log("SUBMITTED DATA", data);
     api
-      .post("/course/add", JSON.stringify({...data, teachers}), {
+      .post("/course/add", JSON.stringify(data), {
         headers: { "Content-Type": "application/json" },
       })
       .then((response) => {
         console.log("RESPONSE", response);
         setSnackBarData({ isOpen: true, response: response.data.success });
         reset();
+        history.push('/courses');
       })
       .catch((error) => {
         setSnackBarData({ isOpen: true, response: false });
         reset();
       });
-      history.push('/courses');
   };
   console.log("SNACKBAR response", SnackbarData.response);
 
-  const [allTeachers, setAllTeachers] = useState([]);
-  useEffect(() => {
-    api.get("/user/teacher").then((response) => setAllTeachers(response.data.data));
-  }, []);
-
-  const onSelect = (item) => {
-    
-    setSelectedValues(...selectedValues, item);
-  };
-
-  const onRemove = (item) => {
-    //setSelectedValues([...selectedValues, item]);
-  };
-
   return (
     <>
-    {console.log('all teachers: ', allTeachers)}
       <form onSubmit={handleSubmit(onSubmit)} className={classes.form}>
         <TextField
           name="name"
@@ -108,14 +100,23 @@ const NewCourseForm = () => {
         />
         {errors.passcode?.message && <Typography>{errors.passcode.message}</Typography>}
 
-        <Multiselect
-          options={allTeachers} 
-          selectedValues={selectedValues} 
-          onSelect={onSelect} 
-          onRemove={onRemove} 
-          displayValue="surname"
-          ref={register}
-        />
+        <ReactHookFormSelect
+          id="teacherId"
+          name="teacherId"
+          label="Teacher"
+          control={control}
+          variant="outlined"
+          margin="normal"
+          defaultValue="None"
+          fullWidth
+        >
+          {allTeachers.map((item) => (
+            <MenuItem key={item.id} value={item.id}>
+              {item.surname}
+              {console.log('id: ', item.id)}
+            </MenuItem>
+          ))}
+        </ReactHookFormSelect>
 
         <TextField
           name="allowedAbsences"
